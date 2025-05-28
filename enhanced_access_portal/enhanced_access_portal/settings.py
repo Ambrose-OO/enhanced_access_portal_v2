@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'login_page' # https://docs.djangoproject.com/en/5.2/topics/templates/#django.template.TemplateDoesNotExist, https://www.w3schools.com/django/django_templates.php, https://learn.microsoft.com/en-us/visualstudio/python/learn-django-in-visual-studio-step-02-create-an-app?view=vs-2022
 ]
 
 MIDDLEWARE = [
@@ -54,7 +55,10 @@ ROOT_URLCONF = 'enhanced_access_portal.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+           # './login_page/templates' # Have to provide directories for locations of your additional template files: https://docs.djangoproject.com/en/5.2/topics/templates/ , https://docs.djangoproject.com/en/5.2/topics/templates/#django.template.TemplateDoesNotExist
+           # don't need to if you specify the app name in INSTALLED_APPS which has a templates folder in its associated directory: https://learn.microsoft.com/en-us/visualstudio/python/learn-django-in-visual-studio-step-02-create-an-app?view=vs-2022
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
