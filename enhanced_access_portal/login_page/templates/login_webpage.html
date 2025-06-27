@@ -44,8 +44,14 @@
 
         .login_options {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
+        }
+        .alternate_login_options {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-top: 3%;
         }
 
         .login_section{
@@ -70,15 +76,39 @@
             border-radius: 0.25rem;
 
             width: 100%;
+            position: relative; 
+            z-index: 1; 
             height: 54px;
             display:block;
             margin:auto;
-            margin-top: 8%;
+            margin-top: 9%; /*Using padding seems to shift the text position. Useful for later*/
 
             font-size: 1.2em;
             
             /* https://www.w3schools.com/tags/tryit.asp?filename=tryhtml_button_css */
             cursor: pointer;
+            text-align: center;
+        }
+        
+        .alternate_login_button{
+            color: #fff;
+            background-color: #212529;
+            border-color: #212529;
+            border: 1px solid transparent;
+            border-radius: 0.25rem;
+
+            width: 40%;
+            position: relative; 
+            z-index: 1; 
+            height: 30px;
+            display:block;
+            margin:auto;
+
+            font-size: 0.9em;
+            
+            /* https://www.w3schools.com/tags/tryit.asp?filename=tryhtml_button_css */
+            cursor: pointer;
+            text-align: center;
         }
 
         .login_button:hover {
@@ -113,6 +143,24 @@
         input [type=submit] {
             font-size: 1.5em;
         }
+
+        .button_wrapper {
+            position: relative;
+            width: 100%;
+        }
+        
+        .loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 24px;       /* adjust size as needed */
+            height: 24px;
+            transform: translate(-50%, -50%);
+            display: block;     /* hidden by default */
+            pointer-events: none; /* allows clicks to pass through */
+            z-index: 2;
+        }
+
     </style>
 
     <body>
@@ -143,29 +191,76 @@
                         </label>
 
                         <!-- "display: block;" helps put the elements on seperate lines */ -->
-                        <input type="text" placeholder="Your password" id="password" class="entry_style1"> 
+                        <input type="password" placeholder="Your password" id="password" class="entry_style1"> 
                     </div>
 
                     <div class = "login_options">
-                        <span style="width: 60%"> 
+                        <span style="margin-right: 5%;"> 
                             <input type="checkbox" checked="checked"> 
                             Remember me
                         </span>
-                        
-                        <span style="width: 40%"> 
-                            <a href="#" style="padding-right: 3%">Forgot Password</a>
-                            <a href="#">Register</a>
+                        <span> 
+                            <input type="checkbox" checked="checked"> 
+                            Hide password
                         </span>
+                        
+                    </div>
+                    
+                    <div class="button_wrapper">
+                        <button id = "x1" type="button" onclick="USER_PROMPT_login_attempt()" class = "login_button">
+                            Log in
+                        </button>
+                        <img id="loader" src="{% static 'LoadingCircleGif.gif' %}" class="loader" alt="loading" />
+                    </div> 
+
+                    <div class = "alternate_login_options">
+                        <button id = "x1" type="button" onclick="USER_PROMPT_forgot_password()" class = "alternate_login_button">
+                            Forgot Password
+                        </button>
+                        <button id = "x1" type="button" onclick="USER_PROMPT_register()" class = "alternate_login_button">
+                            Register
+                        </button>
                     </div>
 
-                    <button type="button" class = "login_button">Log in</button>
+                    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                    <script>
+                        function USER_PROMPT_login_attempt() {
+                            fetch(
+                                "{% url 'login_request' %}", 
+                                {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/x-www-form-urlencoded",
+                                        "X-CSRFToken": "{{ csrf_token }}"
+                                    },
+                                    body: new URLSearchParams({ Output1: "Hello, Ajax!", Output2: "Chicken!" })
+                                }
+                            )
+                            .then(response => response.json())
+                            .then(data => {
+                                    console.log("Done");
+                                    console.log("Server Response:", data.message);
+                                    document.getElementById("x1").innerHTML = "wagwan";
+                            })
+                            .catch(error => {
+                                console.error("Error:", error);
+                            });
+                        }
 
+                        function USER_PROMPT_forgot_password() {
+                        
+                        }
+
+                        function USER_PROMPT_register() {
+                        
+                        }
+                    </script>
 
                     <div style = "
                         width: 100%; 
                         height: 2px; 
                         background-color: #212529; 
-                        margin-top: 8%; 
+                        margin-top: 5%; 
                         ">
                     </div>
 
