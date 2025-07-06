@@ -1,4 +1,5 @@
 {% load static %}
+
 <!DOCTYPE html>
 <html>
 
@@ -190,7 +191,11 @@
     </style>
 
     <body>
-        
+    
+        <form style="display:none;">
+            {% csrf_token %}
+        </form>
+
         <div class = "login_panel" style="display:flex">
             <div class = "login_column">
                 <div class = "login_section" style="z-index: 1; position: relative;">
@@ -210,7 +215,7 @@
                                 </label>
     
                                 <!-- "display: block;" helps put the elements on seperate lines */ -->
-                                <input type="text" placeholder="your-email@gmail.com" id="email" class="entry_style1"> 
+                                <input type="text" placeholder="your-email@gmail.com" id="email_login" class="entry_style1"> 
                             </div>
     
                             <div class = "login_entry_section"> 
@@ -221,7 +226,7 @@
     
                                 <!-- "display: block;" helps put the elements on seperate lines */ -->
                                 <!-- Password inputs: https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input/password -->
-                                <input type="password" placeholder="Your password" id="password" class="entry_style1"> 
+                                <input type="password" placeholder="Your password" id="password_login" class="entry_style1"> 
                             </div>
     
                             <div class = "login_options">
@@ -254,16 +259,40 @@
     
                             <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
                             <script>
+                                function getCookie(name) {
+                                    let cookieValue = null;
+                                    if (document.cookie && document.cookie !== '') {
+                                        const cookies = document.cookie.split(';');
+                                        for (let i = 0; i < cookies.length; i++) {
+                                            const cookie = cookies[i].trim();
+                                            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                                                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    return cookieValue;
+                                }
+                                    
                                 function USER_PROMPT_login_attempt() {
+
+                                    const email_login = document.getElementById("email_login");
+                                    const password_login = document.getElementById("password_login");
+                                    
                                     fetch(
                                         "{% url 'login_request' %}", 
                                         {
                                             method: "POST",
                                             headers: {
                                                 "Content-Type": "application/x-www-form-urlencoded",
-                                                "X-CSRFToken": "{{ csrf_token }}"
+                                                "X-CSRFToken": getCookie('csrftoken') //https://www.geeksforgeeks.org/python/csrf-token-in-django/
                                             },
-                                            body: new URLSearchParams({ Output1: "Hello, Ajax!", Output2: "Chicken!" })
+                                            body: new URLSearchParams(
+                                                { 
+                                                    email: email_login.value, 
+                                                    password: password_login.value
+                                                }
+                                            )
                                         }
                                     )
                                     .then(response => response.json())
@@ -272,16 +301,31 @@
                                             console.log("Server Response:", data.message);
                                             document.getElementById("login_button").innerHTML = "Submitting";
                                             document.getElementById("login_loading_icon").style.display = "block";
-    
-                                            setTimeout(function() {
-                                                document.getElementById("login_button").innerHTML = "Logging in...";
-                                                document.getElementById("login_button").style.backgroundColor = "#18b751"; 
-                                                
-                                                document.getElementById("login_loading_icon").style.transform = "translate(260%, -50%)";
-                                                document.getElementById("login_section_page").style.position = "relative";
-                                                document.getElementById("login_section_page").style.top = "500px";
-                                                
-                                            }, 1000);
+
+                                            if (data.status == "success"){
+                                                setTimeout(function() {
+                                                    document.getElementById("login_button").innerHTML = "Logging in...";
+                                                    document.getElementById("login_button").style.backgroundColor = "#18b751"; 
+                                                    
+                                                    document.getElementById("login_loading_icon").style.transform = "translate(260%, -50%)";
+                                                    //document.getElementById("login_section_page").style.position = "relative";
+                                                    //document.getElementById("login_section_page").style.top = "500px";
+                                                    
+                                                    setTimeout(function() {
+                                                        window.location.href = "/resource_dashboard/"
+                                                        
+                                                    }, 1000);
+                                                }, 1000);
+                                            }else{
+                                                setTimeout(function() {
+                                                    document.getElementById("login_button").innerHTML = "Incorrect credentials";
+                                                    document.getElementById("login_button").style.backgroundColor = "#FF4F6C"; 
+                                                    
+                                                    document.getElementById("login_loading_icon").style.display = "none";
+                                                }, 1000);
+                                            }
+                                            
+                                            
                                     })
                                     .catch(error => {
                                         console.error("Error:", error);

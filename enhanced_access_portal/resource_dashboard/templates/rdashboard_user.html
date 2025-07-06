@@ -67,11 +67,12 @@
         .login_section{
             align-items: center;
             /* https://blog.hubspot.com/website/css-margin-vs-padding#:~:text=What's%20the%20difference%20between%20margin,border%20and%20the%20element's%20content. */
-            margin-bottom: 10%;
+            margin-bottom: 5%;
             padding-left: 3%;
             padding-right: 3%;
             padding-bottom: 4%;
             width: 80%;
+            height: 60%;
 
             background-color: #FFFFFF;
             border-radius: 0.5rem;
@@ -170,23 +171,31 @@
         }
 
         .loader {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 24px;       /* adjust size as needed */
-            height: 24px;
-            transform: translate(220%, -50%);
-            display: none;     /* hidden by default. On show on 'block' */
+            width: 30px;       /* adjust size as needed */
+            height: 30px;
             pointer-events: none; /* allows clicks to pass through */
-            z-index: 2;
         }
 
-        .nine_square_button {
-            width: 100%;       /* or auto */
-            height: 100%;
+        .nine_square_button_icon {
+            width: 90%;       /* or auto */
+            height: 80%;
             padding: 0;
             border: none;
-            background-color: #f0f0f0;
+            background-color: #f0f0f000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+
+            transform: translate(3.5%, 0%);
+        }
+        
+        .panel_image_button {
+            width: 90%;       /* or auto */
+            height: 90%;
+            padding: 0;
+            border: none;
+            background-color: #f0f0f000;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -202,10 +211,28 @@
         }
 
         .panel_toggle_button {
+            background-color: #212529;
+            border-color: #212529;
+            border: 1px solid transparent;
+            border-radius: 0.25rem;
+            
+            font-size: 0.9em;
+            
+            /* https://www.w3schools.com/tags/tryit.asp?filename=tryhtml_button_css */
+            cursor: pointer;
+            text-align: center;
+
+            filter: drop-shadow(3px 2px 4px);
+        }
+
+        .panel_button {
             background-color: #ffffff;
             border-color: #212529;
             border: 1px solid transparent;
             border-radius: 0.25rem;
+            
+            padding: 4px;
+            padding-bottom: 8px;
 
             font-size: 0.9em;
             
@@ -213,16 +240,16 @@
             cursor: pointer;
             text-align: center;
 
-            filter: drop-shadow(5px 5px 6px);
+            filter: drop-shadow(3px 2px 4px);
+
+            width: 100%; 
+            height: 17%;
         }
 
         .width_section_length {
             width: 100%;
         }
 
-        .left_panel_button_size {
-            width: 70px; height: 70px;
-        }
     </style>
 
     <body>
@@ -231,7 +258,7 @@
             <div class = "login_column">
                 <div class = "login_section " style="z-index: 1; position: relative;">
                     
-                    <div class = "upper_panel width_section_length" style = "align-items: center; display: flex;">
+                    <div class = "upper_panel width_section_length" style = "align-items: center; display: flex; height: 12%">
                         <p class = "header_title" style = "padding-right: 15%; font-size: 140%; width: 60%;">
                             Resource dashboard | Enhanced access
                         </p>
@@ -246,9 +273,9 @@
                             </p>
                         </div>
                         
-                        <div style="text-align: right;">
-                            <button id = "panel_toggle_button" type="button" onclick="" class = "panel_toggle_button" style = "width: 60%; height: 50px">
-                                <img id="panel_toggle_button" src="{% static 'NineSquareButtonIcon.png' %}" class="nine_square_button" alt="Panel toggle" />
+                        <div style="text-align: right; margin-right: 0.45%;">
+                            <button id = "panel_toggle_button" type="button" onclick="" class = "panel_toggle_button" style = "width: 110%; height: 50px;">
+                                <img id="panel_toggle_button" src="{% static 'NineSquareButtonIcon.png' %}" class="nine_square_button_icon" alt="Panel toggle" />
                             </button>
                         </div>
                     </div>
@@ -256,46 +283,65 @@
                     
                     
 
-                    <div class = "width_section_length" style="display: grid; align-items: center; display: flex; margin-bottom: 3%;" >
+                    <div class = "width_section_length" style="height: 5.5%; display: grid; align-items: center; display: flex; margin-bottom: 3%;" >
 
-                            
-                                <!-- "display: block;" helps put the elements on seperate lines */ -->
-                            <input type="text" placeholder="Search VMs" id="email" class="entry_style1" style = "width: 80%; margin-right: 1%;"> 
+                            <!-- "display: block;" helps put the elements on seperate lines */ -->
+                            <input type="text" placeholder="Search VMs" id="vm_search" class="entry_style1" style = "width: 80%; margin-right: 1%;"> 
                      
-                            
                             <button id = "x1" type="button" onclick="USER_PROMPT_register_section()" class = "alternate_login_button">
                                 Search
                             </button>
                     
                     </div>
                     
-                    <div class = "left_panel">
+                    <div id = "content-panel" style = "align-items: center; display: flex; height: 70%;">
 
-                        <div style = "display: grid; align-items: center;">
-                            <button id = "panel_toggle_button" type="button" onclick="" class = "panel_toggle_button left_panel_button_size" style = "margin-top: 5px;">
-                                <img id="panel_toggle_button" src="{% static 'NineSquareButtonIcon.png' %}" class="nine_square_button" alt="Projects" />
+                        <div class = "left_panel" style = "width: 12%; height: 100%; align-items: center;">
+
+                            <button id = "panel_toggle_button" type="button" onclick="" class = "panel_button" style = "margin-top: 5px;">
+                                <img id="panel_toggle_button" src="{% static 'NineSquareButtonIcon.png' %}" class="nine_square_button_icon" alt="Projects" />
+                                <p style = "color: #212529; margin: 0px">Projects</p>
                             </button>
     
-                            <button id = "panel_toggle_button" type="button" onclick="" class = "panel_toggle_button left_panel_button_size" style = "margin-top: 5px;">
-                                <img id="panel_toggle_button" src="{% static 'NineSquareButtonIcon.png' %}" class="nine_square_button" alt="All VMS" />
-                            </button>
-    
-                            <button id = "panel_toggle_button" type="button" onclick="" class = "panel_toggle_button left_panel_button_size" style = "margin-top: 5px;">
-                                <img id="panel_toggle_button" src="{% static 'NineSquareButtonIcon.png' %}" class="nine_square_button" alt="VM groupings" />
+                            <button id = "panel_toggle_button" type="button" onclick="" class = "panel_button" style = "margin-top: 5px;">
+                                <img id="panel_toggle_button" src="{% static 'NineSquareButtonIcon.png' %}" class="nine_square_button_icon" alt="VM groupings" />
+                                <p style = "color: #212529; margin: 0px">Groups</p>
                             </button>
 
-                            <button id = "panel_toggle_button" type="button" onclick="" class = "panel_toggle_button left_panel_button_size" style = "margin-top: 5px;">
-                                <img id="panel_toggle_button" src="{% static 'NineSquareButtonIcon.png' %}" class="nine_square_button" alt="Statistics" />
+                            <button id = "panel_toggle_button" type="button" onclick="" class = "panel_button" style = "margin-top: 5px;">
+                                <img id="panel_toggle_button" src="{% static 'NineSquareButtonIcon.png' %}" class="nine_square_button_icon" alt="All VMS" />
+                                <p style = "color: #212529; margin: 0px">All VMs</p>
+                            </button>
+
+                            <button id = "panel_toggle_button" type="button" onclick="" class = "panel_button" style = "margin-top: 5px;">
+                                <img id="panel_toggle_button" src="{% static 'NineSquareButtonIcon.png' %}" class="nine_square_button_icon" alt="Statistics" />
+                                <p style = "color: #212529; margin: 0px">Statistics</p>
                             </button>
 
 
-                            <button id = "panel_toggle_button" type="button" onclick="" class = "panel_toggle_button left_panel_button_size" style = "margin-top: 30px;">
-                                <img id="panel_toggle_button" src="{% static 'NineSquareButtonIcon.png' %}" class="nine_square_button" alt="Logout" />
+                            <button id = "panel_toggle_button" type="button" onclick="USER_ADMIN_PROMPT_logout_attempt()" class = "panel_button" style = "margin-top: 30px; background-color: #4F52BD;">
+                                <img id="panel_toggle_button" src="{% static 'LogoutIcon.png' %}" class="nine_square_button_icon" alt="Logout" style = "transform: translate(14%, 0%); pointer-events: none;" />
+                                <p style = "color: #FFFFFF; margin: 0px; pointer-events: none;">Logout</p>
                             </button>
+                            
                         </div>
                         
-                        <div id = "container" style = "width: 50px; height: 50px; background-color: #fb771a;"></div>
+                        
+                        <div id = "right_content" style = "width: 100vw; height: 100%; background-color: #ffffff; border-radius: 0.5rem; border: 2px solid #212529; margin-left: 2%; align-items: center; display: flex;">
+                            <div id = "logging_out_section" style = "display: none; width: 100%;">
+                                <div id = "logging_out_content" style = "width: 100%; height: 40%; align-items: center;">
+                                    <div style = "justify-content: center; align-items: center; display: flex; height: 100%;">
+                                        <p class = "roboto_font" style = "font-size: 2vw; margin: 0px; font-weight: bold; margin-right: 2%;">Logging out</p>
+                                        <img id="register_loading_icon" src="{% static 'LoadingCircleGif2-Adjusted.gif' %}" class="loader" alt="loading" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                      
                     </div>
+
+
+                    
 
                     <!-- Dark grey line design -->
                     <div style = "
@@ -313,6 +359,68 @@
             </div>
         </div>
 
-        
     </body>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+            
+        function USER_ADMIN_PROMPT_logout_attempt() {
+
+            const logging_out_section = document.getElementById("logging_out_section");
+            
+            logging_out_section.style.display = "flex";
+
+            console.log("logout attempt");
+
+            setTimeout(function() {
+                                               
+                fetch(
+                    "{% url 'logout_request' %}", 
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded",
+                            "X-CSRFToken": getCookie('csrftoken') //https://www.geeksforgeeks.org/python/csrf-token-in-django/
+                        },
+                        body: new URLSearchParams({})
+                    }
+                )
+                .then(response => response.json())
+                .then(data => {
+
+                    if (data.status == "success"){
+                        window.location.href = "/login_page/"
+                    }else{
+                        console.log("error logging out");
+                    }
+                                                                                
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                });
+
+            }, 1000);
+
+        }
+
+        function USER_PROMPT_forgot_password() {
+        
+        }
+        
+      
+    </script>
 </html>

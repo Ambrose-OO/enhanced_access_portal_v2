@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'login_page' # https://docs.djangoproject.com/en/5.2/topics/templates/#django.template.TemplateDoesNotExist, https://www.w3schools.com/django/django_templates.php, https://learn.microsoft.com/en-us/visualstudio/python/learn-django-in-visual-studio-step-02-create-an-app?view=vs-2022
+    'login_page', # https://docs.djangoproject.com/en/5.2/topics/templates/#django.template.TemplateDoesNotExist, https://www.w3schools.com/django/django_templates.php, https://learn.microsoft.com/en-us/visualstudio/python/learn-django-in-visual-studio-step-02-create-an-app?view=vs-2022
+    'resource_dashboard'
 ]
 
 MIDDLEWARE = [
