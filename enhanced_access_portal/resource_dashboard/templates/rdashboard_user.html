@@ -304,23 +304,23 @@
 
                         <div class = "left_panel" style = "width: 12%; height: 100%; align-items: center;">
 
-                            <button id = "panel_toggle_button" type="button" onclick="" class = "panel_button" style = "margin-top: 5px;">
-                                <img id="panel_toggle_button" src="{% static 'NineSquareButtonIcon.png' %}" class="nine_square_button_icon" alt="Projects" />
+                            <button id = "panel_toggle_button" type="button" onclick="section_reveal('projects_section')" class = "panel_button" style = "margin-top: 5px;">
+                                <img id="panel_toggle_button" src="{% static 'ProjectsIcon2.png' %}" class="nine_square_button_icon" alt="Projects" style = "width: 80%; transform: translate(12%, 0%);"/>
                                 <p style = "color: #212529; margin: 0px">Projects</p>
                             </button>
     
-                            <button id = "panel_toggle_button" type="button" onclick="" class = "panel_button" style = "margin-top: 5px;">
-                                <img id="panel_toggle_button" src="{% static 'NineSquareButtonIcon.png' %}" class="nine_square_button_icon" alt="VM groupings" />
+                            <button id = "panel_toggle_button" type="button" onclick="section_reveal('groups_section')" class = "panel_button" style = "margin-top: 5px;">
+                                <img id="panel_toggle_button" src="{% static 'GroupsIcon.png' %}" class="nine_square_button_icon" alt="VM groupings" style = "width: 70%; transform: translate(19%, 0%);" />
                                 <p style = "color: #212529; margin: 0px">Groups</p>
                             </button>
 
-                            <button id = "panel_toggle_button" type="button" onclick="" class = "panel_button" style = "margin-top: 5px;">
-                                <img id="panel_toggle_button" src="{% static 'NineSquareButtonIcon.png' %}" class="nine_square_button_icon" alt="All VMS" />
+                            <button id = "panel_toggle_button" type="button" onclick="section_reveal('all_vms_section')" class = "panel_button" style = "margin-top: 5px;">
+                                <img id="panel_toggle_button" src="{% static 'AllVMsIcon.png' %}" class="nine_square_button_icon" alt="All VMS" style = "width: 90%; transform: translate(5%, 0%);" />
                                 <p style = "color: #212529; margin: 0px">All VMs</p>
                             </button>
 
-                            <button id = "panel_toggle_button" type="button" onclick="" class = "panel_button" style = "margin-top: 5px;">
-                                <img id="panel_toggle_button" src="{% static 'NineSquareButtonIcon.png' %}" class="nine_square_button_icon" alt="Statistics" />
+                            <button id = "panel_toggle_button" type="button" onclick="section_reveal('statistics_section')" class = "panel_button" style = "margin-top: 5px;">
+                                <img id="panel_toggle_button" src="{% static 'StatisticsIcon.png' %}" class="nine_square_button_icon" alt="Statistics" style = "width: 80%; transform: translate(9.5%, 0%);" />
                                 <p style = "color: #212529; margin: 0px">Statistics</p>
                             </button>
 
@@ -421,6 +421,18 @@
                                 
                             </div>
                             
+                            <div id = "groups_section" style = "display: none; width: 100%; height: 100%;">
+                            
+                            </div>
+
+                            <div id = "all_vms_section" style = "display: none; width: 100%; height: 100%;">
+                            
+                            </div>
+
+                            <div id = "statistics_section" style = "display: none; width: 100%; height: 100%;">
+                            
+                            </div>
+
                         </div>
                       
                     </div>
@@ -448,6 +460,26 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
+        let section_lock = false;
+        
+        function section_reveal(name) { 
+            if (section_lock == false){
+                const right_content = document.getElementById("right_content");
+
+                for (const child of right_content.children){
+                    child.style.display = "none";
+                }
+
+                const section_element = document.getElementById(name);
+                section_element.style.display = "flex";
+
+                if (name == "logging_out_section"){
+                    section_lock = true;
+                }
+            }
+            
+        }
+
         function getCookie(name) {
             let cookieValue = null;
             if (document.cookie && document.cookie !== '') {
@@ -465,10 +497,8 @@
             
         function USER_ADMIN_PROMPT_logout_attempt() {
 
-            const logging_out_section = document.getElementById("logging_out_section");
+            section_reveal('logging_out_section');
             
-            logging_out_section.style.display = "flex";
-
             console.log("logout attempt");
 
             setTimeout(function() {
