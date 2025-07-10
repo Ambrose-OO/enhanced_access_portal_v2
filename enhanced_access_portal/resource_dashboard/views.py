@@ -16,13 +16,17 @@ from resource_dashboard.models import VMs
 def dashboard_view(request):
     print("--------------")
     print("User dashboard")
-    
+     
     logged_in_status = request.session.get("logged_in")
+    user_type = request.session.get("user_type")
     print("Logged in?: " + str(logged_in_status))
 
-    if (logged_in_status is not None):
+    if (logged_in_status is not None) and (user_type is not None):
         if (logged_in_status == True):
-            return render(request, 'rdashboard_user.html')
+            if (user_type == "USER"):
+                return render(request, 'rdashboard_user.html')
+            elif (user_type == "ADMIN"):
+                return render(request, 'rdashboard_admin.html')
 
     return redirect("/login_page/") # This method will returns the user to the login page
 
