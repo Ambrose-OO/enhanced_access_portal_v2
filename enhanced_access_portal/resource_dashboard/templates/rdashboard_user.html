@@ -123,6 +123,25 @@
             text-align: center;
         }
 
+        .alternate_connect_button{
+            color: #ffff;
+            background-color: #212529;
+            border-color: #212529;
+            border: 1px solid transparent;
+            border-radius: 0.25rem;
+
+            padding: 0.375rem 0.75rem;
+
+            width: 20%;
+            height: 60%;
+            
+            font-size: 0.9em;
+            
+            /* https://www.w3schools.com/tags/tryit.asp?filename=tryhtml_button_css */
+            cursor: pointer;
+            text-align: center;
+        }
+
         .login_button:hover {
             /* https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Solve_CSS_problems/Transition_button */
             background-color: #4F52BD;
@@ -256,6 +275,43 @@
             border: 2px solid #212529;
         }
 
+        .project_entry { 
+            align-items: center; 
+            display: block; 
+            padding-left: 2%; 
+            padding-top: 2%; 
+            padding-bottom: 2%; 
+            margin-left: 1.5%;
+            margin-top: 1.5%
+        }
+
+        .project_entry_p1{
+            font-size: 1vw; 
+            margin: 0px; 
+            font-weight: bold; 
+            margin-right: 2%;
+        }
+
+        .project_entry_p2{
+            font-size: 0.8vw; 
+            margin: 0px; 
+            font-weight: bold; 
+            margin-right: 2%;
+        }
+
+        .vms_content{ 
+            width: 100%; 
+            margin-bottom: 2%; 
+            padding-left: 5%;
+        }
+
+        .member_content {
+            width: 100%; 
+            height: 15%; 
+            margin-bottom: 2%; 
+            padding-left: 5%; 
+            text-align: center;
+        }
     </style>
 
     <body>
@@ -343,8 +399,10 @@
                                 </div>
                             </div>
 
+                            
                             <div id = "projects_section" style = "display: flex; width: 100%; height: 100%;">
-                                <div id = "project_content" style = "
+                               <!-- Display is typically "grid" for "project_content" -->
+                               <div id = "project_content" style = "
                                     display: grid; 
                                     grid-template-columns: repeat(2, 1fr);
                                     
@@ -355,70 +413,65 @@
                                     overflow-y: auto;
                                     ">
 
-                                    <div id = "project_entry" class = "rounded_container" style = "align-items: center; display: block; padding-left: 2%; padding-top: 2%; padding-bottom: 2%; margin-left: 1.5%; margin-top: 1.5%">
-                                        <p class = "roboto_font" style = "font-size: 1vw; margin: 0px; font-weight: bold; margin-right: 2%;">Project name: Adminstration team</p>
-                                        <p class = "roboto_font" style = "font-size: 0.8vw; margin: 0px; font-weight: bold; margin-right: 2%;">Id: zxawWga2</p>
-                                        <p class = "roboto_font">VMs (4) VMs online (2) Users (3) Admins (2)</p>
+                                    <!-- 
+                                        <div id = "project_entry" class = "rounded_container project_entry">
+                                            <p class = "roboto_font project_entry_p1">Project name: Adminstration team</p>
+                                            <p class = "roboto_font project_entry_p2">Id: zxawWga2</p>
+                                            <p class = "roboto_font">VMs (4) VMs online (2) Users (3) Admins (2)</p>
 
-                                        <button id="x1" type="button" onclick="" class="alternate_button">
-                                            Open
-                                        </button>
-                                    </div>
-
-                                    <div id = "project_entry" class = "rounded_container" style = "align-items: center; display: block; padding-left: 2%; padding-top: 2%; padding-bottom: 2%; margin-left: 1.5%; margin-top: 1.5%">
-                                        <p class = "roboto_font" style = "font-size: 1vw; margin: 0px; font-weight: bold; margin-right: 2%;">Project name: Adminstration team</p>
-                                        <p class = "roboto_font" style = "font-size: 0.8vw; margin: 0px; font-weight: bold; margin-right: 2%;">Id: zxawWga2</p>
-                                        <p class = "roboto_font">VMs (4) VMs online (2) Users (3) Admins (2)</p>
-
-                                        <button id="x1" type="button" onclick="" class="alternate_button">
-                                            Open
-                                        </button>
-                                    </div>
-
-                                    <div id = "project_entry" class = "rounded_container" style = "align-items: center; display: block; padding-left: 2%; padding-top: 2%; padding-bottom: 2%; margin-left: 1.5%; margin-top: 1.5%">
-                                        <p class = "roboto_font" style = "font-size: 1vw; margin: 0px; font-weight: bold; margin-right: 2%;">Project name: Adminstration team</p>
-                                        <p class = "roboto_font" style = "font-size: 0.8vw; margin: 0px; font-weight: bold; margin-right: 2%;">Id: zxawWga2</p>
-                                        <p class = "roboto_font">VMs (4) VMs online (2) Users (3) Admins (2)</p>
-
-                                        <button id="x1" type="button" onclick="" class="alternate_button">
-                                            Open
-                                        </button>
-                                    </div>
-
-                                    <div id = "project_entry" class = "rounded_container" style = "align-items: center; display: block; padding-left: 2%; padding-top: 2%; padding-bottom: 2%; margin-left: 1.5%; margin-top: 1.5%">
-                                        <p class = "roboto_font" style = "font-size: 1vw; margin: 0px; font-weight: bold; margin-right: 2%;">Project name: Adminstration team</p>
-                                        <p class = "roboto_font" style = "font-size: 0.8vw; margin: 0px; font-weight: bold; margin-right: 2%;">Id: zxawWga2</p>
-                                        <p class = "roboto_font">VMs (4) VMs online (2) Users (3) Admins (2)</p>
-
-                                        <button id="x1" type="button" onclick="" class="alternate_button">
-                                            Open
-                                        </button>
-                                    </div>
-
-                                    <div id = "project_entry" class = "rounded_container" style = "align-items: center; display: block; padding-left: 2%; padding-top: 2%; padding-bottom: 2%; margin-left: 1.5%; margin-top: 1.5%">
-                                        <p class = "roboto_font" style = "font-size: 1vw; margin: 0px; font-weight: bold; margin-right: 2%;">Project name: Adminstration team</p>
-                                        <p class = "roboto_font" style = "font-size: 0.8vw; margin: 0px; font-weight: bold; margin-right: 2%;">Id: zxawWga2</p>
-                                        <p class = "roboto_font">VMs (4) VMs online (2) Users (3) Admins (2)</p>
-
-                                        <button id="x1" type="button" onclick="" class="alternate_button">
-                                            Open
-                                        </button>
-                                    </div>
-
-                                    <div id = "project_entry" class = "rounded_container" style = "align-items: center; display: block; padding-left: 2%; padding-top: 2%; padding-bottom: 2%; margin-left: 1.5%; margin-top: 1.5%">
-                                        <p class = "roboto_font" style = "font-size: 1vw; margin: 0px; font-weight: bold; margin-right: 2%;">Project name: Adminstration team</p>
-                                        <p class = "roboto_font" style = "font-size: 0.8vw; margin: 0px; font-weight: bold; margin-right: 2%;">Id: zxawWga2</p>
-                                        <p class = "roboto_font">VMs (4) VMs online (2) Users (3) Admins (2)</p>
-
-                                        <button id="x1" type="button" onclick="" class="alternate_button">
-                                            Open
-                                        </button>
-                                    </div>
-
-                                    
-                                    
+                                            <button id="x1" type="button" onclick="update_projects_content()" class="alternate_button">
+                                                Open
+                                            </button>
+                                        </div>
+                                    -->
                                 </div>
                                 
+                                <!-- Display is typically "flex" for "project_display" -->
+                                <div id = "project_display" style = "display: none; width: 100%; height: 100%;">
+                                    <div id = "project_display_vms" style = "width: 50%; height: 100%; overflow-y: auto; display: block;"> 
+                                        <div style = 
+                                            "width: 100%; 
+                                            height: 20%; 
+                                            align-items: center; 
+                                            justify-content: center; 
+                                            display: flex;
+                                         "> 
+                                            <p class = "header_title" style = "margin-top: 1%;">Virtual machines</p>
+                                        </div>
+                                        <div id = "project_display_vms_content" style = "width: 90%; height: 80%;">
+                                            <!-- 
+                                                <div class = "vms_content">
+                                                    <p class = "roboto_font project_entry_p2">Virtual machine: Ambroses VM | Status: Online | 255.193.321.0</p>
+                                                    <button id="x1" type="button" onclick="update_projects_content()" class="alternate_connect_button">
+                                                        Connect
+                                                    </button>
+                                                </div>
+                                            -->
+                                        </div>
+                                    </div>
+
+                                    <div id = "project_display_users" style = "width: 50%; height: 100%; overflow-y: auto; display: block;"> 
+
+                                        <div style = 
+                                            "width: 100%; 
+                                            height: 20%; 
+                                            align-items: center; 
+                                            justify-content: center; 
+                                            display: flex;
+                                        "> 
+                                            <p class = "header_title" style = "margin-top: 1%;">Project users</p>
+                                        </div>
+
+                                        <div id = "project_display_users_content" style = "width: 90%; height: 80%;">
+                                            <!-- 
+                                                <div class = "member_content">
+                                                    <p class = "roboto_font project_entry_p2">Ambrose | ambrose@gmail.com | Type: USER</p>
+                                                </div>
+                                            -->
+                                            <!-- TODO: For admins add a remove user button. Only to remove users -->
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             
                             <div id = "groups_section" style = "display: none; width: 100%; height: 100%;">
@@ -460,6 +513,146 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
+
+        function navigate_to_project_content() {
+            const project_content = document.getElementById("project_content");
+            const project_display = document.getElementById("project_content");
+
+            project_content.style.display = "grid";
+            project_display.style.display = "none";
+        }
+        function navigate_to_project_display(project_detail_data) {
+            // Navigates and provides data
+            const project_content = document.getElementById("project_content");
+            const project_display = document.getElementById("project_content");
+
+            project_content.style.display = "none";
+            project_display.style.display = "flex";
+
+            // Display virtual machines
+            const project_display_vms_content = document.getElementById("project_display_vms_content");
+            project_display_vms_content.innerHTML = ""; // Clearing all the elements under the div content container
+
+            for (const vm of project_detail_data.project_vms_details){
+                const vms_content = document.createElement("div");
+                vms_content.className = "vms_content";
+
+
+                const vm_title = document.createElement("p");
+                vm_title.className = "roboto_font project_entry_p2"
+                vm_title.innerHTML = "Virtual machine: " + vm.vm_name + " | Status: " + vm.vm_status + " | " + vm.vm_ip;
+                vms_content.appendChild(vm_title);
+
+        
+                const vm_connect_button = document.createElement("button");
+                vm_connect_button.type = "button";
+                vm_connect_button.className = "alternate_connect_button"
+                //vm_connect_button.onclick = () => navigate_to_project_display(project_detail_data);
+                //VM doesn't have actual connect functionality as this is a demo
+                vm_connect_button.innerHTML = "Connect";
+                vms_content.appendChild(vm_connect_button);
+
+                // Rendering the div we created into "project_display_vms_content"
+                project_display_vms_content.appendChild(vms_content);
+            }
+            
+            // Display project users
+            const project_display_users_content = docuemnt.getElementById("project_display_users_content");
+            project_display_users_content.innerHTML = ""; // Clearing all the elements under the div content container
+        
+            for (const member of project_detail_data.project_member_details){
+                const member_content = document.createElement("div");
+                member_content.className = "member_content";
+
+
+                const member_title = document.createElement("p");
+                member_title.className = "roboto_font project_entry_p2"
+                member_title.innerHTML = member.firstname + " | " + member.emailaddress + " | Type: " + member.type; 
+                member_content.appendChild(member_title);
+
+                // TODO: For admins, add an additional button that says "remove". Detailed prior again in this same document elsewhere
+
+                // Rendering the div we created into "project_display_vms_content"
+                project_display_users_content.appendChild(member_content);
+            }
+
+        }
+
+
+        function update_projects_content() {
+            const project_content = document.getElementById("project_content");
+            project_content.innerHTML = ""; // Clearing all the elements under the div content container
+
+            console.log("fetch project listings");
+
+            setTimeout(function() {
+                                               
+                fetch(
+                    "{% url 'project_list_request' %}", 
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded",
+                            "X-CSRFToken": getCookie('csrftoken') //https://www.geeksforgeeks.org/python/csrf-token-in-django/
+                        },
+                        body: new URLSearchParams({})
+                    }
+                )
+                .then(response => response.json())
+                .then(data => {
+
+                    if (data.status == "success"){
+                        console.log(data.message);
+                        
+                        const project_content = document.getElementById("project_content");
+
+                        // Display project details
+                        const project_detail_data = data.project_detail;
+
+                        for (const project of project_detail_data){
+                            const project_entry_div = document.createElement("div");
+                            
+                            const project_title = document.createElement("p");
+                            project_title.className = "roboto_font project_entry_p1"
+                            project_title.innerHTML = "Project name: " + project_detail_data.project_name;
+                            project_entry_div.appendChild(project_title);
+
+                            const project_id = document.createElement("p");
+                            project_id.className = "roboto_font project_entry_p2"
+                            project_title.innerHTML = "Id: " + project_detail_data.project_id;
+                            project_entry_div.appendChild(project_id);
+
+                            const project_details = document.createElement("p");
+                            project_details.className = "roboto_font";
+                            project_title.innerHTML = "Project name: VMs (" + project_detail_data.project_name + ") VMs online (" + project_detail_data.vms_online + ") Users (" + project_detail_data.project_users + ") Admins (" + project_detail_data.project_admins + ")";
+                            project_entry_div.appendChild(project_details);
+                            
+                            const open_project_button = document.createElement("button");
+                            open_project_button.type = "button";
+                            open_project_button.className = "alternate_connect_button"
+                            open_project_button.onclick = () => navigate_to_project_display(project_detail_data);
+                            open_project_button.innerHTML = "Open";
+                            project_entry_div.appendChild(open_project_button);
+
+                            // const delete_project_button - admin
+                            // Once the project_entry_div has finished being edited, render
+                            // it on the resource dashboard by appending it to the project_content
+                            // div element
+                            project_content.appendChild(project_entry_div);
+                        }
+                    }else{
+                        console.log(data.message);
+                    }
+                                                                                
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                });
+
+            }, 1000);
+
+        }
+
         let section_lock = false;
         
         function section_reveal(name) { 
@@ -536,6 +729,6 @@
         
         }
         
-      
+        
     </script>
 </html>

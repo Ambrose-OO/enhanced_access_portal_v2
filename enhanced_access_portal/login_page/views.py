@@ -29,6 +29,8 @@ def USER_PROMPT_login_attempt(request):
                 if password_login == user.password:
                     print("match")
                     request.session["logged_in"] = True
+                    request.session["user_type"] = user.user_type
+                    request.session["user_id"] = user.id
                     return JsonResponse({"status": "success", "message": f"Received: {email_login}"})
     print("fail")
     return JsonResponse({"status": "fail", "message": "Only POST allowed"}, status=405)
