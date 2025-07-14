@@ -12,6 +12,7 @@ class Projects(models.Model):
   entity_id = models.CharField(max_length = 255, default = "-")
   owner_id = models.ForeignKey(User, on_delete=models.CASCADE, default = 0) 
   project_name = models.CharField(max_length = 255, default = "-")
+  project_identifier_code = models.CharField(max_length = 255, default = "-")
 
 class VMs(models.Model):
     #Don't need a vms_id field as django adds id fields by default. 

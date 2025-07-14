@@ -33,7 +33,7 @@ def dashboard_view(request):
 #Both admin and user
 def fetch_user_from_id(id: int):
     for user in User.objects.all():
-        if (user.id == id): 
+        if (str(user.id) == str(id)): 
             return user
     return None
 
@@ -46,6 +46,9 @@ def fetch_project_details(project: Projects):
     # Fetch project id
     project_detail["project_id"] = project.id
     
+    # Fetch project identifier code
+    project_detail["project_identifier_code"] = project.project_identifier_code
+
     # Fetch project owner name
     for user in User.objects.all():
         if (user.id == project.owner_id):
@@ -71,6 +74,9 @@ def fetch_project_details(project: Projects):
 
             project_vms_details.append(vm_detail)
     
+    project_detail["project_available_vms"] = available_vms
+    project_detail["project_vms_online"] = vms_online
+
     # Fetch project users
     project_users = 0
     project_admins = 0 
@@ -83,6 +89,7 @@ def fetch_project_details(project: Projects):
             # If so, count the user/admin
 
             if (project2.entity_type) == "ADMIN":
+                print("admin fetch")
                 project_admins += 1
                 
                 member_user = fetch_user_from_id(project2.entity_id)
@@ -95,6 +102,7 @@ def fetch_project_details(project: Projects):
                 project_member_details.append(member_detail)
                 
             if (project2.entity_type) == "USER":
+                print("user fetch")
                 project_users += 1
 
                 member_user = fetch_user_from_id(project2.entity_id)
@@ -121,7 +129,7 @@ def USER_ADMIN_PROMPT_project_listings(request):
 
         logged_in_status = request.session.get("logged_in")
         user_type = request.session.get("user_type")
-        user_id = request.session.get("user_type")  
+        user_id = request.session.get("user_id")  
 
         if (logged_in_status == True):
             if (user_type == "USER"):
@@ -154,12 +162,9 @@ def USER_ADMIN_PROMPT_project_listings(request):
                 for project in Projects.objects.all():
                     project_detail = {}
 
-                    # If the user is part of a project then list the project details
-                    # to the user
-                    if (project.entity_type == "USER"):
-                        if (project.entity_id == user_id):
-                            project_detail = fetch_project_details(project)    
-                            admin_project_listings.append(project_detail)
+                    # Admins don't have to be part of a project to see it. They can see all
+                    project_detail = fetch_project_details(project)    
+                    admin_project_listings.append(project_detail)
 
                 # Returning project data in JSON format back to the user
                 return JsonResponse(
@@ -175,6 +180,40 @@ def USER_ADMIN_PROMPT_project_listings(request):
             {
                 "status": "failure", 
                 "message": "Server can't pass data on user who is logged out"
+            }
+        ) 
+    
+
+@csrf_protect
+def USER_ADMIN_PROMPT_email_name(request):
+    if request.method == "POST":
+        print("----------------------")
+        print("Email and name display")
+
+        logged_in_status = request.session.get("logged_in")
+        user_id = request.session.get("user_id")  
+
+        if (logged_in_status == True):
+            
+            user = fetch_user_from_id(user_id)
+            user_email = user.emailaddress
+            user_display_name = user.firstname + ", " + user.lastname
+
+            # Returning project data in JSON format back to the user
+            return JsonResponse(
+                {
+                    "status": "success", 
+                    "message": "Server succeeded pass data on project listings",
+                    "email": user_email,
+                    "name": user_display_name
+                }
+            ) 
+            
+        # Failure response if the user is requesting data when logged out
+        return JsonResponse(
+            {
+                "status": "failure", 
+                "message": "Server can't pass data on user/admin"
             }
         ) 
 
@@ -224,7 +263,31 @@ def USER_PROMPT_register_attempt(request):
 #Admins
 @csrf_protect
 def ADMIN_PROMPT_create_project(request):
-    print("empty")
+    if request.method == "POST":
+
+        logged_in_status = request.session.get("logged_in")
+        
+        if (logged_in_status == True):
+
+            user_type = request.session.get("user_type")
+            user_id = request.session.get("user_id")  
+
+            project_name_value = request.POST.get("project_name")
+            project_identifier = request.POST.get("project_identifier")
+
+            project = Projects(
+                entity_type = user_type,
+                entity_id = user_id,
+                owner_id_id = user_id,
+                project_name = project_name_value,
+                project_identifier_code = project_identifier
+            )
+
+            project.save()
+
+            return JsonResponse({"status": "success", "message": "Project registered"})
+    
+    return JsonResponse({"status": "fail", "message": "Only POST allowed"}, status=405)
 
 @csrf_protect
 def ADMIN_PROMPT_update_project_name(request):

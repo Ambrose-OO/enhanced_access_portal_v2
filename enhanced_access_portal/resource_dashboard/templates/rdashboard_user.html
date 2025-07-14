@@ -18,6 +18,7 @@
             height: 100%;
             margin: 0;
             display: flex;
+            background-image: url("{% static 'BackdropImage1.png' %}");
         }
 
         .main_panel {
@@ -44,7 +45,7 @@
             width: 70%;
             margin: auto; /* Centre column */
             height: 100vh;
-            background-color: rgb(246, 247, 252); /* Debug colour:  rgb(186, 186, 189)*/
+            background-color: rgba(246, 247, 252, 0); /* Debug colour:  rgb(186, 186, 189)*/
             overflow: auto; /* Solves scrollbar issue */
 
             justify-content: center; /* Horizontal centre */
@@ -67,7 +68,7 @@
         .login_section{
             align-items: center;
             /* https://blog.hubspot.com/website/css-margin-vs-padding#:~:text=What's%20the%20difference%20between%20margin,border%20and%20the%20element's%20content. */
-            margin-bottom: 5%;
+            margin-bottom: 2%;
             padding-left: 3%;
             padding-right: 3%;
             padding-bottom: 4%;
@@ -245,7 +246,7 @@
         }
 
         .panel_button {
-            background-color: #ffffff;
+            background-color: #d1d1d1;
             border-color: #212529;
             border: 1px solid transparent;
             border-radius: 0.25rem;
@@ -326,7 +327,7 @@
                         </p>
 
                         <div id="name_email_display" style = "padding-right: 8%; width: 20%;">
-                            <p class = "roboto_font" style = "margin: 0px; font-size: 90%">
+                            <p id = "name_display" class = "roboto_font" style = "margin: 0px; font-size: 90%">
                                 Ambrose, Odongkara 
                             </p>
                                
@@ -360,22 +361,22 @@
 
                         <div class = "left_panel" style = "width: 12%; height: 100%; align-items: center;">
 
-                            <button id = "panel_toggle_button" type="button" onclick="section_reveal('projects_section')" class = "panel_button" style = "margin-top: 5px;">
+                            <button id = "projects_button" type="button" onclick="section_reveal('projects_section')" class = "panel_button" style = "margin-top: 5px;">
                                 <img id="panel_toggle_button" src="{% static 'ProjectsIcon2.png' %}" class="nine_square_button_icon" alt="Projects" style = "width: 80%; transform: translate(12%, 0%);"/>
                                 <p style = "color: #212529; margin: 0px">Projects</p>
                             </button>
     
-                            <button id = "panel_toggle_button" type="button" onclick="section_reveal('groups_section')" class = "panel_button" style = "margin-top: 5px;">
+                            <button id = "groups_button" type="button" onclick="section_reveal('groups_section')" class = "panel_button" style = "margin-top: 5px;">
                                 <img id="panel_toggle_button" src="{% static 'GroupsIcon.png' %}" class="nine_square_button_icon" alt="VM groupings" style = "width: 70%; transform: translate(19%, 0%);" />
                                 <p style = "color: #212529; margin: 0px">Groups</p>
                             </button>
 
-                            <button id = "panel_toggle_button" type="button" onclick="section_reveal('all_vms_section')" class = "panel_button" style = "margin-top: 5px;">
+                            <button id = "all_vms_button" type="button" onclick="section_reveal('all_vms_section')" class = "panel_button" style = "margin-top: 5px;">
                                 <img id="panel_toggle_button" src="{% static 'AllVMsIcon.png' %}" class="nine_square_button_icon" alt="All VMS" style = "width: 90%; transform: translate(5%, 0%);" />
                                 <p style = "color: #212529; margin: 0px">All VMs</p>
                             </button>
 
-                            <button id = "panel_toggle_button" type="button" onclick="section_reveal('statistics_section')" class = "panel_button" style = "margin-top: 5px;">
+                            <button id = "statistics_button" type="button" onclick="section_reveal('statistics_section')" class = "panel_button" style = "margin-top: 5px;">
                                 <img id="panel_toggle_button" src="{% static 'StatisticsIcon.png' %}" class="nine_square_button_icon" alt="Statistics" style = "width: 80%; transform: translate(9.5%, 0%);" />
                                 <p style = "color: #212529; margin: 0px">Statistics</p>
                             </button>
@@ -514,6 +515,41 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
 
+function update_name_email_display() {
+            const name_display = document.getElementById("name_display");
+            const email_display = document.getElementById("email_display");
+            console.log("fetch name and email detail");
+                               
+            fetch(
+                "{% url 'email_name_request' %}", 
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "X-CSRFToken": getCookie('csrftoken') //https://www.geeksforgeeks.org/python/csrf-token-in-django/
+                    },
+                    body: new URLSearchParams({})
+                }
+            )
+            .then(response => response.json())
+            .then(data => {
+
+                if (data.status == "success"){
+                    console.log(data.message);
+                    
+                    name_display.innerHTML = data.name;
+                    email_display.innerHTML = data.email; 
+                }else{
+                    console.log(data.message);
+                }
+                                                                            
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        }
+        update_name_email_display() // On program launch, fetch the user/admins name/email display
+                
         function navigate_to_project_content() {
             const project_content = document.getElementById("project_content");
             const project_display = document.getElementById("project_content");
@@ -581,8 +617,7 @@
 
         function update_projects_content() {
             const project_content = document.getElementById("project_content");
-            project_content.innerHTML = ""; // Clearing all the elements under the div content container
-
+        
             console.log("fetch project listings");
 
             setTimeout(function() {
@@ -604,33 +639,37 @@
                     if (data.status == "success"){
                         console.log(data.message);
                         
-                        const project_content = document.getElementById("project_content");
-
+                        project_content.innerHTML = ""; // Clearing all the elements under the div content container
+            
                         // Display project details
-                        const project_detail_data = data.project_detail;
+                        const project_detail_data = data.projects;
 
                         for (const project of project_detail_data){
                             const project_entry_div = document.createElement("div");
-                            
+                            project_entry_div.className = "rounded_container project_entry";
+                            project_entry_div.id = "project_entry";
+
+                            // <p> class elements
                             const project_title = document.createElement("p");
                             project_title.className = "roboto_font project_entry_p1"
-                            project_title.innerHTML = "Project name: " + project_detail_data.project_name;
+                            project_title.innerHTML = "Project name: " + project.project_name;
                             project_entry_div.appendChild(project_title);
 
                             const project_id = document.createElement("p");
                             project_id.className = "roboto_font project_entry_p2"
-                            project_title.innerHTML = "Id: " + project_detail_data.project_id;
+                            project_id.innerHTML = "Id: " + project.project_identifier_code;
                             project_entry_div.appendChild(project_id);
 
                             const project_details = document.createElement("p");
                             project_details.className = "roboto_font";
-                            project_title.innerHTML = "Project name: VMs (" + project_detail_data.project_name + ") VMs online (" + project_detail_data.vms_online + ") Users (" + project_detail_data.project_users + ") Admins (" + project_detail_data.project_admins + ")";
+                            project_details.innerHTML = "VMs (" + project.project_name + ") VMs online (" + project.project_vms_online + ") Users (" + project.project_users + ") Admins (" + project.project_admins + ")";
                             project_entry_div.appendChild(project_details);
                             
+                            // <button> class elements
                             const open_project_button = document.createElement("button");
                             open_project_button.type = "button";
                             open_project_button.className = "alternate_connect_button"
-                            open_project_button.onclick = () => navigate_to_project_display(project_detail_data);
+                            open_project_button.onclick = () => navigate_to_project_display(project);
                             open_project_button.innerHTML = "Open";
                             project_entry_div.appendChild(open_project_button);
 
@@ -652,25 +691,66 @@
             }, 1000);
 
         }
+        update_projects_content() // On program launch, fetch project list
+        setInterval(update_projects_content, 3000); // Updating project content every 3 seconds
 
         let section_lock = false;
         
         function section_reveal(name) { 
             if (section_lock == false){
-                const right_content = document.getElementById("right_content");
+                // Section buttons
+                const projects_button = document.getElementById("projects_button");
+                const groups_button = document.getElementById("groups_button");
+                const all_vms_button = document.getElementById("all_vms_button");
+                const statistics_button = document.getElementById("statistics_button");
 
+                reset_section_button_background();
+
+                // Hiding all the sections
+                const right_content = document.getElementById("right_content");
                 for (const child of right_content.children){
                     child.style.display = "none";
                 }
 
+                // Revealing section of interest
                 const section_element = document.getElementById(name);
                 section_element.style.display = "flex";
+
+
+                if (name == "projects_section"){
+                    toggle_lower_button_panel(true);
+
+                    previous_project_section = "project_content";
+                    const project_content = document.getElementById("project_content");
+                    const project_display = document.getElementById("project_display");
+                    const project_creation = document.getElementById("project_creation");
+
+                    project_content.style.display = "grid";
+                    project_display.style.display = "none";
+                    project_creation.style.display = "none";
+
+                    // Adjusting project button colour background to indicate its selected
+                    projects_button.style = "background-color: #FFFFFF; margin-top: 5px;";
+                }else{
+                    toggle_lower_button_panel(false);
+                }
+
+                if (name == "groups_section"){
+                    groups_button.style = "background-color: #FFFFFF; margin-top: 5px;";
+                }
+
+                if (name == "all_vms_section"){
+                    all_vms_button.style = "background-color: #FFFFFF; margin-top: 5px;";
+                }
+
+                if (name == "statistics_section"){
+                    statistics_button.style = "background-color: #FFFFFF; margin-top: 5px;";
+                }
 
                 if (name == "logging_out_section"){
                     section_lock = true;
                 }
             }
-            
         }
 
         function getCookie(name) {
