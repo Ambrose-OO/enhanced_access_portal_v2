@@ -176,6 +176,46 @@ def collate_ADMIN_project_listings():
     
     return admin_project_listings
 
+
+@csrf_protect
+def ADMIN_PROMPT_delete_project(request):
+    if request.method == "POST":
+        print("----------------")
+        print("Delete project vm")
+
+        logged_in_status = request.session.get("logged_in")
+        user_type = request.session.get("user_type")
+
+        if (logged_in_status == True):
+            if (user_type == "ADMIN"):
+
+                project_id = request.POST.get("project_id")
+                project = fetch_project_from_id(project_id)
+
+                if (project != None):
+                    print("attempting to delete project")
+                    project.delete()
+                
+                    print("deleted project")
+
+                    return JsonResponse(
+                        {
+                            "status": "success", 
+                            "message": "Server successfully removed vm from project"
+                        }
+                    ) 
+                            
+                else:
+                    print("project can't be found - error")
+
+        return JsonResponse(
+            {
+                "status": "error", 
+                "message": "Server cannot delete project for unknown reason"
+            }
+        )
+    
+
 @csrf_protect
 def ADMIN_PROMPT_remove_vm(request):
     if request.method == "POST":

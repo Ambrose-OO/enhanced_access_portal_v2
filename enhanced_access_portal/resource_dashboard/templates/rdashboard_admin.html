@@ -646,6 +646,62 @@
         let project_identifier = ""; // Variable used to pass a project identifer code when creating a project
         let selected_project_id = "";
 
+        function ADMIN_PROMPT_delete_project(project_entry_div, delete_project_button, project_id_to_delete){
+
+            console.log("-----------");
+            console.log("Deleting VM");
+                            
+            delete_project_button.innerHTML = "Removing..."
+
+            fetch(
+                "{% url 'delete_project_request' %}", 
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "X-CSRFToken": getCookie('csrftoken') //https://www.geeksforgeeks.org/python/csrf-token-in-django/
+                    },
+                    body: new URLSearchParams(
+                        {
+                            project_id: project_id_to_delete
+                        }
+                    )
+                }
+            )
+            .then(response => response.json())
+            .then(data => {
+                
+                if (data.status == "success"){
+                    
+                    delete_project_button.innerHTML = "Success!"
+                    setTimeout(function() {
+                        // Removing the project entry display
+                        project_entry_div.parentNode.removeChild(vms_content); // removing the listing after success
+                    
+                        // Don't need to do further updates as the project entry display
+                        // will dissapear and that's the most latest visual update that we will need
+                        // nothing else will be visible to the user from the project we deleted after
+                    }, 3000);
+                    
+                   
+                }else{
+                    // If the VM has failed to be deleted, give a failed prompt
+                    // then return back to normal
+                    console.log(data.message);
+
+                    delete_project_button.innerHTML = "Failed."
+                    setTimeout(function() {
+                        delete_project_button.innerHTML = "Delete"
+                    }, 3000);
+                }
+                                                                            
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+
+        }
+
 
         function ADMIN_PROMPT_remove_vm(vms_content, vm_remove_button, vm_id_to_remove){
             
@@ -1150,7 +1206,18 @@
                             open_project_button.className = "alternate_connect_button"
                             open_project_button.onclick = () => navigate_to_project_display(project);
                             open_project_button.innerHTML = "Open";
+                            open_project_button.style.marginRight = "3%";
                             project_entry_div.appendChild(open_project_button);
+
+
+                            const delete_project_button = document.createElement("button");
+                            delete_project_button.type = "button";
+                            delete_project_button.className = "alternate_connect_button"
+                            delete_project_button.onclick = () => ADMIN_PROMPT_delete_project(project_entry_div, delete_project_button, project.project_id);
+                            delete_project_button.innerHTML = "Delete";
+                            project_entry_div.appendChild(delete_project_button);
+
+
 
                             // const delete_project_button - admin
                             // Once the project_entry_div has finished being edited, render

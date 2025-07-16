@@ -10,7 +10,7 @@ class Projects(models.Model):
   
   entity_type = models.CharField(max_length = 255, default = "-")
   entity_id = models.CharField(max_length = 255, default = "-")
-  owner_id = models.ForeignKey(User, on_delete=models.CASCADE, default = 0) 
+  owner_id = models.ForeignKey(User, on_delete=models.CASCADE, default = None, null = True, blank = True) 
   project_name = models.CharField(max_length = 255, default = "-")
   project_identifier_code = models.CharField(max_length = 255, default = "-")
 
