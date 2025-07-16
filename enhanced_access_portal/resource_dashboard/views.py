@@ -12,6 +12,51 @@ from resource_dashboard.models import Projects
 from resource_dashboard.models import VMs
 
 
+#Both admin and user
+def fetch_user_from_id(user_id: int):
+    try:
+        return User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        return None
+    
+def fetch_project_from_id(project_id: int):
+    try:
+        return Projects.objects.get(id=project_id)
+    except Projects.DoesNotExist:
+        return None
+    
+def fetch_vm_from_id(vm_id: int):
+    try:
+        return VMs.objects.get(id=vm_id)
+    except Projects.DoesNotExist:
+        return None
+
+    
+def insert_data():
+    # Function used to add in VM data
+    print("Inserting data")
+    vm_logs = [
+        ["Mechanical Simulation", "Online", "123.0.255.1", 1, None],
+        ["C++ development", "Offline", "56.126.34.2", 1, None],
+        ["Python development", "Offline", "255.123.0.1", 1, None],
+        ["Hosting machine", "Offline", "233.123.255.3", 1, None],
+        ["C development", "Online", "233.255.56.2", 1, None],
+        ["Web development", "Online", "135.0.255.1", 1, None],
+        ["General Modelling & Simulation", "Online", "137.123.6.1", 1, None],
+        ["Ambroses Development VM", "Online", "255.56.7.1", 1, None],
+        ["Conans Development VM", "Offline", "41.123.23.1", 1, None],
+        ["Jacobs Development VM", "Online", "214.255.123.3", 1, None]
+    ]
+
+    for log in vm_logs:
+        vm = VMs(
+            vm_name = log[0],
+            vm_online = log[1],
+            vm_ip = log[2],
+            owner_id = fetch_user_from_id(log[3])
+        )
+        vm.save()
+
 @csrf_protect
 def dashboard_view(request):
     print("--------------")
@@ -20,6 +65,8 @@ def dashboard_view(request):
     logged_in_status = request.session.get("logged_in")
     user_type = request.session.get("user_type")
     print("Logged in?: " + str(logged_in_status))
+
+    #insert_data()
 
     if (logged_in_status is not None) and (user_type is not None):
         if (logged_in_status == True):
@@ -30,12 +77,7 @@ def dashboard_view(request):
 
     return redirect("/login_page/") # This method will returns the user to the login page
 
-#Both admin and user
-def fetch_user_from_id(id: int):
-    for user in User.objects.all():
-        if (str(user.id) == str(id)): 
-            return user
-    return None
+
 
 def fetch_project_details(project: Projects):
     project_detail = {}
@@ -61,7 +103,7 @@ def fetch_project_details(project: Projects):
     project_vms_details = []
 
     for vm in VMs.objects.all():
-        if (vm.project_id == project.id):
+        if (vm.project_id == project):
             available_vms += 1
             if vm.vm_online == "online":
                 vms_online += 1
@@ -121,6 +163,80 @@ def fetch_project_details(project: Projects):
 
     return project_detail
 
+
+def collate_ADMIN_project_listings():
+    admin_project_listings = []
+
+    for project in Projects.objects.all():
+        project_detail = {}
+
+        # Admins don't have to be part of a project to see it. They can see all
+        project_detail = fetch_project_details(project)    
+        admin_project_listings.append(project_detail)
+    
+    return admin_project_listings
+
+@csrf_protect
+def ADMIN_PROMPT_add_vm(request):
+    if request.method == "POST":
+        print("----------------")
+        print("Add vm")
+
+        logged_in_status = request.session.get("logged_in")
+        user_type = request.session.get("user_type")
+
+        if (logged_in_status == True):
+            if (user_type == "ADMIN"):
+
+                vm_id = request.POST.get("vm_id")
+                project_id = request.POST.get("project_id")
+                print("b")
+                print(vm_id)
+                print(project_id)
+                vm = fetch_vm_from_id(vm_id)
+                project = fetch_project_from_id(project_id)
+                print("c")
+
+                if (vm != None) and (project != None):
+                    if (vm.project_id == None):
+                        print("vm available to add")
+
+                        # Updating vm SQL data to match the given project
+                        # https://www.w3schools.com/django/django_update_data.php
+
+                        vm.project_id = project
+                        vm.save()
+                        
+                        admin_project_listings = collate_ADMIN_project_listings()
+
+                        return JsonResponse(
+                            {
+                                "status": "success", 
+                                "message": "Server successfully added vm to project",
+                                "projects": admin_project_listings
+                            }
+                        ) 
+                            
+                    else:
+                        print("vm unavailable to add - error")
+                else:
+                    print("vm/project can't be found - error")
+
+                return JsonResponse(
+                    {
+                        "status": "error", 
+                        "message": "Server cannot add vm to the project"
+                    }
+                ) 
+
+        # Failure response if the user is requesting data when logged out
+        return JsonResponse(
+            {
+                "status": "failure", 
+                "message": "Server can't pass data on user who is logged out"
+            }
+        ) 
+
 @csrf_protect
 def USER_ADMIN_PROMPT_project_listings(request):
     if request.method == "POST":
@@ -152,6 +268,61 @@ def USER_ADMIN_PROMPT_project_listings(request):
                         "status": "success", 
                         "message": "Server succeeded pass data on project listings",
                         "projects": user_project_listings
+                    }
+                ) 
+            elif (user_type == "ADMIN"):
+
+                # Variable to store all data on projects for the admin to see
+                admin_project_listings = collate_ADMIN_project_listings()
+
+                # Returning project data in JSON format back to the user
+                return JsonResponse(
+                    {
+                        "status": "success", 
+                        "message": "Server succeeded pass data on project listings",
+                        "projects": admin_project_listings
+                    }
+                ) 
+        
+        # Failure response if the user is requesting data when logged out
+        return JsonResponse(
+            {
+                "status": "failure", 
+                "message": "Server can't pass data on user who is logged out"
+            }
+        ) 
+    
+@csrf_protect
+def ADMIN_PROMPT_available_vms(request):
+    if request.method == "POST":
+        print("---------------------")
+        print("Available project VMS")
+
+        logged_in_status = request.session.get("logged_in")
+        user_type = request.session.get("user_type")
+        user_id = request.session.get("user_id")  
+
+        if (logged_in_status == True):
+            if (user_type == "ADMIN"):
+                
+                available_vms = []
+
+                for vm in VMs.objects.all():
+                    if (vm.project_id == None):
+                        vm_detail = {}
+
+                        vm_detail["vm_id"] = vm.id
+                        vm_detail["vm_name"] = vm.vm_name
+                        vm_detail["vm_status"] = vm.vm_online
+                        vm_detail["vm_ip"] = vm.vm_ip 
+                        available_vms.append(vm_detail) 
+
+                # Returning project data in JSON format back to the user
+                return JsonResponse(
+                    {
+                        "status": "success", 
+                        "message": "Server succeeded pass data on project listings",
+                        "vms": available_vms
                     }
                 ) 
             elif (user_type == "ADMIN"):

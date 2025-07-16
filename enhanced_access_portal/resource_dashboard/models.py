@@ -21,11 +21,11 @@ class VMs(models.Model):
     vm_name = models.CharField(max_length = 255, default = "undefined_vm_name")
     vm_online = models.CharField(max_length = 255, default = "offline")
     vm_ip = models.CharField(max_length = 255, default = "0.0.0.0") 
-    owner_id = models.ForeignKey(User, on_delete=models.CASCADE, default = 0)
+    owner_id = models.ForeignKey(User, on_delete=models.CASCADE, default = None, null = True, blank = True)
     # If the user entry is deleted and their foreign key resides in an entry for a VMs then the Vms entry 
     # is deleted too
     
-    project_id = models.ForeignKey(Projects, on_delete=models.CASCADE, default = 0) 
+    project_id = models.ForeignKey(Projects, on_delete=models.CASCADE, default = None, null = True, blank = True) 
     # If the user entry is deleted and their foreign key resides in an entry for a VMs then the Vms entry 
     # is deleted too
 

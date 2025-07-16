@@ -593,7 +593,7 @@ function update_name_email_display() {
             }
             
             // Display project users
-            const project_display_users_content = docuemnt.getElementById("project_display_users_content");
+            const project_display_users_content = document.getElementById("project_display_users_content");
             project_display_users_content.innerHTML = ""; // Clearing all the elements under the div content container
         
             for (const member of project_detail_data.project_member_details){
@@ -662,7 +662,7 @@ function update_name_email_display() {
 
                             const project_details = document.createElement("p");
                             project_details.className = "roboto_font";
-                            project_details.innerHTML = "VMs (" + project.project_name + ") VMs online (" + project.project_vms_online + ") Users (" + project.project_users + ") Admins (" + project.project_admins + ")";
+                            project_details.innerHTML = "VMs (" + project.project_available_vms + ") VMs online (" + project.project_vms_online + ") Users (" + project.project_users + ") Admins (" + project.project_admins + ")";
                             project_entry_div.appendChild(project_details);
                             
                             // <button> class elements
