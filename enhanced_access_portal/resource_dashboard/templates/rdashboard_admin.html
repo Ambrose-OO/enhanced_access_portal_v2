@@ -530,6 +530,30 @@
                                         </div>
                                     </div>
 
+                                    <div id = "available_users_display" style = "width: 100%; height: 100%; overflow-y: auto; display: none;"> 
+
+                                        <div style = 
+                                            "width: 100%; 
+                                            height: 20%; 
+                                            align-items: center; 
+                                            justify-content: center; 
+                                            display: flex;
+                                        "> 
+                                            <p class = "header_title" style = "margin-top: 1%;">Available users</p>
+                                        </div>
+                                        
+
+                                        <div id = "project_available_users_content" style = "width: 90%; height: 80%;">
+                                            <div class = "vms_content">
+                                                <p class = "roboto_font project_entry_p2">Virtual machine: Ambroses VM | Status: Online | 255.193.321.0</p>
+                                                <button id="x1" type="button" onclick="" class="alternate_connect_button">
+                                                    Add user
+                                                </button>
+                                            </div>
+                                            
+                                        </div>
+                                    </div>
+
                                 </div>
 
                                 <div id = "project_creation" style = "display: none; width: 100%; height: 100%; align-items: center; 
@@ -616,7 +640,7 @@
                         <button id = "add_vm_button" type="button" onclick="reveal_project_display_available_vms()" class = "alternate_button_2" style = "display: none;">
                             Add VM
                         </button>
-                        <button id = "add_user_button" type="button" onclick="navigate_to_project_creation()" class = "alternate_button_2" style = "display: none;">
+                        <button id = "add_user_button" type="button" onclick="reveal_project_display_available_users()" class = "alternate_button_2" style = "display: none;">
                             Add user
                         </button>
                     </div>
@@ -689,9 +713,9 @@
                     // then return back to normal
                     console.log(data.message);
 
-                    delete_project_button.innerHTML = "Failed."
+                    delete_project_button.innerHTML = "Failed.";
                     setTimeout(function() {
-                        delete_project_button.innerHTML = "Delete"
+                        delete_project_button.innerHTML = "Delete";
                     }, 3000);
                 }
                                                                             
@@ -708,7 +732,7 @@
             console.log("-----------");
             console.log("Removing VM");
                             
-            vm_remove_button.innerHTML = "Removing..."
+            vm_remove_button.innerHTML = "Removing...";
 
             fetch(
                 "{% url 'remove_vm_request' %}", 
@@ -730,7 +754,7 @@
                 
                 if (data.status == "success"){
                     
-                    vm_remove_button.innerHTML = "Success!"
+                    vm_remove_button.innerHTML = "Success!";
                     setTimeout(function() {
                         // vms_content.remove(); 
                         vms_content.parentNode.removeChild(vms_content); // removing the listing after success
@@ -740,7 +764,7 @@
 
                         for (const project of project_detail_data){
                             if (project.project_id == selected_project_id) { 
-                                update_project_display_with_project_data(project)
+                                update_project_display_with_project_data(project);
                             }
                         }
                     }, 3000);
@@ -751,9 +775,9 @@
                     // then return back to normal
                     console.log(data.message);
 
-                    vm_remove_button.innerHTML = "Failed."
+                    vm_remove_button.innerHTML = "Failed.";
                     setTimeout(function() {
-                        vm_remove_button.innerHTML = "Remove"
+                        vm_remove_button.innerHTML = "Remove";
                     }, 3000);
                 }
                                                                             
@@ -782,7 +806,7 @@
         
                 const vm_connect_button = document.createElement("button");
                 vm_connect_button.type = "button";
-                vm_connect_button.className = "alternate_connect_button"
+                vm_connect_button.className = "alternate_connect_button";
                 //vm_connect_button.onclick = () => navigate_to_project_display(project);
                 //VM doesn't have actual connect functionality as this is a demo
                 vm_connect_button.innerHTML = "Connect";
@@ -790,7 +814,7 @@
 
                 const vm_remove_button = document.createElement("button");
                 vm_remove_button.type = "button";
-                vm_remove_button.className = "alternate_connect_button"
+                vm_remove_button.className = "alternate_connect_button";
                 
                 vm_remove_button.onclick = () => ADMIN_PROMPT_remove_vm(vms_content, vm_remove_button, vm.vm_id);
                
@@ -812,7 +836,7 @@
 
 
                 const member_title = document.createElement("p");
-                member_title.className = "roboto_font project_entry_p2"
+                member_title.className = "roboto_font project_entry_p2";
                 member_title.innerHTML = member.firstname + " | " + member.emailaddress + " | Type: " + member.type; 
                 member_content.appendChild(member_title);
 
@@ -829,7 +853,7 @@
 
             console.log("add vm");
                             
-            vm_add_button.innerHTML = "Adding vm..."
+            vm_add_button.innerHTML = "Adding vm...";
 
             fetch(
                 "{% url 'add_vm_request' %}", 
@@ -852,7 +876,7 @@
                 
                 if (data.status == "success"){
                     
-                    vm_add_button.innerHTML = "Success!"
+                    vm_add_button.innerHTML = "Success!";
                     setTimeout(function() {
                         // vms_content.remove(); 
                         vms_content.parentNode.removeChild(vms_content); // removing the listing after success
@@ -862,7 +886,7 @@
 
                         for (const project of project_detail_data){
                             if (project.project_id == selected_project_id) { 
-                                update_project_display_with_project_data(project)
+                                update_project_display_with_project_data(project);
                             }
                         }
                     }, 3000);
@@ -872,9 +896,9 @@
                     // then return back to normal
                     console.log(data.message);
 
-                    vm_add_button.innerHTML = "Failed."
+                    vm_add_button.innerHTML = "Failed.";
                     setTimeout(function() {
-                        vm_add_button.innerHTML = "Add VM"
+                        vm_add_button.innerHTML = "Add VM";
                     }, 3000);
                 }
                                                                             
@@ -884,11 +908,132 @@
             });
         }
 
+        function ADMIN_PROMPT_add_user(user_content, user_add_button, user_id_to_add) {
+            if (selected_project_id == ""){console.log("no selected vm"); return;}
+
+            console.log("add user to project");
+                            
+            user_add_button.innerHTML = "Adding...";
+
+            fetch(
+                "{% url 'add_users_to_project_request' %}", 
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "X-CSRFToken": getCookie('csrftoken') //https://www.geeksforgeeks.org/python/csrf-token-in-django/
+                    },
+                    body: new URLSearchParams(
+                        {
+                            user_id: user_id_to_add,
+                            project_id: selected_project_id
+                        }
+                    )
+                }
+            )
+            .then(response => response.json())
+            .then(data => {
+                
+                if (data.status == "success"){
+                    
+                    user_add_button.innerHTML = "Success!";
+                    setTimeout(function() {
+                        // Removing user_content from display 
+                        user_content.parentNode.removeChild(user_content); // removing the listing after success
+                    
+                        // No need to update as the user will be seeing the latest after
+                        // removing the user they just added to the list
+                    }, 3000);
+                    
+                }else{
+                    // If the VM has failed to be added, give a failed prompt
+                    // then return back to normal
+                    console.log(data.message);
+
+                    user_add_button.innerHTML = "Failed.";
+                    setTimeout(function() {
+                        user_add_button.innerHTML = "Add User";
+                    }, 3000);
+                }
+                                                                            
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        }
+        
+
+        function update_available_project_users() { 
+            if (selected_project_id != ""){
+                 // Display users
+                const project_available_users_content = document.getElementById("project_available_users_content");
+                
+                console.log("update available project users");
+                console.log(selected_project_id);
+                console.log("---");
+                fetch(
+                    "{% url 'available_users_request' %}", 
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded",
+                            "X-CSRFToken": getCookie('csrftoken') //https://www.geeksforgeeks.org/python/csrf-token-in-django/
+                        },
+                        body: new URLSearchParams(
+                            {
+                                project_id: selected_project_id
+                            }
+                        )
+                    }
+                )
+                .then(response => response.json())
+                .then(data => {
+                    
+                    if (data.status == "success"){
+                        
+                        project_available_users_content.innerHTML = ""; // Clearing the content views
+                        console.log("got available user data");
+                        for (const user of data.available_users_details){
+                            
+                            const user_content = document.createElement("div");
+                            user_content.className = "vms_content";
+
+                            const member_title = document.createElement("p");
+                            member_title.className = "roboto_font project_entry_p2";
+                            member_title.innerHTML = user.firstname + " | " + user.emailaddress + " | Type: " + user.type; 
+                            user_content.appendChild(member_title);
+                                        
+                            const user_add_button = document.createElement("button");
+                            user_add_button.type = "button";
+                            user_add_button.className = "alternate_connect_button";
+
+                            user_add_button.onclick = () => ADMIN_PROMPT_add_user(user_content, user_add_button, user.user_id);
+                            
+                            user_add_button.innerHTML = "Add user";
+                            user_content.appendChild(user_add_button);
+
+                            // Rendering the div we created into "project_display_vms_content"
+                            project_available_users_content.appendChild(user_content);
+                        }
+                        
+                    }else{
+                        console.log(data.message);
+                    }
+                                                                                
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                });
+            }
+        }
+        setInterval(update_available_project_users, 3000); // Updating available vm content every 3 seconds
+
+
         function update_available_project_vms() { 
             // Display virtual machines
             const project_available_vms_content = document.getElementById("project_available_vms_content");
             
-            console.log("fetch name and email detail");
+            console.log("fetch available project vms");
                                
             fetch(
                 "{% url 'available_vms_request' %}", 
@@ -915,7 +1060,7 @@
 
 
                         const vm_title = document.createElement("p");
-                        vm_title.className = "roboto_font project_entry_p2"
+                        vm_title.className = "roboto_font project_entry_p2";
                         vm_title.innerHTML = "Virtual machine: " + vm.vm_name + " | Status: " + vm.vm_status + " | " + vm.vm_ip;
                         vms_content.appendChild(vm_title);
 
@@ -1023,33 +1168,75 @@
             }
         }
 
-        function reveal_project_display_available_vms(state)
+        const available_vms_display = document.getElementById("available_vms_display");
+        const available_users_display = document.getElementById("available_users_display");
+        const project_display_users = document.getElementById("project_display_users");
+        const project_display_vms = document.getElementById("project_display_vms");
+    
+        function reveal_project_display_available_users(state)
         {
-            const available_vms_display = document.getElementById("available_vms_display");
-            const project_display_users = document.getElementById("project_display_users");
-            const project_display_vms = document.getElementById("project_display_vms");
-      
             if (state == true){
-                available_vms_display.style.display = "block";
+                available_vms_display.style.display = "none";
 
                 project_display_users.style.display = "none";
                 project_display_vms.style.display = "none";
+
+                available_users_display.style.display = "block";
             }else if (state == false){
                 available_vms_display.style.display = "none";
 
                 project_display_users.style.display = "block";
                 project_display_vms.style.display = "block";
+                
+                available_users_display.style.display = "none";
+            }
+            else if (available_users_display.style.display == "block"){
+                available_vms_display.style.display = "none";
+
+                project_display_users.style.display = "block";
+                project_display_vms.style.display = "block";
+
+                available_users_display.style.display = "none";
+            } else {
+                available_vms_display.style.display = "none";
+
+                project_display_users.style.display = "none";
+                project_display_vms.style.display = "none";
+
+                available_users_display.style.display = "block";
+            }
+        }
+        function reveal_project_display_available_vms(state)
+        {
+            if (state == true){
+                available_vms_display.style.display = "block";
+
+                project_display_users.style.display = "none";
+                project_display_vms.style.display = "none";
+
+                available_users_display.style.display = "none";
+            }else if (state == false){
+                available_vms_display.style.display = "none";
+
+                project_display_users.style.display = "block";
+                project_display_vms.style.display = "block";
+                
+                available_users_display.style.display = "none";
             }
             else if (available_vms_display.style.display == "block"){
                 available_vms_display.style.display = "none";
 
                 project_display_users.style.display = "block";
                 project_display_vms.style.display = "block";
+
+                available_users_display.style.display = "none";
             } else {
                 available_vms_display.style.display = "block";
 
                 project_display_users.style.display = "none";
                 project_display_vms.style.display = "none";
+
+                available_users_display.style.display = "none";
             }
         }
 
@@ -1146,7 +1333,7 @@
             previous_project_section = "project_display";
 
             // Updating displays for virtual machines and users 
-            update_project_display_with_project_data(project)
+            update_project_display_with_project_data(project);
         }
 
 
@@ -1186,12 +1373,12 @@
 
                             // <p> class elements
                             const project_title = document.createElement("p");
-                            project_title.className = "roboto_font project_entry_p1"
+                            project_title.className = "roboto_font project_entry_p1";
                             project_title.innerHTML = "Project name: " + project.project_name;
                             project_entry_div.appendChild(project_title);
 
                             const project_id = document.createElement("p");
-                            project_id.className = "roboto_font project_entry_p2"
+                            project_id.className = "roboto_font project_entry_p2";
                             project_id.innerHTML = "Id: " + project.project_identifier_code;
                             project_entry_div.appendChild(project_id);
 
@@ -1203,7 +1390,7 @@
                             // <button> class elements
                             const open_project_button = document.createElement("button");
                             open_project_button.type = "button";
-                            open_project_button.className = "alternate_connect_button"
+                            open_project_button.className = "alternate_connect_button";
                             open_project_button.onclick = () => navigate_to_project_display(project);
                             open_project_button.innerHTML = "Open";
                             open_project_button.style.marginRight = "3%";
@@ -1276,7 +1463,7 @@
                         console.log(data.message);
                         
                         const register_loading_text = document.getElementById("register_loading_text");
-                        register_loading_text.innerHTML = "Project created!"
+                        register_loading_text.innerHTML = "Project created!";
                     
                         setTimeout(function() {
                             
@@ -1289,7 +1476,7 @@
                         console.log(data.message);
 
                         const register_loading_text = document.getElementById("register_loading_text");
-                        register_loading_text.innerHTML = "Project failed to create"
+                        register_loading_text.innerHTML = "Project failed to create";
 
                         setTimeout(function() {
                             
@@ -1439,7 +1626,7 @@
                 .then(data => {
 
                     if (data.status == "success"){
-                        window.location.href = "/login_page/"
+                        window.location.href = "/login_page/";
                     }else{
                         console.log("error logging out");
                     }
