@@ -647,6 +647,67 @@
         let selected_project_id = "";
 
 
+        function ADMIN_PROMPT_remove_vm(vms_content, vm_remove_button, vm_id_to_remove){
+            
+            console.log("-----------");
+            console.log("Removing VM");
+                            
+            vm_remove_button.innerHTML = "Removing..."
+
+            fetch(
+                "{% url 'remove_vm_request' %}", 
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "X-CSRFToken": getCookie('csrftoken') //https://www.geeksforgeeks.org/python/csrf-token-in-django/
+                    },
+                    body: new URLSearchParams(
+                        {
+                            vm_id: vm_id_to_remove
+                        }
+                    )
+                }
+            )
+            .then(response => response.json())
+            .then(data => {
+                
+                if (data.status == "success"){
+                    
+                    vm_remove_button.innerHTML = "Success!"
+                    setTimeout(function() {
+                        // vms_content.remove(); 
+                        vms_content.parentNode.removeChild(vms_content); // removing the listing after success
+                    
+                        // Updating project information currently being displayed to the user
+                        const project_detail_data = data.projects;
+
+                        for (const project of project_detail_data){
+                            if (project.project_id == selected_project_id) { 
+                                update_project_display_with_project_data(project)
+                            }
+                        }
+                    }, 3000);
+                    
+                   
+                }else{
+                    // If the VM has failed to be added, give a failed prompt
+                    // then return back to normal
+                    console.log(data.message);
+
+                    vm_remove_button.innerHTML = "Failed."
+                    setTimeout(function() {
+                        vm_remove_button.innerHTML = "Remove"
+                    }, 3000);
+                }
+                                                                            
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        }
+
+
         function update_project_display_with_project_data(project){
             // Display virtual machines
             const project_display_vms_content = document.getElementById("project_display_vms_content");
@@ -670,6 +731,16 @@
                 //VM doesn't have actual connect functionality as this is a demo
                 vm_connect_button.innerHTML = "Connect";
                 vms_content.appendChild(vm_connect_button);
+
+                const vm_remove_button = document.createElement("button");
+                vm_remove_button.type = "button";
+                vm_remove_button.className = "alternate_connect_button"
+                
+                vm_remove_button.onclick = () => ADMIN_PROMPT_remove_vm(vms_content, vm_remove_button, vm.vm_id);
+               
+                vm_remove_button.innerHTML = "Remove";
+                vms_content.appendChild(vm_remove_button);
+
 
                 // Rendering the div we created into "project_display_vms_content"
                 project_display_vms_content.appendChild(vms_content);
@@ -696,7 +767,7 @@
             }
         }
 
-        
+
         function ADMIN_PROMPT_add_vm(vms_content, vm_add_button, vm_id_to_add) {
             if (selected_project_id == ""){console.log("no selected vm"); return;}
 
@@ -729,16 +800,17 @@
                     setTimeout(function() {
                         // vms_content.remove(); 
                         vms_content.parentNode.removeChild(vms_content); // removing the listing after success
+                    
+                        // Updating project information currently being displayed to the user
+                        const project_detail_data = data.projects;
+
+                        for (const project of project_detail_data){
+                            if (project.project_id == selected_project_id) { 
+                                update_project_display_with_project_data(project)
+                            }
+                        }
                     }, 3000);
                     
-                    // Updating project information currently being displayed to the user
-                    const project_detail_data = data.projects;
-
-                    for (const project of project_detail_data){
-                        if (project.project_id == selected_project_id) { 
-                            update_project_display_with_project_data(project)
-                        }
-                    }
                 }else{
                     // If the VM has failed to be added, give a failed prompt
                     // then return back to normal

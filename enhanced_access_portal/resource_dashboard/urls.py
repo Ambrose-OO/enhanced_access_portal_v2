@@ -9,5 +9,6 @@ urlpatterns = [
     path('create_project_request/', views.ADMIN_PROMPT_create_project, name="create_project_request"),
     path('email_name_request/', views.USER_ADMIN_PROMPT_email_name, name="email_name_request"),
     path('available_vms_request/', views.ADMIN_PROMPT_available_vms, name="available_vms_request"),
-    path('add_vm_request/', views.ADMIN_PROMPT_add_vm, name="add_vm_request")
+    path('add_vm_request/', views.ADMIN_PROMPT_add_vm, name="add_vm_request"),
+    path('remove_vm_request/', views.ADMIN_PROMPT_remove_vm, name="remove_vm_request")
 ]

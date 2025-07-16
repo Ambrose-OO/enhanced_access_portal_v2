@@ -177,6 +177,65 @@ def collate_ADMIN_project_listings():
     return admin_project_listings
 
 @csrf_protect
+def ADMIN_PROMPT_remove_vm(request):
+    if request.method == "POST":
+        print("----------------")
+        print("Remove vm")
+
+        logged_in_status = request.session.get("logged_in")
+        user_type = request.session.get("user_type")
+
+        if (logged_in_status == True):
+            if (user_type == "ADMIN") or (user_type == "USER"):
+
+                print("a")
+
+                vm_id = request.POST.get("vm_id")
+                print(vm_id)
+                vm = fetch_vm_from_id(vm_id)
+
+                print("b")
+
+                if (vm != None):
+                    if (vm.project_id != None):
+                        print("vm has a project")
+
+                        # Updating vm SQL data to have the VM not be associated with a project
+                        # https://www.w3schools.com/django/django_update_data.php
+                        vm.project_id = None
+                        vm.save()
+                        
+                        admin_project_listings = collate_ADMIN_project_listings()
+
+                        return JsonResponse(
+                            {
+                                "status": "success", 
+                                "message": "Server successfully removed vm from project",
+                                "projects": admin_project_listings
+                            }
+                        ) 
+                            
+                    else:
+                        print("vm is already removed from a project - error")
+                else:
+                    print("vm can't be found - error")
+
+                return JsonResponse(
+                    {
+                        "status": "error", 
+                        "message": "Server cannot remove vm to the project for unknown reason"
+                    }
+                ) 
+
+        # Failure response if the user is requesting data when logged out
+        return JsonResponse(
+            {
+                "status": "failure", 
+                "message": "Server can't pass data on user who is logged out"
+            }
+        ) 
+
+@csrf_protect
 def ADMIN_PROMPT_add_vm(request):
     if request.method == "POST":
         print("----------------")
