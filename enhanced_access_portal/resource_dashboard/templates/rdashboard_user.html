@@ -143,6 +143,25 @@
             text-align: center;
         }
 
+        .alternate_button_2{
+            color: #ffff;
+            background-color: #212529;
+            border-color: #212529;
+            border: 1px solid transparent;
+            border-radius: 0.25rem;
+
+            padding: 0.375rem 0.75rem;
+
+            width: 20%;
+            height: 5%;
+            
+            font-size: 0.9em;
+            
+            /* https://www.w3schools.com/tags/tryit.asp?filename=tryhtml_button_css */
+            cursor: pointer;
+            text-align: center;
+        }
+
         .login_button:hover {
             /* https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Solve_CSS_problems/Transition_button */
             background-color: #4F52BD;
@@ -350,8 +369,8 @@
 
                             <!-- "display: block;" helps put the elements on seperate lines */ -->
                             <input type="text" placeholder="Search VMs" id="vm_search" class="entry_style1" style = "width: 80%; margin-right: 1%;"> 
-                     
-                            <button id = "x1" type="button" onclick="USER_PROMPT_register_section()" class = "alternate_button">
+                    
+                            <button id = "x1" type="button" onclick="" class = "alternate_button">
                                 Search
                             </button>
                     
@@ -382,7 +401,7 @@
                             </button>
 
 
-                            <button id = "panel_toggle_button" type="button" onclick="USER_ADMIN_PROMPT_logout_attempt()" class = "panel_button" style = "margin-top: 30px; background-color: #4F52BD;">
+                            <button id = "logout_button" type="button" onclick="USER_ADMIN_PROMPT_logout_attempt()" class = "panel_button" style = "margin-top: 30px; background-color: #4F52BD;">
                                 <img id="panel_toggle_button" src="{% static 'LogoutIcon.png' %}" class="nine_square_button_icon" alt="Logout" style = "transform: translate(14%, 0%); pointer-events: none;" />
                                 <p style = "color: #FFFFFF; margin: 0px; pointer-events: none;">Logout</p>
                             </button>
@@ -402,33 +421,47 @@
 
                             
                             <div id = "projects_section" style = "display: flex; width: 100%; height: 100%;">
-                               <!-- Display is typically "grid" for "project_content" -->
-                               <div id = "project_content" style = "
-                                    display: grid; 
-                                    grid-template-columns: repeat(2, 1fr);
-                                    
-
-                                    width: 100%; 
-                                    height: 100%; 
-                                    align-items: center;
-                                    overflow-y: auto;
-                                    ">
-
-                                    <!-- 
-                                        <div id = "project_entry" class = "rounded_container project_entry">
-                                            <p class = "roboto_font project_entry_p1">Project name: Adminstration team</p>
-                                            <p class = "roboto_font project_entry_p2">Id: zxawWga2</p>
-                                            <p class = "roboto_font">VMs (4) VMs online (2) Users (3) Admins (2)</p>
-
-                                            <button id="x1" type="button" onclick="update_projects_content()" class="alternate_button">
-                                                Open
-                                            </button>
-                                        </div>
-                                    -->
-                                </div>
+                                <!-- Display is typically "grid" for "project_content" -->
+                                <div id = "project_content" style = "
+                                     display: grid; 
+                                     grid-template-columns: repeat(2, 1fr);
+                                     
+ 
+                                     width: 100%; 
+                                     height: 100%; 
+                                     align-items: center;
+                                     overflow-y: auto;
+                                     ">
+ 
+                                     <!-- 
+                                         <div style = 
+                                             "width: 100%; 
+                                             height: 20%; 
+                                             align-items: center; 
+                                             justify-content: center; 
+                                             display: flex;
+                                         "> 
+                                             <p class = "header_title" style = "margin-top: 1%; width: 100%; text-align: center;">No projects</p>
+                                         </div>
+                                     -->
+ 
+                                     <!-- 
+                                         <div id = "project_entry" class = "rounded_container project_entry">
+                                             <p class = "roboto_font project_entry_p1">Project name: Adminstration team</p>
+                                             <p class = "roboto_font project_entry_p2">Id: zxawWga2</p>
+                                             <p class = "roboto_font">VMs (4) VMs online (2) Users (3) Admins (2)</p>
+ 
+                                             <button id="x1" type="button" onclick="update_projects_content()" class="alternate_button">
+                                                 Open
+                                             </button>
+                                         </div>
+                                     -->
+                                 </div>
                                 
                                 <!-- Display is typically "flex" for "project_display" -->
                                 <div id = "project_display" style = "display: none; width: 100%; height: 100%;">
+
+                                    <!-- Display is usually "block" for "project_display_vms" and "project_display_users"-->
                                     <div id = "project_display_vms" style = "width: 50%; height: 100%; overflow-y: auto; display: block;"> 
                                         <div style = 
                                             "width: 100%; 
@@ -440,14 +473,14 @@
                                             <p class = "header_title" style = "margin-top: 1%;">Virtual machines</p>
                                         </div>
                                         <div id = "project_display_vms_content" style = "width: 90%; height: 80%;">
-                                            <!-- 
+                                            
                                                 <div class = "vms_content">
                                                     <p class = "roboto_font project_entry_p2">Virtual machine: Ambroses VM | Status: Online | 255.193.321.0</p>
                                                     <button id="x1" type="button" onclick="update_projects_content()" class="alternate_connect_button">
                                                         Connect
                                                     </button>
                                                 </div>
-                                            -->
+                                            
                                         </div>
                                     </div>
 
@@ -472,34 +505,92 @@
                                             <!-- TODO: For admins add a remove user button. Only to remove users -->
                                         </div>
                                     </div>
+
+                                    <div id = "available_vms_display" style = "width: 100%; height: 100%; overflow-y: auto; display: none;"> 
+
+                                        <div style = 
+                                            "width: 100%; 
+                                            height: 20%; 
+                                            align-items: center; 
+                                            justify-content: center; 
+                                            display: flex;
+                                        "> 
+                                            <p class = "header_title" style = "margin-top: 1%;">Available virtual machines</p>
+                                        </div>
+                                        
+
+                                        <div id = "project_available_vms_content" style = "width: 90%; height: 80%;">
+                                            <div class = "vms_content">
+                                                <p class = "roboto_font project_entry_p2">Virtual machine: Ambroses VM | Status: Online | 255.193.321.0</p>
+                                                <button id="x1" type="button" onclick="" class="alternate_connect_button">
+                                                    Add VM
+                                                </button>
+                                            </div>
+                                            
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             
                             <div id = "groups_section" style = "display: none; width: 100%; height: 100%;">
-                            
+                                
+                                <div style = 
+                                    "width: 100%; 
+                                    height: 20%; 
+                                    align-items: center; 
+                                    justify-content: center; 
+                                    display: flex;
+                                "> 
+                                    <p class = "header_title" style = "margin-top: 1%; width: 100%; text-align: center;">Groups is not available in this version</p>
+                                </div>
+
                             </div>
 
                             <div id = "all_vms_section" style = "display: none; width: 100%; height: 100%;">
-                            
+                               
+                                <div style = 
+                                    "width: 100%; 
+                                    height: 20%; 
+                                    align-items: center; 
+                                    justify-content: center; 
+                                    display: flex;
+                                "> 
+                                    <p class = "header_title" style = "margin-top: 1%; width: 100%; text-align: center;">VM searching is not available in this version</p>
+                                </div>
+
                             </div>
 
-                            <div id = "statistics_section" style = "display: none; width: 100%; height: 100%;">
-                            
+                            <div id = "statistics_section" style = "display: none; width: 100%; height: 100%; justify-content: center; align-items: center;">
+                                
+                                <div style = 
+                                    "width: 100%; 
+                                    height: 20%; 
+                                    align-items: center; 
+                                    justify-content: center; 
+                                    display: flex;
+                                "> 
+                                    <p class = "header_title" style = "margin-top: 1%; width: 100%; text-align: center;">Statistics is not available in this version</p>
+                                </div>
+    
                             </div>
 
                         </div>
                       
                     </div>
-
-
+        
+                    <div id = "lower_button_panel" style = "margin-top: 1%; align-items: center; justify-content: space-around; display: flex;">
+                        <button id = "add_vm_button" type="button" onclick="reveal_project_display_available_vms()" class = "alternate_button_2" style = "display: none;">
+                            Add VM
+                        </button>
+                    </div>
                     
 
-                    <!-- Dark grey line design -->
-                    <div style = "
+                    <!-- Dark grey line design | margin-top should be either 1% or 5% -->
+                    <div id = "grey_divider" style = "
                         width: 100%; 
                         height: 2px; 
                         background-color: #212529; 
-                        margin-top: 5%; 
+                        margin-top: 1%; 
                         ">
                     </div>
                 </div>
@@ -514,6 +605,250 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
+        
+        let project_identifier = ""; // Variable used to pass a project identifer code when creating a project
+        let selected_project_id = "";
+
+        function ADMIN_USER_PROMPT_remove_vm(vms_content, vm_remove_button, vm_id_to_remove){
+            
+            console.log("-----------");
+            console.log("Removing VM");
+                            
+            vm_remove_button.innerHTML = "Removing...";
+
+            fetch(
+                "{% url 'remove_vm_request' %}", 
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "X-CSRFToken": getCookie('csrftoken') //https://www.geeksforgeeks.org/python/csrf-token-in-django/
+                    },
+                    body: new URLSearchParams(
+                        {
+                            vm_id: vm_id_to_remove
+                        }
+                    )
+                }
+            )
+            .then(response => response.json())
+            .then(data => {
+                
+                if (data.status == "success"){
+                    
+                    vm_remove_button.innerHTML = "Success!";
+                    setTimeout(function() {
+                        // vms_content.remove(); 
+                        vms_content.parentNode.removeChild(vms_content); // removing the listing after success
+                    
+                        // Updating project information currently being displayed to the user
+                        const project_detail_data = data.projects;
+
+                        for (const project of project_detail_data){
+                            if (project.project_id == selected_project_id) { 
+                                update_project_display_with_project_data(project);
+                            }
+                        }
+                    }, 3000);
+                    
+                    
+                }else{
+                    // If the VM has failed to be added, give a failed prompt
+                    // then return back to normal
+                    console.log(data.message);
+
+                    vm_remove_button.innerHTML = "Failed.";
+                    setTimeout(function() {
+                        vm_remove_button.innerHTML = "Remove";
+                    }, 3000);
+                }
+                                                                            
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        }
+
+
+        function update_project_display_with_project_data(project){
+            // Display virtual machines
+            const project_display_vms_content = document.getElementById("project_display_vms_content");
+            project_display_vms_content.innerHTML = ""; // Clearing all the elements under the div content container
+
+            for (const vm of project.project_vms_details){
+                const vms_content = document.createElement("div");
+                vms_content.className = "vms_content";
+
+
+                const vm_title = document.createElement("p");
+                vm_title.className = "roboto_font project_entry_p2"
+                vm_title.innerHTML = "Virtual machine: " + vm.vm_name + " | Status: " + vm.vm_status + " | " + vm.vm_ip;
+                vms_content.appendChild(vm_title);
+
+        
+                const vm_connect_button = document.createElement("button");
+                vm_connect_button.type = "button";
+                vm_connect_button.className = "alternate_connect_button";
+                //vm_connect_button.onclick = () => navigate_to_project_display(project);
+                //VM doesn't have actual connect functionality as this is a demo
+                vm_connect_button.innerHTML = "Connect";
+                vms_content.appendChild(vm_connect_button);
+
+                const vm_remove_button = document.createElement("button");
+                vm_remove_button.type = "button";
+                vm_remove_button.className = "alternate_connect_button";
+                
+                vm_remove_button.onclick = () => ADMIN_USER_PROMPT_remove_vm(vms_content, vm_remove_button, vm.vm_id);
+               
+                vm_remove_button.innerHTML = "Remove";
+                vms_content.appendChild(vm_remove_button);
+
+
+                // Rendering the div we created into "project_display_vms_content"
+                project_display_vms_content.appendChild(vms_content);
+            }
+            
+            // Display project users
+            const project_display_users_content = document.getElementById("project_display_users_content");
+            project_display_users_content.innerHTML = ""; // Clearing all the elements under the div content container
+        
+            for (const member of project.project_member_details){
+                const member_content = document.createElement("div");
+                member_content.className = "member_content";
+
+
+                const member_title = document.createElement("p");
+                member_title.className = "roboto_font project_entry_p2";
+                member_title.innerHTML = member.firstname + " | " + member.emailaddress + " | Type: " + member.type; 
+                member_content.appendChild(member_title);
+
+                // TODO: For admins, add an additional button that says "remove". Detailed prior again in this same document elsewhere
+
+                // Rendering the div we created into "project_display_vms_content"
+                project_display_users_content.appendChild(member_content);
+            }
+        }
+
+
+        function ADMIN_USER_PROMPT_add_vm(vms_content, vm_add_button, vm_id_to_add) {
+            if (selected_project_id == ""){console.log("no selected vm"); return;}
+
+            console.log("add vm");
+                            
+            vm_add_button.innerHTML = "Adding vm...";
+
+            fetch(
+                "{% url 'add_vm_request' %}", 
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "X-CSRFToken": getCookie('csrftoken') //https://www.geeksforgeeks.org/python/csrf-token-in-django/
+                    },
+                    body: new URLSearchParams(
+                        {
+                            vm_id: vm_id_to_add,
+                            project_id: selected_project_id
+                        }
+                    )
+                }
+            )
+            .then(response => response.json())
+            .then(data => {
+                
+                if (data.status == "success"){
+                    
+                    vm_add_button.innerHTML = "Success!";
+                    setTimeout(function() {
+                        // vms_content.remove(); 
+                        vms_content.parentNode.removeChild(vms_content); // removing the listing after success
+                    
+                        // Updating project information currently being displayed to the user
+                        const project_detail_data = data.projects;
+
+                        for (const project of project_detail_data){
+                            if (project.project_id == selected_project_id) { 
+                                update_project_display_with_project_data(project);
+                            }
+                        }
+                    }, 3000);
+                    
+                }else{
+                    // If the VM has failed to be added, give a failed prompt
+                    // then return back to normal
+                    console.log(data.message);
+
+                    vm_add_button.innerHTML = "Failed.";
+                    setTimeout(function() {
+                        vm_add_button.innerHTML = "Add VM";
+                    }, 3000);
+                }
+                                                                            
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        }
+
+        function update_available_project_vms() { 
+            // Display virtual machines
+            const project_available_vms_content = document.getElementById("project_available_vms_content");
+            
+            console.log("fetch available project vms");
+                               
+            fetch(
+                "{% url 'available_vms_request' %}", 
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "X-CSRFToken": getCookie('csrftoken') //https://www.geeksforgeeks.org/python/csrf-token-in-django/
+                    },
+                    body: new URLSearchParams({})
+                }
+            )
+            .then(response => response.json())
+            .then(data => {
+                
+                if (data.status == "success"){
+                    
+                    project_available_vms_content.innerHTML = ""; // Clearing the content views
+                    console.log("got available vm data");
+                    for (const vm of data.vms){
+                        console.log(vm.vm_name);
+                        const vms_content = document.createElement("div");
+                        vms_content.className = "vms_content";
+
+
+                        const vm_title = document.createElement("p");
+                        vm_title.className = "roboto_font project_entry_p2";
+                        vm_title.innerHTML = "Virtual machine: " + vm.vm_name + " | Status: " + vm.vm_status + " | " + vm.vm_ip;
+                        vms_content.appendChild(vm_title);
+
+                
+                        const vm_add_button = document.createElement("button");
+                        vm_add_button.type = "button";
+                        vm_add_button.className = "alternate_connect_button";
+
+                        vm_add_button.onclick = () => ADMIN_USER_PROMPT_add_vm(vms_content, vm_add_button, vm.vm_id);
+                        
+                        vm_add_button.innerHTML = "Add VM";
+                        vms_content.appendChild(vm_add_button);
+
+                        // Rendering the div we created into "project_display_vms_content"
+                        project_available_vms_content.appendChild(vms_content);
+                    }
+                    
+                }else{
+                    console.log(data.message);
+                }
+                                                                            
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        }
+        setInterval(update_available_project_vms, 3000); // Updating available vm content every 3 seconds
 
         function update_name_email_display() {
             const name_display = document.getElementById("name_display");
@@ -549,69 +884,104 @@
             });
         }
         update_name_email_display() // On program launch, fetch the user/admins name/email display
-                
+        
+
+
+    
+        // user feature where it returns you to the last section you were at in the project section
+        let previous_project_section = "project_content";
+
+        const available_vms_display = document.getElementById("available_vms_display");
+        const project_display_users = document.getElementById("project_display_users");
+        const project_display_vms = document.getElementById("project_display_vms");
+
+        function reveal_project_display_available_vms(state)
+        {
+            if (state == true){
+                available_vms_display.style.display = "block";
+
+                project_display_users.style.display = "none";
+                project_display_vms.style.display = "none";
+            }else if (state == false){
+                available_vms_display.style.display = "none";
+
+                project_display_users.style.display = "block";
+                project_display_vms.style.display = "block";
+            }
+            else if (available_vms_display.style.display == "block"){
+                available_vms_display.style.display = "none";
+
+                project_display_users.style.display = "block";
+                project_display_vms.style.display = "block";
+            } else {
+                available_vms_display.style.display = "block";
+
+                project_display_users.style.display = "none";
+                project_display_vms.style.display = "none";
+            }
+        }
+
+        function project_panel_navigation(panel){
+
+            previous_project_section = panel; 
+
+            // Navigating to the section within the project section area
+            const project_display = document.getElementById("project_display");
+            const project_content = document.getElementById("project_content");
+
+            // Hiding all the panels in the project section
+            project_display.style.display = "none";
+            project_content.style.display = "none";
+            available_vms_display.style.display = "none";
+
+            // Working on which one to reval and how
+            if (panel == "project_content"){
+                project_content.style.display = "grid";
+            }
+            else if (panel = "project_display"){
+                project_display.style.display = "";
+            }
+        }
+
         function navigate_to_project_content() {
             const project_content = document.getElementById("project_content");
-            const project_display = document.getElementById("project_content");
+            const project_display = document.getElementById("project_display");
 
             project_content.style.display = "grid";
             project_display.style.display = "none";
         }
-        function navigate_to_project_display(project_detail_data) {
+
+        function reveal_add_vm_buttons(state){
+            // Reveals "Add VM" and "Add user" buttons
+            const add_vm_button = document.getElementById("add_vm_button");
+            
+            if (state == true){
+                add_vm_button.style.display = "block";
+            }else{
+                add_vm_button.style.display = "none";
+            }
+        }
+
+        
+        function navigate_to_project_display(project) {
+            // Updating knowledge on which project has been selected by changing
+            // the selected_project_id variable
+
+            selected_project_id = project.project_id; 
+
+            // Reveals "Add VM" and "Add user" buttons
+            reveal_add_vm_buttons(true);
+
             // Navigates and provides data
             const project_content = document.getElementById("project_content");
-            const project_display = document.getElementById("project_content");
+            const project_display = document.getElementById("project_display");
 
             project_content.style.display = "none";
             project_display.style.display = "flex";
+            previous_project_section = "project_display";
 
-            // Display virtual machines
-            const project_display_vms_content = document.getElementById("project_display_vms_content");
-            project_display_vms_content.innerHTML = ""; // Clearing all the elements under the div content container
-
-            for (const vm of project_detail_data.project_vms_details){
-                const vms_content = document.createElement("div");
-                vms_content.className = "vms_content";
-
-
-                const vm_title = document.createElement("p");
-                vm_title.className = "roboto_font project_entry_p2"
-                vm_title.innerHTML = "Virtual machine: " + vm.vm_name + " | Status: " + vm.vm_status + " | " + vm.vm_ip;
-                vms_content.appendChild(vm_title);
-
-        
-                const vm_connect_button = document.createElement("button");
-                vm_connect_button.type = "button";
-                vm_connect_button.className = "alternate_connect_button"
-                //vm_connect_button.onclick = () => navigate_to_project_display(project_detail_data);
-                //VM doesn't have actual connect functionality as this is a demo
-                vm_connect_button.innerHTML = "Connect";
-                vms_content.appendChild(vm_connect_button);
-
-                // Rendering the div we created into "project_display_vms_content"
-                project_display_vms_content.appendChild(vms_content);
-            }
-            
-            // Display project users
-            const project_display_users_content = document.getElementById("project_display_users_content");
-            project_display_users_content.innerHTML = ""; // Clearing all the elements under the div content container
-        
-            for (const member of project_detail_data.project_member_details){
-                const member_content = document.createElement("div");
-                member_content.className = "member_content";
-
-
-                const member_title = document.createElement("p");
-                member_title.className = "roboto_font project_entry_p2"
-                member_title.innerHTML = member.firstname + " | " + member.emailaddress + " | Type: " + member.type; 
-                member_content.appendChild(member_title);
-
-                // TODO: For admins, add an additional button that says "remove". Detailed prior again in this same document elsewhere
-
-                // Rendering the div we created into "project_display_vms_content"
-                project_display_users_content.appendChild(member_content);
-            }
-
+            // Updating displays for virtual machines and users 
+            update_project_display_with_project_data(project);
         }
 
 
@@ -651,12 +1021,12 @@
 
                             // <p> class elements
                             const project_title = document.createElement("p");
-                            project_title.className = "roboto_font project_entry_p1"
+                            project_title.className = "roboto_font project_entry_p1";
                             project_title.innerHTML = "Project name: " + project.project_name;
                             project_entry_div.appendChild(project_title);
 
                             const project_id = document.createElement("p");
-                            project_id.className = "roboto_font project_entry_p2"
+                            project_id.className = "roboto_font project_entry_p2";
                             project_id.innerHTML = "Id: " + project.project_identifier_code;
                             project_entry_div.appendChild(project_id);
 
@@ -668,15 +1038,12 @@
                             // <button> class elements
                             const open_project_button = document.createElement("button");
                             open_project_button.type = "button";
-                            open_project_button.className = "alternate_connect_button"
+                            open_project_button.className = "alternate_connect_button";
                             open_project_button.onclick = () => navigate_to_project_display(project);
                             open_project_button.innerHTML = "Open";
+                            open_project_button.style.marginRight = "3%";
                             project_entry_div.appendChild(open_project_button);
 
-                            // const delete_project_button - admin
-                            // Once the project_entry_div has finished being edited, render
-                            // it on the resource dashboard by appending it to the project_content
-                            // div element
                             project_content.appendChild(project_entry_div);
                         }
                     }else{
@@ -695,9 +1062,46 @@
         setInterval(update_projects_content, 3000); // Updating project content every 3 seconds
 
         let section_lock = false;
+        let lower_button_panel_toggle = false;
+
+        function toggle_lower_button_panel(toggle){
+            const lower_button_panel = document.getElementById("lower_button_panel");
+            const grey_divider = document.getElementById("grey_divider");
+
+            if (toggle == true){
+                lower_button_panel.style.display = "flex";
+                grey_divider.style.marginTop = "1%";
+            }else{
+                lower_button_panel.style.display = "none";
+                grey_divider.style.marginTop = "5%";
+            }
+        }
         
+        function reset_section_button_background()
+        {
+            // Section buttons
+            const projects_button = document.getElementById("projects_button");
+            projects_button.style = "margin-top: 5px;";
+
+            const groups_button = document.getElementById("groups_button");
+            groups_button.style = "margin-top: 5px;";
+
+            const all_vms_button = document.getElementById("all_vms_button");
+            all_vms_button.style = "margin-top: 5px;";
+
+            const statistics_button = document.getElementById("statistics_button");
+            statistics_button.style = "margin-top: 5px;";
+        }
+
+
         function section_reveal(name) { 
             if (section_lock == false){
+                // Reseting selcted vm 
+                selected_project_id = "";
+
+                // Hiding add vm and user buttons
+                reveal_add_vm_buttons(false);
+
                 // Section buttons
                 const projects_button = document.getElementById("projects_button");
                 const groups_button = document.getElementById("groups_button");
@@ -720,15 +1124,8 @@
                 if (name == "projects_section"){
                     toggle_lower_button_panel(true);
 
-                    previous_project_section = "project_content";
-                    const project_content = document.getElementById("project_content");
-                    const project_display = document.getElementById("project_display");
-                    const project_creation = document.getElementById("project_creation");
-
-                    project_content.style.display = "grid";
-                    project_display.style.display = "none";
-                    project_creation.style.display = "none";
-
+                    project_panel_navigation("project_content");
+                    
                     // Adjusting project button colour background to indicate its selected
                     projects_button.style = "background-color: #FFFFFF; margin-top: 5px;";
                 }else{
@@ -752,6 +1149,8 @@
                 }
             }
         }
+        section_reveal("projects_section");
+        // Doing this so on runtime for the dashboard we navigate to the correct area 
 
         function getCookie(name) {
             let cookieValue = null;
@@ -771,11 +1170,11 @@
         function USER_ADMIN_PROMPT_logout_attempt() {
 
             section_reveal('logging_out_section');
-            
+
             console.log("logout attempt");
 
             setTimeout(function() {
-                                               
+                                            
                 fetch(
                     "{% url 'logout_request' %}", 
                     {
@@ -791,7 +1190,7 @@
                 .then(data => {
 
                     if (data.status == "success"){
-                        window.location.href = "/login_page/"
+                        window.location.href = "/login_page/";
                     }else{
                         console.log("error logging out");
                     }
@@ -805,10 +1204,5 @@
 
         }
 
-        function USER_PROMPT_forgot_password() {
-        
-        }
-        
-        
     </script>
 </html>
