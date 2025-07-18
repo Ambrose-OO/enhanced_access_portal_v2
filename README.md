@@ -78,6 +78,8 @@ Since the IEAP has some areas of improvement, testing may come with some faults.
 
 ## Extended bibliography
 
+https://www.youtube.com/watch?v=9BEKT0mEAso
+
 https://github.com/django/django/
 
 https://developer.mozilla.org/en-US/docs/Web/CSS/repeat
