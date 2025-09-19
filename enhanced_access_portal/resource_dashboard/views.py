@@ -515,7 +515,7 @@ def ADMIN_PROMPT_available_vms(request):
         user_id = request.session.get("user_id")  
 
         if (logged_in_status == True):
-            if (user_type == "ADMIN"):
+            if (user_type == "USER"):
                 
                 available_vms = []
 
@@ -653,22 +653,32 @@ def ADMIN_PROMPT_create_project(request):
         if (logged_in_status == True):
 
             user_type = request.session.get("user_type")
-            user_id = request.session.get("user_id")  
 
-            project_name_value = request.POST.get("project_name")
-            project_identifier = request.POST.get("project_identifier")
+            if (user_type == "ADMIN"):
+                user_id = request.session.get("user_id")  
 
-            project = Projects(
-                entity_type = user_type,
-                entity_id = user_id,
-                owner_id_id = user_id,
-                project_name = project_name_value,
-                project_identifier_code = project_identifier
-            )
+                project_name_value = request.POST.get("project_name")
+                project_identifier = request.POST.get("project_identifier")
 
-            project.save()
+                project_root_entry = Projects(
+                    entity_type = "PROJECT",
+                    entity_id = 0, # Can just use the project identifier code to find records for a particulat project then hone in on "PROJECT" entity_type
+                    owner_id_id = user_id,
+                    project_name = project_name_value,
+                    project_identifier_code = project_identifier
+                )
+                project_root_entry.save()
 
-            return JsonResponse({"status": "success", "message": "Project registered"})
+                project_admin_entry = Projects(
+                    entity_type = user_type,
+                    entity_id = user_id,
+                    owner_id_id = user_id,
+                    project_name = project_name_value,
+                    project_identifier_code = project_identifier
+                )
+                project_admin_entry.save()
+
+                return JsonResponse({"status": "success", "message": "Project registered"})
     
     return JsonResponse({"status": "fail", "message": "Only POST allowed"}, status=405)
 
