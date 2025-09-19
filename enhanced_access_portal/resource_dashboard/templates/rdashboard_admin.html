@@ -1476,6 +1476,8 @@
                     if (data.status == "success"){
                         console.log(data.message);
                         
+                        const project_detail = document.getElementById("project_detail");
+
                         const register_loading_text = document.getElementById("register_loading_text");
                         register_loading_text.innerHTML = "Project created!";
                     
@@ -1483,6 +1485,10 @@
                             
                             project_creation_cancellation(); // Moving user back to main project display section
                             register_loading_text.innerHTML = "Creating project"; // Resetting text
+                            
+                            // Resetting the project creation page section
+                            project_detail.style.display = "block";
+                            project_creation_loading.style.display = "none";
 
                         }, 3000);
 
