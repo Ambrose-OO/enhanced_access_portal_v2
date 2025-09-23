@@ -1,0 +1,34 @@
+/*
+    CSS Styling guide
+    https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Organizing#:~:text=Compiling%20component%20stylesheets,separate%20stylesheet%20for%20each%20component.
+*/
+
+/* UTILITY STYLES */ 
+.rounded_container { 
+    background-color: #ffffff; 
+    border-radius: 0.5rem; 
+    border: 2px solid #212529;
+}
+
+
+/* BACKGROUND IMAGE STYLING */
+.login_panel_bg {
+    width: 50%;
+    height: 100vh; /* Full vertical height */
+    overflow: auto;
+
+  
+   background-image: url("../images/ServerFarm2.png");
+   background-size: cover; 
+   background-position: center;
+   background-color: #fb771a;
+
+   position: relative;
+}
+
+/* GENERIC STYLES */
+.loader {
+    width: 30px;       /* adjust size as needed */
+    height: 30px;
+    pointer-events: none; /* allows clicks to pass through */
+}

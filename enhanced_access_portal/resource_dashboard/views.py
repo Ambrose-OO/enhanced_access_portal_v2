@@ -30,7 +30,7 @@ def fetch_project_from_id(project_id: int):
 
 def fetch_group_from_name(group_name: int):
     try:
-        return VM_Group.objects.get(vm_group_name=group_name)
+        return VM_Group.objects.first(vm_group_name=group_name)
     except VM_Group.DoesNotExist:
         return None
     
@@ -186,8 +186,9 @@ def fetch_group_details(group: VM_Group):
         group_detail["group_root"] = False
 
         group_detail["vm_name"] = vm.vm_name
-        group_detail["vm_online"] = vm.vm_online
+        group_detail["vm_status"] = vm.vm_online
         group_detail["vm_ip"] = vm.vm_ip
+        group_detail["vm_id"] = vm.id
 
     return group_detail
 
@@ -222,9 +223,10 @@ def fetch_group_listings(user_id):
         # If the user is part of a project then list the project details
         # to the user
         if (group.owner_id == user):
-            group_metadata["group_name"] = group.vm_group_name
-            group_metadata["created_date"] = group.created_date
-            group_metadata["group_id"] = group.id 
+            if (group.vm_id == None):
+                group_metadata["group_name"] = group.vm_group_name
+                group_metadata["created_date"] = group.created_date
+                group_metadata["group_id"] = group.id 
 
             group_detail = fetch_group_details(group) 
                 
@@ -467,10 +469,14 @@ def USRER_ADMIN_PROMPT_add_vm_to_group(request):
             vm_id = request.POST.get("vm_id")
             group_name = request.POST.get("group_name")
 
-            group = fetch_group_from_name(group_name)
+            group_exists = False
             vm = fetch_vm_from_id(vm_id)
 
-            if (group) and (vm):
+            for found_group in VM_Group.objects.all():    
+                if (found_group.vm_group_name == group_name):
+                    group_exists = True
+            
+            if (group_exists) and (vm):
                 user_id = request.session.get("user_id")  
             
                 group_root_entry = VM_Group(
@@ -510,7 +516,69 @@ def USRER_ADMIN_PROMPT_add_vm_to_group(request):
                     "message": "Server can't pass data on user who is logged out"
                 }
             ) 
+
+
+@csrf_protect
+def USRER_ADMIN_PROMPT_remove_vm_from_group(request):
+    if request.method == "POST":
+        print("----------------------")
+        print("Removing vm from group")
+
+        logged_in_status = request.session.get("logged_in")
     
+        if (logged_in_status == True):
+
+            vm_id = request.POST.get("vm_id")
+            group_name = request.POST.get("group_name")
+
+            print("found group name")
+            print(group_name)
+            print("vm id")
+            print(vm_id)
+
+            for found_group in VM_Group.objects.all():
+                if (found_group.vm_id != None):    
+                    identified_group_name: bool = (found_group.vm_group_name == group_name)
+                    
+                    vm_id_match: bool = (int((found_group.vm_id).id) == int(vm_id))
+                    
+                    if (identified_group_name) and (vm_id_match):
+                        # Removing the vm from the users group
+                        found_group.delete()
+
+                        user_id = request.session.get("user_id")  
+
+                        fetch_group_listings_return = fetch_group_listings(user_id)
+                        group_metadata = fetch_group_listings_return[0]
+                        user_group_listings = fetch_group_listings_return[1]
+
+                        # Returning project data in JSON format back to the user
+                        return JsonResponse(
+                            {
+                                "status": "success", 
+                                "message": "Server succeeded removing from the group",
+                                "groups": {
+                                    "listings": user_group_listings,
+                                    "meta_data": group_metadata
+                                }
+                            }
+                        ) 
+        
+            return JsonResponse(
+                {
+                    "status": "error", 
+                    "message": "Server cannot add vm to the group"
+                }
+            ) 
+        else:
+            # Failure response if the user is requesting data when logged out
+            return JsonResponse(
+                {
+                    "status": "failure", 
+                    "message": "Server can't pass data on user who is logged out"
+                }
+            ) 
+        
 
 # Display name
 @csrf_protect

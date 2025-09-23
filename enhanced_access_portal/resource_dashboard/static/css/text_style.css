@@ -1,0 +1,23 @@
+/*
+    CSS Styling guide
+    https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Organizing#:~:text=Compiling%20component%20stylesheets,separate%20stylesheet%20for%20each%20component.
+*/
+
+/* GENERAL STYLES */
+.roboto_font {
+    /* Alternative to the above text tag overrides*/
+    font-family: "Roboto", sans-serif;
+    color: #212529;
+}
+
+
+/* TITLES */
+.header_title {
+    font-family: "Roboto", sans-serif;
+    font-weight: bold;
+    font-stretch: expanded;
+    color: #212529;
+    font-size: 1.5em;
+}
+
+
