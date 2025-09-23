@@ -867,7 +867,7 @@
                 }else{
                     // If the VM has failed to be deleted, give a failed prompt
                     // then return back to normal
-                    console.log(data.message);
+                    //console.log(data.message);
 
                     delete_project_button.innerHTML = "Failed.";
                     setTimeout(function() {
@@ -929,7 +929,7 @@
                 }else{
                     // If the VM has failed to be added, give a failed prompt
                     // then return back to normal
-                    console.log(data.message);
+                    //console.log(data.message);
 
                     vm_remove_button.innerHTML = "Failed.";
                     setTimeout(function() {
@@ -1007,7 +1007,7 @@
         function ADMIN_USER_PROMPT_add_vm(vms_content, vm_add_button, vm_id_to_add) {
             if (selected_project_id == ""){console.log("no selected vm"); return;}
 
-            console.log("add vm");
+            //console.log("add vm");
                             
             vm_add_button.innerHTML = "Adding vm...";
 
@@ -1050,7 +1050,7 @@
                 }else{
                     // If the VM has failed to be added, give a failed prompt
                     // then return back to normal
-                    console.log(data.message);
+                    //console.log(data.message);
 
                     vm_add_button.innerHTML = "Failed.";
                     setTimeout(function() {
@@ -1067,7 +1067,7 @@
         function ADMIN_PROMPT_add_user(user_content, user_add_button, user_id_to_add) {
             if (selected_project_id == ""){console.log("no selected vm"); return;}
 
-            console.log("add user to project");
+            //console.log("add user to project");
                             
             user_add_button.innerHTML = "Adding...";
 
@@ -1104,7 +1104,7 @@
                 }else{
                     // If the VM has failed to be added, give a failed prompt
                     // then return back to normal
-                    console.log(data.message);
+                    //console.log(data.message);
 
                     user_add_button.innerHTML = "Failed.";
                     setTimeout(function() {
@@ -1124,9 +1124,6 @@
                  // Display users
                 const project_available_users_content = document.getElementById("project_available_users_content");
                 
-                console.log("update available project users");
-                console.log(selected_project_id);
-                console.log("---");
                 fetch(
                     "{% url 'available_users_request' %}", 
                     {
@@ -1221,8 +1218,6 @@
             // Display virtual machines
             const project_available_vms_content = document.getElementById("project_available_vms_content");
             
-            console.log("fetch available project vms");
-                               
             fetch(
                 "{% url 'available_vms_request' %}", 
                 {
@@ -1240,7 +1235,7 @@
                 if (data.status == "success"){
                     
                     project_available_vms_content.innerHTML = ""; // Clearing the content views
-                    console.log("got available vm data");
+                 
                     for (const vm of data.vms){
                         
                         generate_vm_element_returns =  generate_vm_element(
@@ -1272,8 +1267,7 @@
         function update_name_email_display() {
             const name_display = document.getElementById("name_display");
             const email_display = document.getElementById("email_display");
-            console.log("fetch name and email detail");
-                               
+                           
             fetch(
                 "{% url 'email_name_request' %}", 
                 {
@@ -1289,12 +1283,12 @@
             .then(data => {
 
                 if (data.status == "success"){
-                    console.log(data.message);
-                    
+        
                     name_display.innerHTML = data.name;
                     email_display.innerHTML = data.email; 
+
                 }else{
-                    console.log(data.message);
+                    //console.log(data.message);
                 }
                                                                             
             })
@@ -1469,7 +1463,6 @@
             project_content.style.display = "none";
             available_vms_display.style.display = "none";
 
-            console.log(project_name.value);
         }
 
         function navigate_to_project_content() {
@@ -1578,7 +1571,6 @@
             group_content.style.display = "none";
             available_vms_davailable_group_vms_displayisplay.style.display = "none";
 
-            console.log(group_name.value);
         }
 
 
@@ -1645,18 +1637,16 @@
         }
         function reveal_group_display_available_vms(state)
         {
-            console.log("A");
+       
             if (state){
-                console.log("B");
                 reveal_group_display_available_vms_subfunction(state);
             }
             else if (available_group_vms_display.style.display == "block"){
-                console.log("C");
                 reveal_group_display_available_vms_subfunction(false);
             } else {
-                console.log("D");
                 reveal_group_display_available_vms_subfunction(true);
             }
+
         }
 
 
@@ -1695,7 +1685,7 @@
                             )
                             vm_add_button = generate_vm_element_returns[0];
                             vms_content = generate_vm_element_returns[1];
-
+                            
                             vm_add_button.onclick = () => ADMIN_USER_PROMPT_add_vm_to_group(vms_content, vm_add_button, vm.vm_id);
 
                             // Rendering the div we created into "project_display_vms_content"
@@ -1751,7 +1741,6 @@
                 .then(data => {
 
                     if (data.status == "success"){
-                        console.log(data.message);
                         
                         const group_detail = document.getElementById("group_detail");
 
@@ -1770,7 +1759,6 @@
                         }, 3000);
 
                     }else{
-                        console.log(data.message);
 
                         const group_creation_loading_text = document.getElementById("group_creation_loading_text");
                         group_creation_loading_text.innerHTML = "Group failed to create";
@@ -1919,10 +1907,8 @@
 
 
         function ADMIN_USER_PROMPT_add_vm_to_group(vms_content, vm_add_button, vm_id_to_add) {
-            if (selected_project_id == ""){console.log("no selected vm"); return;}
+            if (selected_group_name == ""){console.log("no selected vm"); return;}
 
-            console.log("add vm");
-                            
             vm_add_button.innerHTML = "Adding vm...";
 
             fetch(
@@ -1962,7 +1948,6 @@
                 }else{
                     // If the VM has failed to be added, give a failed prompt
                     // then return back to normal
-                    console.log(data.message);
 
                     vm_add_button.innerHTML = "Failed.";
                     setTimeout(function() {
@@ -2148,8 +2133,7 @@
                 .then(data => {
 
                     if (data.status == "success"){
-                        console.log(data.message);
-                        
+                      
                         project_content.innerHTML = ""; // Clearing all the elements under the div content container
             
                         // Display project details
@@ -2196,12 +2180,12 @@
                             project_content.appendChild(project_entry_div);
                         }
                     }else{
-                        console.log(data.message);
+                        //console.log(data.message);
                     }
                                                                                 
                 })
                 .catch(error => {
-                    console.error("Error:", error);
+                    //console.error("Error:", error);
                 });
 
             }, 1000);
@@ -2243,8 +2227,7 @@
                 .then(data => {
 
                     if (data.status == "success"){
-                        console.log(data.message);
-                        
+          
                         const project_detail = document.getElementById("project_detail");
 
                         const register_loading_text = document.getElementById("register_loading_text");
@@ -2262,8 +2245,7 @@
                         }, 3000);
 
                     }else{
-                        console.log(data.message);
-
+                        
                         const register_loading_text = document.getElementById("register_loading_text");
                         register_loading_text.innerHTML = "Project failed to create";
 
@@ -2446,12 +2428,12 @@
                     if (data.status == "success"){
                         window.location.href = "/login_page/";
                     }else{
-                        console.log("error logging out");
+                        //console.log("error logging out");
                     }
                                                                                 
                 })
                 .catch(error => {
-                    console.error("Error:", error);
+                    //console.error("Error:", error);
                 });
 
             }, 1000);
