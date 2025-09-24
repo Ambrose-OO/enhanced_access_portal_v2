@@ -17,7 +17,8 @@ urlpatterns = [
     
     path('available_users_request/', views.ADMIN_PROMPT_available_users, name="available_users_request"),
     path('add_users_to_project_request/', views.ADMIN_PROMPT_add_user_to_project, name="add_users_to_project_request"),
-    
+    path('remove_user_from_project_request/', views.ADMIN_PROMPT_remove_user_from_project, name="remove_user_from_project_request"),
+
     path('group_list_request/', views.USER_ADMIN_PROMPT_group_listings, name="group_list_request"),
     path('create_group_request/', views.USER_ADMIN_PROMPT_create_vm_group, name="create_group_request"),
     path('delete_group_request/', views.USER_ADMIN_PROMPT_delete_vm_group, name="delete_group_request"),

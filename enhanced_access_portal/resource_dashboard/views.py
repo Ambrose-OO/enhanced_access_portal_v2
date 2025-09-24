@@ -148,6 +148,7 @@ def fetch_project_details(project: Projects):
                 member_detail["firstname"] = member_user.firstname
                 member_detail["emailaddress"] = member_user.emailaddress
                 member_detail["type"] = member_user.user_type
+                member_detail["user_id"] = member_user.id
 
                 project_member_details.append(member_detail)
                 
@@ -161,6 +162,7 @@ def fetch_project_details(project: Projects):
                 member_detail["firstname"] = member_user.firstname
                 member_detail["emailaddress"] = member_user.emailaddress
                 member_detail["type"] = member_user.user_type
+                member_detail["user_id"] = member_user.id
 
                 project_member_details.append(member_detail)
 
@@ -884,6 +886,60 @@ def ADMIN_PROMPT_add_user_to_project(request):
             }
         ) 
     
+
+@csrf_protect
+def ADMIN_PROMPT_remove_user_from_project(request):
+    if request.method == "POST":
+        print("--------------------------")
+        print("Removing user from project")
+
+        logged_in_status = request.session.get("logged_in")
+        user_type = request.session.get("user_type")
+
+        user_id = request.session.get("user_id")  
+        user = fetch_user_from_id(user_id)
+
+        user_id_to_remove = int(request.POST.get("user_id"))
+        user_to_remove = fetch_user_from_id(user_id_to_remove)
+
+        project_id = request.POST.get("project_id")
+        project = fetch_project_from_id(project_id)
+
+        if (logged_in_status == True):
+            if (user != None) and (project != None) and (user_to_remove != None):
+                if (user_type == "ADMIN"):
+                    
+                    if (user_to_remove != project.owner_id):
+                        # Finding project entries
+                        for found_project in Projects.objects.all():
+                            
+                            found_project_entity_id = int(found_project.entity_id)
+
+                            # Is the project entry a target?
+                            if (found_project.project_identifier_code == project.project_identifier_code):
+                                # Is it a project entry user type for the target user?
+                                if (found_project_entity_id == user_id_to_remove):
+                                        found_project.delete()
+                                        
+                                        admin_project_listings = collate_ADMIN_project_listings()
+
+                                        # Returning project data in JSON format back to the user
+                                        return JsonResponse(
+                                            {
+                                                "status": "success", 
+                                                "message": "Server succeeded in deleting the user from the project",
+                                                "projects": admin_project_listings
+                                            }
+                                        ) 
+                
+        # Failure response if the user is requesting data when logged out
+        return JsonResponse(
+            {
+                "status": "failure", 
+                "message": "Server can't add user to project"
+            }
+        ) 
+
 
 @csrf_protect
 def ADMIN_PROMPT_available_users(request):
