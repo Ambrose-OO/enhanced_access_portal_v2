@@ -113,7 +113,7 @@ def fetch_project_details(project: Projects):
     for vm in VMs.objects.all():
         if (vm.project_id == project):
             available_vms += 1
-            if vm.vm_online == "online":
+            if vm.vm_online == "Online":
                 vms_online += 1
 
             vm_detail = {}
@@ -134,7 +134,7 @@ def fetch_project_details(project: Projects):
 
     for project2 in Projects.objects.all():
         # Checking if is the same project we are fetching details
-        if (project2.id == project.id):
+        if (project2.project_identifier_code == project.project_identifier_code):
             # Checking if the found project2 is part of project
             # If so, count the user/admin
 
@@ -168,6 +168,8 @@ def fetch_project_details(project: Projects):
     project_detail["project_admins"] = project_admins
     project_detail["project_member_details"] = project_member_details
     project_detail["project_vms_details"] = project_vms_details
+
+    project_detail["entity_type"] = project.entity_type
 
     return project_detail
 
