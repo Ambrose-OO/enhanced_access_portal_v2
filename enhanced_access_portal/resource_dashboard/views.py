@@ -152,7 +152,7 @@ def fetch_project_details(project: Projects):
                 project_member_details.append(member_detail)
                 
             if (project2.entity_type) == "USER":
-                print("user fetch")
+                
                 project_users += 1
 
                 member_user = fetch_user_from_id(project2.entity_id)
@@ -864,12 +864,15 @@ def ADMIN_PROMPT_add_user_to_project(request):
                     )
 
                     project_entry.save()
-            
+
+                    admin_project_listings = collate_ADMIN_project_listings()
+
                     # Returning project data in JSON format back to the user
                     return JsonResponse(
                         {
                             "status": "success", 
                             "message": "Server succeeded adding user to project",
+                            "projects": admin_project_listings
                         }
                     ) 
                 
@@ -895,30 +898,32 @@ def ADMIN_PROMPT_available_users(request):
         user_id = request.session.get("user_id")  
         user = fetch_user_from_id(user_id)
         
-        project_id = request.POST.get("project_id")
+        project_id = int(request.POST.get("project_id"))
         project = fetch_project_from_id(project_id)
-    
-
+        
         if (logged_in_status == True):
     
             if (user != None) and (project != None):
                 if (user_type == "ADMIN"):
                     
                     available_users_details = []
-
+                    
+                    # Filtering users who are already in the project
                     for found_user in User.objects.all():
-                        user_in_project_to_invite_to = False
+                        user_in_project_of_focus = False
 
                         for found_project in Projects.objects.all():
-                            # If there's a user in the project already, make note
-                            if (found_project.entity_type == "USER") or (found_project.entity_type == "ADMIN"):
-                    
-                                if (int(found_project.entity_id) == int(found_user.id)):
-                                    if (int(found_project.id) == int(project_id)):
-                                        user_in_project_to_invite_to = True
                             
-                        
-                        if (user_in_project_to_invite_to == False):
+                            if (found_project.entity_type == "ADMIN") or (found_project.entity_type == "USER"):
+                                
+                                found_project_entity_id = int(found_project.entity_id)
+                                found_user_id = int(found_user.id)
+
+                                if (found_project_entity_id == found_user_id):
+                                    if (found_project.project_identifier_code == project.project_identifier_code):
+                                        user_in_project_of_focus = True
+                 
+                        if (user_in_project_of_focus == False):
                             
                             member_detail = {}
                             member_detail["firstname"] = found_user.firstname
