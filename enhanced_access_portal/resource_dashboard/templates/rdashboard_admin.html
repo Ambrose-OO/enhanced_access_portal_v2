@@ -608,9 +608,7 @@
                     
                     vm_remove_button.innerHTML = "Success!";
                     setTimeout(function() {
-                        // vms_content.remove(); 
-                        vms_content.parentNode.removeChild(vms_content); // removing the listing after success
-                    
+                        
                         // Updating project information currently being displayed to the user
                         const project_detail_data = data.projects;
 
@@ -730,9 +728,7 @@
                     
                     vm_add_button.innerHTML = "Success!";
                     setTimeout(function() {
-                        // vms_content.remove(); 
-                        vms_content.parentNode.removeChild(vms_content); // removing the listing after success
-                    
+                        
                         // Updating project information currently being displayed to the user
                         const project_detail_data = data.projects;
 
@@ -902,9 +898,6 @@
                             
             vm_add_button.innerHTML = "Add VM";
             vms_content.appendChild(vm_add_button);
-
-            // Rendering the div we created into "project_display_vms_content"
-            project_available_vms_content.appendChild(vms_content);
 
             return [vm_add_button, vms_content];
         }
@@ -1512,9 +1505,7 @@
                     
                     vm_remove_button.innerHTML = "Success!";
                     setTimeout(function() {
-                        // vms_content.remove(); 
-                        vms_content.parentNode.removeChild(vms_content); // removing the listing after success
-                    
+                        
                         // Updating group information currently being displayed to the user
                         const group_listing_data = data.groups.listings;
                         const group_metadata_data = data.groups.meta_data;
@@ -1632,23 +1623,14 @@
                 if (data.status == "success"){
                     
                     vm_add_button.innerHTML = "Success!";
-                    setTimeout(function() {
-                       
-                        // Typically would remove the listing but it would get updated every 3 sec
-                        // meaning the line of code below would error as vms_content would get removed
-                        // and equate to null. Also if you're updating with fresh data later on,
-                        // what's the point
-
-                        vms_content.parentNode.removeChild(vms_content);
-
                     
-                        // Updating group information currently being displayed to the user
-                        const group_listing_data = data.groups.listings;
-                        const group_metadata_data = data.groups.meta_data;
+                    
+                    // Updating group information currently being displayed to the user
+                    const group_listing_data = data.groups.listings;
+                    const group_metadata_data = data.groups.meta_data;
 
-                        update_group_display_with_group_data(group_listing_data, group_metadata_data);
+                    update_group_display_with_group_data(group_listing_data, group_metadata_data);
 
-                    }, 3000);
                     
                 }else{
                     // If the VM has failed to be added, give a failed prompt
@@ -1695,17 +1677,9 @@
             .then(data => {
                 console.log("RV B");
                 if (data.status == "success"){
-                    console.log("[GROUP VM DELETION A]");
-                    vm_remove_button.innerHTML = "Success!";
-                    console.log("[GROUP VM DELETION B]");
-                    setTimeout(function() {
-                        // vms_content.remove(); 
-                        vms_content.parentNode.removeChild(vms_content); // removing the listing after success
+                    console.log("notification window");
                     
-                        
-                    }, 3000);
-                    
-                   
+            
                 }else{
                     // If the VM has failed to be added, give a failed prompt
                     // then return back to normal
