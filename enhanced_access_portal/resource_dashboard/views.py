@@ -28,9 +28,9 @@ def fetch_project_from_id(project_id: int):
     except Projects.DoesNotExist:
         return None
 
-def fetch_group_from_name(group_name: int):
+def fetch_group_from_id(group_id: int):
     try:
-        return VM_Group.objects.first(vm_group_name=group_name)
+        return VM_Group.objects.get(id=group_id)
     except VM_Group.DoesNotExist:
         return None
     
@@ -298,7 +298,33 @@ def USER_ADMIN_PROMPT_create_vm_group(request):
 
 @csrf_protect
 def USER_ADMIN_PROMPT_delete_vm_group(request):
-    return
+    if request.method == "POST":
+
+        logged_in_status = request.session.get("logged_in")
+        
+        if (logged_in_status == True):
+            
+            group_id = request.POST.get("group_id")
+            group = fetch_group_from_id(group_id)
+
+            user_id = request.session.get("user_id")  
+            user = fetch_user_from_id(user_id)
+
+            if (group):
+                # Checking if the person requesting to delete the group
+                # actually owns it as an additional security check
+                if (group.owner_id == user):
+                    
+                    # Need to delete Group VM entries associated with the Group entry
+                    for found_group in VM_Group.objects.all():
+                        if (found_group.owner_id == user) and (found_group.vm_group_name == group.vm_group_name):
+                            found_group.delete()
+                    
+                    group.delete()
+        
+                return JsonResponse({"status": "success", "message": "Group deleted"})
+
+    return JsonResponse({"status": "fail", "message": "Only POST allowed"}, status=405)
 
 #@csrf_protect
 #def USER_ADMIN_PROMPT_add_vm_to_vm_group(request):
