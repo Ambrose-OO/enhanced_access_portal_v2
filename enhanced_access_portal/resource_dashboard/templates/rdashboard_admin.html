@@ -1678,14 +1678,12 @@
                     
                     vm_add_button.innerHTML = "Success!";
                     
-                    
                     // Updating group information currently being displayed to the user
                     const group_listing_data = data.groups.listings;
                     const group_metadata_data = data.groups.meta_data;
 
                     update_group_display_with_group_data(group_listing_data, group_metadata_data);
 
-                    
                 }else{
                     // If the VM has failed to be added, give a failed prompt
                     // then return back to normal
@@ -1731,8 +1729,14 @@
             .then(data => {
                 console.log("RV B");
                 if (data.status == "success"){
-                    console.log("notification window");
+
+                    vm_add_button.innerHTML = "Success!";
                     
+                    // Updating group information currently being displayed to the user
+                    const group_listing_data = data.groups.listings;
+                    const group_metadata_data = data.groups.meta_data;
+
+                    update_group_display_with_group_data(group_listing_data, group_metadata_data);
             
                 }else{
                     // If the VM has failed to be added, give a failed prompt

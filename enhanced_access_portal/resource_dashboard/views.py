@@ -444,7 +444,7 @@ def USRER_ADMIN_PROMPT_available_vms_for_group(request):
 
         logged_in_status = request.session.get("logged_in")
         user_type = request.session.get("user_type")
-        
+
         group_name_target = request.POST.get("group_name_target")
        
         if (logged_in_status == True):
@@ -599,7 +599,7 @@ def USRER_ADMIN_PROMPT_remove_vm_from_group(request):
                         return JsonResponse(
                             {
                                 "status": "success", 
-                                "message": "Server succeeded removing from the group",
+                                "message": "Server succeeded removing vm from the group",
                                 "groups": {
                                     "listings": user_group_listings,
                                     "meta_data": group_metadata
