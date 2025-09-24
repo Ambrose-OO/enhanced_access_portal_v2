@@ -77,6 +77,21 @@
     transform: translate(3.5%, 0%);
 }
 
+.panel_toggle_button {
+    background-color: #212529;
+    border-color: #212529;
+    border: 1px solid transparent;
+    border-radius: 0.25rem;
+    
+    font-size: 0.9em;
+    
+    /* https://www.w3schools.com/tags/tryit.asp?filename=tryhtml_button_css */
+    cursor: pointer;
+    text-align: center;
+
+    filter: drop-shadow(3px 2px 4px);
+}
+
 .panel_button {
     background-color: #d1d1d1;
     border-color: #212529;
