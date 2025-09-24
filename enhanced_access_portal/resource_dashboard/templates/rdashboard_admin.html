@@ -391,7 +391,7 @@
 
                                 <div id = "group_display" style = "display: none; width: 100%; height: 100%;">
 
-                                    <!-- Display is usually "block" for "project_display_vms" and "project_display_users"-->
+                                    <!-- Display is usually "block" for "group_display_vms" -->
                                     <div id = "group_display_vms" style = "width: 100%; height: 100%; overflow-y: auto; display: block;"> 
                                         <div style = 
                                             "width: 100%; 
@@ -550,16 +550,8 @@
                 if (data.status == "success"){
                     
                     delete_project_button.innerHTML = "Success!"
-                    setTimeout(function() {
-                        // Removing the project entry display
-                        project_entry_div.parentNode.removeChild(vms_content); // removing the listing after success
-                    
-                        // Don't need to do further updates as the project entry display
-                        // will dissapear and that's the most latest visual update that we will need
-                        // nothing else will be visible to the user from the project we deleted after
-                    }, 3000);
-                    
-                   
+                    update_projects_content()
+                  
                 }else{
                     // If the VM has failed to be deleted, give a failed prompt
                     // then return back to normal
@@ -606,20 +598,15 @@
                 
                 if (data.status == "success"){
                     
-                    vm_remove_button.innerHTML = "Success!";
-                    setTimeout(function() {
-                        
-                        // Updating project information currently being displayed to the user
-                        const project_detail_data = data.projects;
+                    // Updating project information currently being displayed to the user
+                    const project_detail_data = data.projects;
 
-                        for (const project of project_detail_data){
-                            if (project.project_id == selected_project_id) { 
-                                update_project_display_with_project_data(project);
-                            }
+                    for (const project of project_detail_data){
+                        if (project.project_id == selected_project_id) { 
+                            update_project_display_with_project_data(project);
                         }
-                    }, 3000);
-                    
-                   
+                    }
+
                 }else{
                     // If the VM has failed to be added, give a failed prompt
                     // then return back to normal
@@ -726,18 +713,18 @@
                 
                 if (data.status == "success"){
                     
-                    vm_add_button.innerHTML = "Success!";
-                    setTimeout(function() {
-                        
-                        // Updating project information currently being displayed to the user
-                        const project_detail_data = data.projects;
+                    // After successfully removing a VM, request an update on the latest
+                    // available vms
+                    update_available_project_vms();
 
-                        for (const project of project_detail_data){
-                            if (project.project_id == selected_project_id) { 
-                                update_project_display_with_project_data(project);
-                            }
+                    // Updating project information currently being displayed to the user
+                    const project_detail_data = data.projects;
+
+                    for (const project of project_detail_data){
+                        if (project.project_id == selected_project_id) { 
+                            update_project_display_with_project_data(project);
                         }
-                    }, 3000);
+                    }
                     
                 }else{
                     // If the VM has failed to be added, give a failed prompt
@@ -784,14 +771,17 @@
                 
                 if (data.status == "success"){
                     
-                    user_add_button.innerHTML = "Success!";
-                    setTimeout(function() {
-                        // Removing user_content from display 
-                        user_content.parentNode.removeChild(user_content); // removing the listing after success
+                    // Updating available user data
+                    update_available_project_users();
                     
-                        // No need to update as the user will be seeing the latest after
-                        // removing the user they just added to the list
-                    }, 3000);
+                    // Updating project information currently being displayed to the user
+                    const project_detail_data = data.projects;
+
+                    for (const project of project_detail_data){
+                        if (project.project_id == selected_project_id) { 
+                            update_project_display_with_project_data(project);
+                        }
+                    }
                     
                 }else{
                     // If the VM has failed to be added, give a failed prompt
@@ -839,7 +829,7 @@
                         project_available_users_content.innerHTML = ""; // Clearing the content views
                         console.log("got available user data");
                         for (const user of data.available_users_details){
-                            
+                            console.log(user.firstname);
                             const user_content = document.createElement("div");
                             user_content.className = "vms_content";
 
