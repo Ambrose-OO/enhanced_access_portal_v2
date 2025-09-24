@@ -1294,7 +1294,7 @@
         //////////////////////////////
 
         let previous_group_section = "group_content";
-        let selected_group_name = ""; // Default "", other times it can be set to a number
+        let selected_group_name = ""; // Default "", or name of a group
 
         const group_creation = document.getElementById("group_creation");
         const group_display = document.getElementById("group_display");
@@ -1400,62 +1400,59 @@
             const group_content = document.getElementById("group_content");
         
             //console.log("fetch available group vms");
-
-            setTimeout(function() {
-                                               
-                fetch(
-                    "{% url 'available_vms_for_group_request' %}", 
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/x-www-form-urlencoded",
-                            "X-CSRFToken": getCookie('csrftoken') //https://www.geeksforgeeks.org/python/csrf-token-in-django/
-                        },
-                        body: new URLSearchParams({})
-                    }
-                )
-                .then(response => response.json())
-                .then(data => {
-
-                    if (data.status == "success"){
-                        
-                        group_available_vms_content.innerHTML = ""; // Clearing all the elements under the div content container
-            
-                        // Display available VM details
-                        counter = 1;
-                        for (const vm of data.vms){
-                        
-                            generate_vm_element_returns = generate_vm_element(
-                                vm.vm_name,
-                                vm.vm_status,
-                                vm.vm_ip
-                            )
-                            vm_add_button = generate_vm_element_returns[0];
-                            vms_content = generate_vm_element_returns[1];
                             
-                            vm_add_button.innerHTML = counter;
-                            counter ++; 
-                            vm_add_button.onclick = () => ADMIN_USER_PROMPT_add_vm_to_group(vms_content, vm_add_button, vm.vm_id);
-
-                            // Rendering the div we created into "project_display_vms_content"
-                            group_available_vms_content.appendChild(vms_content);
-
+            fetch(
+                "{% url 'available_vms_for_group_request' %}", 
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "X-CSRFToken": getCookie('csrftoken') //https://www.geeksforgeeks.org/python/csrf-token-in-django/
+                    },
+                    body: new URLSearchParams(
+                        {
+                            group_name_target: selected_group_name
                         }
+                    )
+                }
+            )
+            .then(response => response.json())
+            .then(data => {
 
-                    }else{
-                        console.log(data.message);
+                if (data.status == "success"){
+                    
+                    group_available_vms_content.innerHTML = ""; // Clearing all the elements under the div content container
+        
+                    // Display available VM details
+                    for (const vm of data.vms){
+                    
+                        generate_vm_element_returns = generate_vm_element(
+                            vm.vm_name,
+                            vm.vm_status,
+                            vm.vm_ip
+                        )
+                        vm_add_button = generate_vm_element_returns[0];
+                        vms_content = generate_vm_element_returns[1];
+                        
+                        vm_add_button.onclick = () => ADMIN_USER_PROMPT_add_vm_to_group(vms_content, vm_add_button, vm.vm_id);
+
+                        // Rendering the div we created into "project_display_vms_content"
+                        group_available_vms_content.appendChild(vms_content);
+
                     }
-                                                                                
-                })
-                .catch(error => {
-                    console.error("Error:", error);
-                });
 
-            }, 1000);
+                }else{
+                    console.log(data.message);
+                }
+                                                                            
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
 
         }
         update_available_group_vms_content() // On program launch, fetch project list
-        setInterval(update_available_group_vms_content, 3000); // Updating project content every 3 seconds
+        setInterval(update_available_group_vms_content, 1000); // Updating project content every 3 seconds
 
 
         function ADMIN_USER_PROMPT_create_group_attempt(project_identifier_code){

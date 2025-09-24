@@ -403,7 +403,7 @@ def USRER_ADMIN_PROMPT_available_vms(request):
         logged_in_status = request.session.get("logged_in")
         user_type = request.session.get("user_type")
         user_id = request.session.get("user_id")  
-
+        
         if (logged_in_status == True):
             
             available_vms = []
@@ -444,29 +444,42 @@ def USRER_ADMIN_PROMPT_available_vms_for_group(request):
 
         logged_in_status = request.session.get("logged_in")
         user_type = request.session.get("user_type")
-        user_id = request.session.get("user_id")  
-
+        
+        group_name_target = request.POST.get("group_name_target")
+       
         if (logged_in_status == True):
             
             available_vms = []
    
             for vm in VMs.objects.all():
+                # If the user_type is an ADMIN, they can view all 
+                # VMs to add to their own private group
+
+                # Else USER, then one should just check
+                # if vm.project_id == NONE to know if the VM is not
+                # assigned to a current project
                 if (user_type == "ADMIN") or (vm.project_id == None):
                     
-                    # If the user_type is an ADMIN, they can view all 
-                    # VMs to add to their own private group
+                    # Additional filter to see if the VM is not already
+                    # in the group to hide it from the list
+                    vm_is_not_in_group = True
 
-                    # If the user_type is USER, then one should just check
-                    # if vm.project_id == NONE to know if the VM is not
-                    # assigned to a current project
+                    for found_group in VM_Group.objects.all():
+                        # Looking at group vm entries
+                        if (found_group.vm_id != None):
+                            if (found_group.vm_group_name == group_name_target):
+                                if (found_group.vm_id == vm):
+                                    vm_is_not_in_group = False
 
-                    vm_detail = {}
+                    if (vm_is_not_in_group == True):
+                
+                        vm_detail = {}
 
-                    vm_detail["vm_id"] = vm.id
-                    vm_detail["vm_name"] = vm.vm_name
-                    vm_detail["vm_status"] = vm.vm_online
-                    vm_detail["vm_ip"] = vm.vm_ip 
-                    available_vms.append(vm_detail) 
+                        vm_detail["vm_id"] = vm.id
+                        vm_detail["vm_name"] = vm.vm_name
+                        vm_detail["vm_status"] = vm.vm_online
+                        vm_detail["vm_ip"] = vm.vm_ip 
+                        available_vms.append(vm_detail) 
 
             # Returning project data in JSON format back to the user
             return JsonResponse(
