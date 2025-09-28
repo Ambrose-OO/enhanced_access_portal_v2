@@ -693,7 +693,7 @@ def USER_ADMIN_PROMPT_logout_attempt(request):
 def ADMIN_PROMPT_delete_project(request):
     if request.method == "POST":
         print("----------------")
-        print("Delete project vm")
+        print("Delete project")
 
         logged_in_status = request.session.get("logged_in")
         user_type = request.session.get("user_type")
@@ -713,19 +713,28 @@ def ADMIN_PROMPT_delete_project(request):
                     return JsonResponse(
                         {
                             "status": "success", 
-                            "message": "Server successfully removed vm from project"
+                            "header_message": "Success: Server deleted the project",
+                            "message": "Server successfully deleted the project from the database."
                         }
                     ) 
-                            
+                     
                 else:
-                    print("project can't be found - error")
+                    return JsonResponse(
+                        {
+                            "status": "fail", 
+                            "header_message": "Error: Can't identify project",
+                            "message": "Selected project for deletion cannot be identified. Try again or refresh your page."
+                        }
+                    )
 
         return JsonResponse(
             {
-                "status": "error", 
-                "message": "Server cannot delete project for unknown reason"
+                "status": "fail", 
+                "header_message": "Error: Cannot delete project entry",
+                "message": "Project deletion failure. As the user is not logged in."
             }
         )
+    
     
 
 @csrf_protect

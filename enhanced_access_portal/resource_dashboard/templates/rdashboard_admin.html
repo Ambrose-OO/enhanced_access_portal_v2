@@ -54,6 +54,37 @@
 
             </div>
 
+
+            <!--- Display is either none or flex -->
+            <div id = "confirmation_prompt_window" style="display: flex; justify-content: center; align-items: center; z-index: 5; width: 100%; height: 100%; background-color: #5f5f5f9d; position: absolute;"> 
+                
+                <div style = "width: 50%; height: 60%; margin-top: 5%;">
+                    <div style = "width: 100%; height: 15%; justify-content: center; align-items: center; display: flex; background-color: #212529ce; border-radius: 1.5rem;">
+                        <p id = "confirmation_prompt_header" class = "roboto_font" style = "font-size: 1.5vw; margin: 0px; font-weight: bold; margin-right: 2%; color: #ffffff;">Error: Invalid project name</p>
+                    </div>
+
+                    <div style = "margin-top: 5%; padding-top: 2%; padding-left: 2%; width: 98%; height: 40%; justify-content: center; align-items: center; background-color: #212529ce; border-radius: 1.5rem;">
+                        <div style = "height: 65%; width: 100%">
+                            <p id = "confirmation_prompt_message" class = "roboto_font" style = "font-size: 1.2vw; margin: 0px; margin-right: 2%; color: #ffffff;">Project name has no characters. Write in at least a 3 character stringxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</p>
+                        </div>
+                        
+                        <div style = "height:20%; align-items: center; justify-content: space-around; display: flex;">
+
+                            <button id = "confirmation_prompt_button" style = "margin-left: 0%;" type="button" onclick=""" class = "alternate_button" style = "height: 25%; margin-left: 40%; font-size: 1.2em;">
+                                Confirm
+                            </button>
+
+                            <button id = "x1" style = "margin-left: 0%;" type="button" onclick="prompt_continue_button()" class = "alternate_button" style = "height: 25%; margin-left: 40%; font-size: 1.2em;">
+                                Cancel
+                            </button>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
             <div class = "login_column">
                 <div class = "login_section " style="z-index: 1; position: relative;">
                     
@@ -541,8 +572,11 @@
 
         const notification_window = document.getElementById("notification_window");
         const prompt_window = document.getElementById("prompt_window");
+        const confirmation_prompt_window = document.getElementById("confirmation_prompt_window");
 
-        /**
+        const confirmation_prompt_button = document.getElementById("confirmation_prompt_button");
+
+        /*
          * Reveals a notification or prompt window
          * @param reveal_type {string a "notification" or "prompt" window you want revealed. Hides the other}
          */
@@ -551,12 +585,19 @@
             if (reveal_type == "notification"){
                 notification_window.style.display = "flex";
                 prompt_window.style.display = "none";
+                confirmation_prompt_window.style.display = "none";
             }else if (reveal_type == "prompt"){
                 notification_window.style.display = "none";
                 prompt_window.style.display = "flex";
+                confirmation_prompt_window.style.display = "none";
+            }else if (reveal_type == "confirmation_prompt"){
+                notification_window.style.display = "none";
+                prompt_window.style.display = "none";
+                confirmation_prompt_window.style.display = "flex";
             }else if (reveal_type == "none"){
                 notification_window.style.display = "none";
                 prompt_window.style.display = "none";
+                confirmation_prompt_window.style.display = "none";
             }else{
                 error("Wrong input");
             }
@@ -606,6 +647,42 @@
 
         }
 
+
+        /**
+         * Processes the result of a confirmation prompt made to a user
+         * @param function_to_call {string The name of the function to call}
+         * @param function_args {list A list of arguments to pass to the function call}
+         */
+        function continue_confirmation_prompt(function_to_call, function_args){
+            reveal_notification_or_prompt("none");
+            if (function_to_call == "ADMIN_PROMPT_delete_project"){
+                ADMIN_PROMPT_delete_project(function_args);
+            }
+        }
+
+        /**
+         * Reveals a confirmation prompt to the user
+         * @param prompt_header {string The header message}
+         * @param prompt_message {string The prompt message}
+         * @param function_to_call {string The name of the function to call}
+         * @param function_args {list A list of arguments to pass to the function call}
+         */
+         function confirmation_prompt_user(prompt_header, prompt_message, function_to_call, function_args){
+
+            reveal_notification_or_prompt("confirmation_prompt");
+
+            const confirmation_prompt_header_p = document.getElementById("confirmation_prompt_header");
+            confirmation_prompt_header.innerHTML = prompt_header;
+
+            const confirmation_prompt_message_p = document.getElementById("confirmation_prompt_message");
+            confirmation_prompt_message.innerHTML = prompt_message;
+
+            confirmation_prompt_button.onclick = () => continue_confirmation_prompt(function_to_call, function_args);
+            
+        }
+
+        
+
         /**
          * Hides a prompt pop up
          */
@@ -618,11 +695,15 @@
         let selected_project_id = "";
         
 
-        function ADMIN_PROMPT_delete_project(project_entry_div, delete_project_button, project_id_to_delete){
+        function ADMIN_PROMPT_delete_project(arg_list){
 
             console.log("-----------");
             console.log("Deleting VM");
                             
+            let project_entry_div = arg_list[0];
+            let delete_project_button = arg_list[1];
+            let project_id_to_delete = arg_list[2];
+
             delete_project_button.innerHTML = "Removing..."
 
             fetch(
@@ -645,6 +726,7 @@
                 
                 if (data.status == "success"){
                     
+                    prompt_user(data.header_message, data.message);
                     delete_project_button.innerHTML = "Success!"
                     update_projects_content()
                   
@@ -652,6 +734,7 @@
                     // If the VM has failed to be deleted, give a failed prompt
                     // then return back to normal
                     //console.log(data.message);
+                    prompt_user(data.header_message, data.message);
 
                     delete_project_button.innerHTML = "Failed.";
                     setTimeout(function() {
@@ -2081,7 +2164,15 @@
                             const delete_project_button = document.createElement("button");
                             delete_project_button.type = "button";
                             delete_project_button.className = "alternate_connect_button"
-                            delete_project_button.onclick = () => ADMIN_PROMPT_delete_project(project_entry_div, delete_project_button, project.project_id);
+
+                            let delete_project_args = [project_entry_div, delete_project_button, project.project_id];
+                            delete_project_button.onclick = () => confirmation_prompt_user(
+                                "Project deletion confirmation",
+                                "Clicking confirm will mean you will completely delete the project entry. There is no recovery of this data. Are you sure?",
+                                "ADMIN_PROMPT_delete_project",
+                                delete_project_args
+                            );
+   
                             delete_project_button.innerHTML = "Delete";
                             project_entry_div.appendChild(delete_project_button);
                             
