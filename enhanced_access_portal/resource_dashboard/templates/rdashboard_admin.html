@@ -28,7 +28,7 @@
                 
                 <div style = "width: 40%; height: 20%; justify-content: center; align-items: center; display: flex; background-color: #212529ce; border-radius: 1.5rem;">
                     <p id = "notification_message" class = "roboto_font" style = "font-size: 2vw; margin: 0px; font-weight: bold; margin-right: 2%; color: #ffffff;">Logging out</p>
-                    <img id="register_loading_icon" src="{% static 'images/LoadingCircle.gif' %}" class="loader" alt="loading" />
+                    <img id="notification_loading_icon" src="{% static 'images/LoadingCircle.gif' %}" class="loader" alt="loading" />
                 </div>
               
             </div>
@@ -43,10 +43,10 @@
 
                     <div style = "margin-top: 5%; padding-top: 2%; padding-left: 2%; width: 98%; height: 40%; justify-content: center; align-items: center; background-color: #212529ce; border-radius: 1.5rem;">
                         <div style = "height: 65%; width: 100%">
-                            <p id = "notification_message" class = "roboto_font" style = "font-size: 1.2vw; margin: 0px; margin-right: 2%; color: #ffffff;">Project name has no characters. Write in at least a 3 character stringxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</p>
+                            <p id = "prompt_message" class = "roboto_font" style = "font-size: 1.2vw; margin: 0px; margin-right: 2%; color: #ffffff;">Project name has no characters. Write in at least a 3 character stringxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</p>
                         </div>
                         
-                        <button id = "x1" type="button" onclick="" class = "alternate_button" style = "height: 25%; margin-left: 40%; font-size: 1.2em;">
+                        <button id = "x1" type="button" onclick="prompt_continue_button()" class = "alternate_button" style = "height: 25%; margin-left: 40%; font-size: 1.2em;">
                             Continue
                         </button>
                     </div>
@@ -317,7 +317,7 @@
                                         <button id = "x1" type="button" onclick="ADMIN_PROMPT_create_project_attempt()" class = "alternate_button" style = "width: 48%;">
                                             Create
                                         </button>
-                                        <button id = "project_creation_cancel_button" type="button" onclick="project_creation_cancellation()" class = "alternate_button" style = "width: 48%;">
+                                        <button id = "project_creation_cancel_button" type="button" onclick="project_creation_cancellation(true)" class = "alternate_button" style = "width: 48%;">
                                             Back
                                         </button>
                                     </div>
@@ -538,6 +538,81 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
+
+        const notification_window = document.getElementById("notification_window");
+        const prompt_window = document.getElementById("prompt_window");
+
+        /**
+         * Reveals a notification or prompt window
+         * @param reveal_type {string a "notification" or "prompt" window you want revealed. Hides the other}
+         */
+        function reveal_notification_or_prompt(reveal_type){
+
+            if (reveal_type == "notification"){
+                notification_window.style.display = "flex";
+                prompt_window.style.display = "none";
+            }else if (reveal_type == "prompt"){
+                notification_window.style.display = "none";
+                prompt_window.style.display = "flex";
+            }else if (reveal_type == "none"){
+                notification_window.style.display = "none";
+                prompt_window.style.display = "none";
+            }else{
+                error("Wrong input");
+            }
+        }
+        reveal_notification_or_prompt("none");
+
+        /**
+         * Reveals a notification to the user
+         * @param notification_message {string The message to reveal}
+         * @param loading_icon {bool Whether to show the loading icon}
+         */
+         function notify_user(notification_message, loading_icon){
+
+            reveal_notification_or_prompt("notification");
+
+            const notification_message_p = document.getElementById("notification_window");
+            notification_message_p.innerHTML = notification_message;
+
+            const notification_loading_icon = document.getElementById("notification_loading_icon");
+
+            if (loading_icon){
+                if (loading_icon == true){
+                    notification_loading_icon.style.display = "block";
+                }else{
+                    notification_loading_icon.style.display = "none";
+                }
+            }else{
+                notification_loading_icon.style.display = "none";
+            }
+
+        }
+
+        /**
+         * Reveals a prompt to the user
+         * @param prompt_header {string The header message}
+         * @param prompt_message {string The prompt message}
+         */
+         function prompt_user(prompt_header, prompt_message){
+
+            reveal_notification_or_prompt("prompt");
+
+            const prompt_header_p = document.getElementById("prompt_header");
+            prompt_header_p.innerHTML = prompt_header;
+
+            const prompt_message_p = document.getElementById("prompt_message");
+            prompt_message_p.innerHTML = prompt_message;
+
+        }
+
+        /**
+         * Hides a prompt pop up
+         */
+        function prompt_continue_button(){
+            reveal_notification_or_prompt("none");
+        }
+
 
         let project_identifier = ""; // Variable used to pass a project identifer code when creating a project
         let selected_project_id = "";
@@ -1091,29 +1166,44 @@
         // user feature where it returns you to the last section you were at in the project section
         let previous_project_section = "project_content";
         
-        function project_creation_cancellation(){
+        function project_creation_cancellation(full_cancel){
             const project_creation = document.getElementById("project_creation");
             const project_display = document.getElementById("project_display");
             const project_content = document.getElementById("project_content");
 
-            project_creation.style.display = "none";
-            project_display.style.display = "none";
-            project_content.style.display = "none";
+            if (full_cancel == true){
+                project_creation.style.display = "none";
+                project_display.style.display = "none";
+                project_content.style.display = "none";
+                
+                // Resetting the project creation page section
+                project_detail.style.display = "block";
+                project_creation_loading.style.display = "none";
 
-            if (previous_project_section == "project_content"){
-                project_content.style.display = "grid";
-            }else if (previous_project_section == "project_display"){
-                project_display.style.display = "flex";
-            }else if (previous_project_section == "project_creation"){
-                project_creation.style.display = "flex";
+                if (previous_project_section == "project_content"){
+                    project_content.style.display = "grid";
+                }else if (previous_project_section == "project_display"){
+                    project_display.style.display = "flex";
+                }else if (previous_project_section == "project_creation"){
+                    project_creation.style.display = "flex";
+                }
+            }else{
+               
+                // Resetting the project creation page section
+                project_detail.style.display = "block";
+                project_creation_loading.style.display = "none";
+            
             }
+           
         }
 
         const available_vms_display = document.getElementById("available_vms_display");
         const available_users_display = document.getElementById("available_users_display");
         const project_display_users = document.getElementById("project_display_users");
         const project_display_vms = document.getElementById("project_display_vms");
-    
+        
+        const project_creation_loading = document.getElementById("project_creation_loading");
+
         function reveal_project_display_available_users(state)
         {
             if (state == true){
@@ -2013,8 +2103,7 @@
         function ADMIN_PROMPT_create_project_attempt(project_identifier_code){
             // Hiding the project creation form and revealing project loading icon
             const project_detail = document.getElementById("project_detail");
-            const project_creation_loading = document.getElementById("project_creation_loading");
-           
+            
             const project_name_entry = document.getElementById("project_name_entry");
 
             project_detail.style.display = "none";
@@ -2051,30 +2140,27 @@
                     
                         setTimeout(function() {
                             
-                            project_creation_cancellation(); // Moving user back to main project display section
+                            project_creation_cancellation(true); // Moving user back to main project display section
                             register_loading_text.innerHTML = "Creating project"; // Resetting text
-                            
-                            // Resetting the project creation page section
-                            project_detail.style.display = "block";
-                            project_creation_loading.style.display = "none";
 
                         }, 3000);
 
                     }else{
                         
-                        const register_loading_text = document.getElementById("register_loading_text");
-                        register_loading_text.innerHTML = "Project failed to create";
+                        if (data.header_message == "Error: Invalid project name"){
+                            prompt_user(data.header_message, data.message);
+                            project_creation_cancellation(false); // Resettingt he project creation screen
+                        }else{
+                            const register_loading_text = document.getElementById("register_loading_text");
+                            register_loading_text.innerHTML = "Project failed to create";
 
-                        setTimeout(function() {
-                            
-                            project_creation_cancellation(); // Moving user back to main project display section
-                            register_loading_text.innerHTML = "Creating project"; // Resetting text
+                            setTimeout(function() {
+                                
+                                project_creation_cancellation(true); // Moving user back to main project display section
+                                register_loading_text.innerHTML = "Creating project"; // Resetting text
 
-
-                            project_detail.style.display = "block";
-                            project_creation_loading.style.display = "none";
-                        }, 3000);
-
+                            }, 3000);
+                        }
                     }
                                                                                 
                 })
@@ -2084,6 +2170,7 @@
 
             }, 1000);
         }
+
 
         let section_lock = false;
         let lower_button_panel_toggle = false;

@@ -1036,25 +1036,43 @@ def ADMIN_PROMPT_create_project(request):
                 project_name_value = request.POST.get("project_name")
                 project_identifier = request.POST.get("project_identifier")
 
-                project_root_entry = Projects(
-                    entity_type = "PROJECT",
-                    entity_id = 0, # Can just use the project identifier code to find records for a particulat project then hone in on "PROJECT" entity_type
-                    owner_id_id = user_id,
-                    project_name = project_name_value,
-                    project_identifier_code = project_identifier
-                )
-                project_root_entry.save()
+                if (project_name_value != ""):
+                    if (len(project_name_value) > 2): 
+                        project_root_entry = Projects(
+                        entity_type = "PROJECT",
+                        entity_id = 0, # Can just use the project identifier code to find records for a particulat project then hone in on "PROJECT" entity_type
+                        owner_id_id = user_id,
+                        project_name = project_name_value,
+                        project_identifier_code = project_identifier
+                        )
+                        project_root_entry.save()
 
-                project_admin_entry = Projects(
-                    entity_type = user_type,
-                    entity_id = user_id,
-                    owner_id_id = user_id,
-                    project_name = project_name_value,
-                    project_identifier_code = project_identifier
-                )
-                project_admin_entry.save()
+                        project_admin_entry = Projects(
+                            entity_type = user_type,
+                            entity_id = user_id,
+                            owner_id_id = user_id,
+                            project_name = project_name_value,
+                            project_identifier_code = project_identifier
+                        )
+                        project_admin_entry.save()
 
-                return JsonResponse({"status": "success", "message": "Project registered"})
+                        return JsonResponse({"status": "success", "message": "Project registered"})
+                    else:
+                        return JsonResponse(
+                        {
+                            "status": "fail", 
+                            "header_message": "Error: Invalid project name",
+                            "message": "Project creation failure. Project name has less than 3 characters. Write in at least a 3 character string."
+                        }
+                    )
+                else:
+                    return JsonResponse(
+                        {
+                            "status": "fail", 
+                            "header_message": "Error: Invalid project name",
+                            "message": "Project creation failure. Project name has no characters. Write in at least a 3 character string."
+                        }
+                    )
     
     return JsonResponse({"status": "fail", "message": "Only POST allowed"}, status=405)
 
