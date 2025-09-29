@@ -82,6 +82,8 @@ https://www.youtube.com/watch?v=9BEKT0mEAso
 
 https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Organizing#:~:text=Compiling%20component%20stylesheets,separate%20stylesheet%20for%20each%20component.
 
+https://www.w3schools.com/django/django_update_data.php
+
 https://github.com/django/django/
 
 https://developer.mozilla.org/en-US/docs/Web/CSS/repeat
