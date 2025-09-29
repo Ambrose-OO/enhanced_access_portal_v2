@@ -590,6 +590,14 @@
                         <button id = "add_user_button" type="button" onclick="reveal_project_display_available_users()" class = "alternate_button_2" style = "display: none;">
                             Add user
                         </button>
+
+                        <button id = "back_to_projects_button" type="button" onclick="section_reveal('projects_section')" class = "alternate_button_2" style = "display: none;">
+                            Back to projects
+                        </button>
+
+                        <button id = "back_to_groups_button" type="button" onclick="section_reveal('groups_section')" class = "alternate_button_2" style = "display: none;">
+                            Back to groups
+                        </button>
                     </div>
                     
 
@@ -1540,8 +1548,11 @@
             b_add_user_button, 
             b_add_group_button,
             b_create_project_button,
-            b_add_group_vm_button
+            b_add_group_vm_button,
+            b_back_to_projects_button,
+            b_back_to_groups_button
         ){
+
             const add_vm_button = document.getElementById("add_vm_button");
             const add_user_button = document.getElementById("add_user_button");
 
@@ -1550,6 +1561,10 @@
             const create_project_button = document.getElementById("create_project_button");
             
             const add_group_vm_button = document.getElementById("add_group_vm_button");
+
+            const back_to_projects_button = document.getElementById("back_to_projects_button");
+            const back_to_groups_button = document.getElementById("back_to_groups_button");
+            
 
             if (b_add_vm_button == false){
                 add_vm_button.style.display = "none";
@@ -1580,6 +1595,18 @@
             }else{
                 add_group_vm_button.style.display = "block"
             }
+
+            if (b_back_to_projects_button == false){
+                back_to_projects_button.style.display = "none";
+            }else{
+                back_to_projects_button.style.display = "block"
+            }
+
+            if (b_back_to_groups_button == false){
+                back_to_groups_button.style.display = "none";
+            }else{
+                back_to_groups_button.style.display = "block"
+            }
         }
 
 
@@ -1590,7 +1617,7 @@
             selected_project_id = project.project_id; 
 
             // Reveals "Add VM" and "Add user" buttons
-            lower_button_toggle(true, true, false, false, false);
+            lower_button_toggle(true, true, false, false, false, true, false);
 
             // Navigates and provides data
             const project_content = document.getElementById("project_content");
@@ -1612,7 +1639,7 @@
             selected_project_id = project.project_id; 
 
             // Reveals "Add VM" and "Add user" buttons
-            lower_button_toggle(false, false, false, false, false);
+            lower_button_toggle(false, false, false, false, false, true, false);
 
             // Navigates and provides data
             const project_content = document.getElementById("project_content");
@@ -1966,7 +1993,7 @@
             selected_group_name = inputted_selected_group_name; 
 
             // Hide all toggle buttons
-            lower_button_toggle(false, false, false, false, true);
+            lower_button_toggle(false, false, false, false, true, false, true);
 
             // Navigates and provides data
             group_content.style.display = "none";
@@ -2453,7 +2480,7 @@
                 selected_project_id = "";
 
                 // Hiding add vm and user buttons
-                lower_button_toggle(false, false, false, false, false);
+                lower_button_toggle(false, false, false, false, false, false, false);
 
                 // Section buttons
                 const projects_button = document.getElementById("projects_button");
@@ -2478,7 +2505,7 @@
 
                     // Handling bottom panel buttons
                     toggle_lower_button_panel(true);
-                    lower_button_toggle(false, false, false, true, false);
+                    lower_button_toggle(false, false, false, true, false, false, false);
 
                     project_panel_navigation("project_content");
                     
@@ -2489,7 +2516,7 @@
 
                     // Handling bottom panel buttons
                     toggle_lower_button_panel(true);
-                    lower_button_toggle(false, false, true, false, false);
+                    lower_button_toggle(false, false, true, false, false, false, false);
                     
                     group_panel_navigation("group_content");
 
@@ -2503,7 +2530,7 @@
 
                     // Handling bottom panel buttons
                     toggle_lower_button_panel(false);
-                    lower_button_toggle(false, false, false, false, false);
+                    lower_button_toggle(false, false, false, false, false, false, false);
 
                     // Adjusting project button colour background to indicate its selected
                     all_vms_button.style = "background-color: #FFFFFF; margin-top: 5px;";
@@ -2512,7 +2539,7 @@
                     
                     // Handling bottom panel buttons
                     toggle_lower_button_panel(false);
-                    lower_button_toggle(false, false, false, false, false);
+                    lower_button_toggle(false, false, false, false, false, false, false);
 
                     // Adjusting project button colour background to indicate its selected
                     statistics_button.style = "background-color: #FFFFFF; margin-top: 5px;";
@@ -2521,13 +2548,13 @@
 
                     // Handling bottom panel buttons
                     toggle_lower_button_panel(false);
-                    lower_button_toggle(false, false, false, false, false);
+                    lower_button_toggle(false, false, false, false, false, false, false);
 
                     section_lock = true;
 
                 } else {
                     toggle_lower_button_panel(false);
-                    lower_button_toggle(false, false, false, false, false);
+                    lower_button_toggle(false, false, false, false, false, false, false);
                 }
             }
         }
