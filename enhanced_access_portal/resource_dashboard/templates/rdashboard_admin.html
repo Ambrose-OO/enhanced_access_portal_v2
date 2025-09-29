@@ -292,13 +292,7 @@
                                         
 
                                         <div id = "project_available_users_content" style = "width: 90%; height: 80%;">
-                                            <div class = "vms_content">
-                                                <p class = "roboto_font project_entry_p2">Virtual machine: Ambroses VM | Status: Online | 255.193.321.0</p>
-                                                <button id="x1" type="button" onclick="" class="alternate_connect_button">
-                                                    Add user
-                                                </button>
-                                            </div>
-                                            
+     
                                         </div>
                                     </div>
 
@@ -1410,6 +1404,23 @@
         
         const project_creation_loading = document.getElementById("project_creation_loading");
 
+        const add_user_button = document.getElementById("add_user_button");
+        const add_vm_button = document.getElementById("add_vm_button");
+
+        function toggle_add_vm_to_project_button_innertext(default_state){
+            if (default_state == true){
+                add_vm_button.innerHTML = "Add VM";
+            }else{
+                add_vm_button.innerHTML = "Go back to project detail";
+            }
+        }
+        function toggle_add_user_to_project_button_innertext(default_state){
+            if (default_state == true){
+                add_user_button.innerHTML = "Add user";
+            }else{
+                add_user_button.innerHTML = "Go back to project detail";
+            }
+        }
         function reveal_project_display_available_users(state)
         {
             if (state == true){
@@ -1419,6 +1430,9 @@
                 project_display_vms.style.display = "none";
 
                 available_users_display.style.display = "block";
+
+                toggle_add_vm_to_project_button_innertext(true);
+                toggle_add_user_to_project_button_innertext(false);
             }else if (state == false){
                 available_vms_display.style.display = "none";
 
@@ -1426,6 +1440,9 @@
                 project_display_vms.style.display = "block";
                 
                 available_users_display.style.display = "none";
+
+                toggle_add_vm_to_project_button_innertext(false);
+                toggle_add_user_to_project_button_innertext(false);
             }
             else if (available_users_display.style.display == "block"){
                 available_vms_display.style.display = "none";
@@ -1434,6 +1451,9 @@
                 project_display_vms.style.display = "block";
 
                 available_users_display.style.display = "none";
+
+                toggle_add_vm_to_project_button_innertext(true);
+                toggle_add_user_to_project_button_innertext(true);
             } else {
                 available_vms_display.style.display = "none";
 
@@ -1441,6 +1461,9 @@
                 project_display_vms.style.display = "none";
 
                 available_users_display.style.display = "block";
+
+                toggle_add_vm_to_project_button_innertext(true);
+                toggle_add_user_to_project_button_innertext(false);
             }
         }
         function reveal_project_display_available_vms(state)
@@ -1452,6 +1475,9 @@
                 project_display_vms.style.display = "none";
 
                 available_users_display.style.display = "none";
+
+                toggle_add_vm_to_project_button_innertext(false);
+                toggle_add_user_to_project_button_innertext(true);
             }else if (state == false){
                 available_vms_display.style.display = "none";
 
@@ -1459,6 +1485,9 @@
                 project_display_vms.style.display = "block";
                 
                 available_users_display.style.display = "none";
+
+                toggle_add_vm_to_project_button_innertext(true);
+                toggle_add_user_to_project_button_innertext(true);
             }
             else if (available_vms_display.style.display == "block"){
                 available_vms_display.style.display = "none";
@@ -1467,6 +1496,9 @@
                 project_display_vms.style.display = "block";
 
                 available_users_display.style.display = "none";
+
+                toggle_add_vm_to_project_button_innertext(true);
+                toggle_add_user_to_project_button_innertext(true);
             } else {
                 available_vms_display.style.display = "block";
 
@@ -1474,6 +1506,9 @@
                 project_display_vms.style.display = "none";
 
                 available_users_display.style.display = "none";
+
+                toggle_add_vm_to_project_button_innertext(false);
+                toggle_add_user_to_project_button_innertext(true);
             }
         }
 
