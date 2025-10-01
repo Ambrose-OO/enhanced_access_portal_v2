@@ -1223,8 +1223,6 @@ def ADMIN_PROMPT_create_project(request):
                 if (project_name_value != ""):
                     if (len(project_name_value) > 2): 
 
-                        user = fetch_user_from_id(user_id)
-
                         for project in Projects.objects.all():
                             
                             if (project.project_name == project_name_value):
