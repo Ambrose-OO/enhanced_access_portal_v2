@@ -1932,9 +1932,15 @@
             // Convert both to lowercase for non-case sensitive comparison
             const lower_sub = substring.toLowerCase();
             const lower_full = fullString.toLowerCase();
-
+                    
             // Checking for a match
-            return lower_full.includes(lower_sub);
+            for (let i = 0; i < lower_sub.length; i++) {
+                if (lower_sub[i] != lower_full[i]){
+                    return false
+                }
+            }
+  
+            return true
         }
 
         function update_available_group_vms_content() {
