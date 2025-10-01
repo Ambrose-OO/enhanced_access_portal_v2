@@ -246,7 +246,7 @@
                                                     <p class = "roboto_font project_entry_p2">Ambrose | ambrose@gmail.com | Type: USER</p>
                                                 </div>
                                             -->
-                                            <!-- TODO: For admins add a remove user button. Only to remove users -->
+                                            
                                         </div>
                                     </div>
 
@@ -1085,7 +1085,6 @@
                 member_title.innerHTML = member.firstname + " | " + member.emailaddress + " | Type: " + member.type; 
                 member_content.appendChild(member_title);
                 
-                // TODO: For admins, add an additional button that says "remove". Detailed prior again in this same document elsewhere
                 const member_remove_button = document.createElement("button");
                 member_remove_button.type = "button";
                 member_remove_button.className = "alternate_connect_button";
@@ -2371,7 +2370,6 @@
                     
                     prompt_user(data.header_message, data.message);
                     // Removing the project entry display
-                    // TODO: Figure out what the line below does again
                     group_entry_div.parentNode.removeChild(vms_content); // removing the listing after success
                 
                     // Don't need to do further updates as the project entry display

@@ -17,7 +17,6 @@ class Projects(models.Model):
 class VMs(models.Model):
     #Don't need a vms_id field as django adds id fields by default. 
 
-    #TODO: finish this
     vm_name = models.CharField(max_length = 255, default = "undefined_vm_name")
     vm_online = models.CharField(max_length = 255, default = "offline")
     vm_ip = models.CharField(max_length = 255, default = "0.0.0.0") 

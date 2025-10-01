@@ -181,7 +181,7 @@
                                                     <p class = "roboto_font project_entry_p2">Ambrose | ambrose@gmail.com | Type: USER</p>
                                                 </div>
                                             -->
-                                            <!-- TODO: For admins add a remove user button. Only to remove users -->
+                                           
                                         </div>
                                     </div>
 
@@ -400,8 +400,6 @@
                 member_title.className = "roboto_font project_entry_p2";
                 member_title.innerHTML = member.firstname + " | " + member.emailaddress + " | Type: " + member.type; 
                 member_content.appendChild(member_title);
-
-                // TODO: For admins, add an additional button that says "remove". Detailed prior again in this same document elsewhere
 
                 // Rendering the div we created into "project_display_vms_content"
                 project_display_users_content.appendChild(member_content);
