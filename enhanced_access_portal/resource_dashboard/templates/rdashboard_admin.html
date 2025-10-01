@@ -118,7 +118,7 @@
                             <!-- "display: block;" helps put the elements on seperate lines */ -->
                             <input type="text" placeholder="Search VMs" id="vm_search" class="entry_style1" style = "width: 80%; margin-right: 1%;"> 
                      
-                            <button id = "x1" type="button" onclick="" class = "alternate_button">
+                            <button id = "search_button" type="button" onclick="search_all_vms()" class = "alternate_button">
                                 Search
                             </button>
                     
@@ -487,13 +487,6 @@
                                         </div>
                                         <div id = "group_display_vms_content" style = "width: 90%; height: 80%;">
                                             
-                                                <div class = "vms_content">
-                                                    <p class = "roboto_font project_entry_p2">Virtual machine: Ambroses VM | Status: Online | 255.193.321.0</p>
-                                                    <button id="x1" type="button" onclick="update_projects_content()" class="alternate_connect_button">
-                                                        Connect
-                                                    </button>
-                                                </div>
-                                            
                                         </div>
                                     </div>
 
@@ -528,19 +521,27 @@
 
                             </div>
 
-                            <div id = "all_vms_section" style = "display: none; width: 100%; height: 100%;">
+                            <div id = "all_vms_section" style = "width: 100%; height: 100%; display: none;">
                                
-                                <div style = 
-                                    "width: 100%; 
-                                    height: 20%; 
-                                    align-items: center; 
-                                    justify-content: center; 
-                                    display: flex;
-                                "> 
-                                    <!-- Admins can see all VMS. Users can only see VMS that are not assigned coupled with the ones they can see based on the projects they're on -->
-                                    <p class = "header_title" style = "margin-top: 1%; width: 100%; text-align: center;">All VMS</p>
-                                </div>
+                                <div style = "width: 100%; height: 100%; overflow-y: auto; display: block;">
 
+                                    <div style = 
+                                        "width: 100%; 
+                                        height: 20%; 
+                                        align-items: center; 
+                                        justify-content: center; 
+                                        display: flex;
+                                    "> 
+                                        <!-- Admins can see all VMS. Users can only see VMS that are not assigned coupled with the ones they can see based on the projects they're on -->
+                                        <p class = "header_title" style = "margin-top: 1%; width: 100%; text-align: center;">All VMS</p>
+                                    </div>
+
+                                    <div id = "all_vms_display_content" style = "width: 90%; height: 80%;">
+                                                
+                                    
+                                    </div>
+
+                                </div>
                             </div>
 
                             <div id = "statistics_section" style = "display: none; width: 100%; height: 100%; justify-content: center; align-items: center;">
@@ -1360,7 +1361,7 @@
             vm_add_button.innerHTML = "Add VM";
             vms_content.appendChild(vm_add_button);
 
-            return [vm_add_button, vms_content];
+            return [vm_add_button, vms_content, vm_title, vm_name];
         }
 
 
@@ -1900,10 +1901,47 @@
 
         }
 
+        let search_query = "";
+        const vm_search = document.getElementById("vm_search");
+        const search_button = document.getElementById("search_button");
+
+        function search_all_vms(){
+            if (search_button.innerHTML == "Search"){
+
+                if (vm_search.value == ""){
+                    prompt_user(
+                        "Error: Cannot run a search query",
+                        "Error handling the search query. As nothing has been entered into the 'Search VMs' entry box. Please try again."
+                    );
+                }else{
+                    search_query = vm_search.value;
+                    search_button.innerHTML = "Close search";
+                    prompt_user(
+                        "Success: Search query",
+                        "Search query went through sucessfully."
+                    );
+                }
+                
+            }else{
+                search_button.innerHTML = "Search";
+                search_query = "";
+            }
+            
+        }
+        function substring_match(substring, fullString) {
+            // Convert both to lowercase for non-case sensitive comparison
+            const lower_sub = substring.toLowerCase();
+            const lower_full = fullString.toLowerCase();
+
+            // Checking for a match
+            return lower_full.includes(lower_sub);
+        }
 
         function update_available_group_vms_content() {
             const group_content = document.getElementById("group_content");
-        
+            
+            const all_vms_display_content = document.getElementById("all_vms_display_content");
+
             //console.log("fetch available group vms");
                             
             fetch(
@@ -1927,22 +1965,63 @@
                 if (data.status == "success"){
                     
                     group_available_vms_content.innerHTML = ""; // Clearing all the elements under the div content container
-        
+                    all_vms_display_content.innerHTML = ""; // Clearing elements for the all vms section
+                    vm_counter = 0;
+
                     // Display available VM details
                     for (const vm of data.vms){
-                    
+                        vm_counter += 1;
+
+                        // Generating vm entries for available vms for selection in a group
                         generate_vm_element_returns = generate_vm_element(
                             vm.vm_name,
                             vm.vm_status,
                             vm.vm_ip
-                        )
+                        );
                         vm_add_button = generate_vm_element_returns[0];
                         vms_content = generate_vm_element_returns[1];
                         
                         vm_add_button.onclick = () => ADMIN_USER_PROMPT_add_vm_to_group(vms_content, vm_add_button, vm.vm_id);
 
-                        // Rendering the div we created into "project_display_vms_content"
+                        // Generating vm entries for available vms for selection in a group - Rendering the div we created into "project_display_vms_content"
                         group_available_vms_content.appendChild(vms_content);
+
+
+
+
+                        // Generating vm entries for VM searching
+                        generate_vm_element_returns = generate_vm_element(
+                            vm.vm_name,
+                            vm.vm_status,
+                            vm.vm_ip
+                        );
+                        vm_add_button = generate_vm_element_returns[0];
+                        vm_add_button.remove();
+                        vms_content = generate_vm_element_returns[1];
+                        vm_title = generate_vm_element_returns[2];
+                        vm_name = generate_vm_element_returns[3];
+                        
+            
+                        if (search_query != ""){
+                            // Checking if the searched query matches with the given vm name. If not, pass.
+                            if (substring_match(search_query, vm_name) == false){
+                                continue;
+                            }
+                        }
+
+                        //vm_title.innerHTML = vm_counter + " . " + vm_title.innerHTML;
+                        vm_title.style.textAlign = "center";
+
+                        // Generating vm entries for VM searching - Rendering the div 
+                        all_vms_display_content.appendChild(vms_content);
+
+                        let divider = document.createElement("div");
+                        divider.className = "content_divider";
+                        divider.style.marginTop = "1%";
+                        divider.style.marginBottom = "1%";
+                        
+                        all_vms_display_content.appendChild(divider);
+                        
 
                     }
 
