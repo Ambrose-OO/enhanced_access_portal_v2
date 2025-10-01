@@ -867,8 +867,20 @@ def ADMIN_PROMPT_rename_project(request):
 
                 if (project != None):
                     if (new_project_name) and (new_project_name != ""):
-                        print("attempting to rename project")
-
+                        
+                        # Checking if the new project name entered doesn't already exist
+                        for project in Projects.objects.all():
+                            
+                            if (project.project_name == new_project_name):
+                                return JsonResponse(
+                                    {
+                                        "status": "fail", 
+                                        "header_message": "Error: Project duplicate name",
+                                        "message": "Issue with renaming the project. As one already exists with the same name. Please enter a different one, rename the project that is clashing, or delete the clashing project before trying again."
+                                    }
+                                )
+                        
+                        # Attempting to rename the project
                         fetched_project_identifier_code = project.project_identifier_code
                         for found_project in Projects.objects.all():
                             if (found_project.project_identifier_code == fetched_project_identifier_code):
