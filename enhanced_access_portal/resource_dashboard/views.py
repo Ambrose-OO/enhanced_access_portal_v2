@@ -562,6 +562,100 @@ def USRER_ADMIN_PROMPT_add_vm_to_group(request):
 
 
 @csrf_protect
+def USRER_ADMIN_PROMPT_statistics(request):
+    if request.method == "POST":
+        print("-------------------")
+        print("Statistics request")
+
+        logged_in_status = request.session.get("logged_in")
+       
+        if (logged_in_status == True):
+
+            # VM Data
+            vm_total = 0
+            vms_online = 0
+            vms_offline = 0
+
+            unassigned_project_vms = 0
+            assigned_project_vms = 0 
+
+            for vm in VMs.objects.all():
+                vm_total += 1
+
+                if (vm.vm_online == "Online"):
+                    vms_online += 1
+                else:
+                    vms_offline += 1
+
+                if (vm.project_id == None):
+                    unassigned_project_vms += 1
+                else:
+                    assigned_project_vms += 1 
+            
+            # Version number data
+            version_number = "1.0"
+
+            # System users data
+            user_total = 0
+            admins_total = 0 
+            system_users_total = 0
+
+            for user in User.objects.all():
+                system_users_total += 1
+
+                if (user.user_type == "ADMIN"):
+                    admins_total += 1
+                else:
+                    user_total += 1
+
+            # Group and project totals data
+            project_total = 0
+            group_total = 0
+
+            for found_project in Projects.objects.all():
+                if (found_project.entity_type == "PROJECT"):
+                    project_total +=1 
+
+            for found_group in VM_Group.objects.all():
+                if (found_group.vm_id == None):
+                    group_total += 1
+
+            # Returning statistics data in JSON format back to the user
+            return JsonResponse(
+                {
+                    "status": "success", 
+                    "message": "Server passing statistic data",
+                    "statistics": {
+                        "vm_total": vm_total,
+                        "vms_online": vms_online,
+                        "vms_offline": vms_offline,
+
+                        "unassigned_project_vms": unassigned_project_vms,
+                        "assigned_project_vms": assigned_project_vms,
+
+                        "version_number": version_number,
+
+                        "user_total": user_total,
+                        "admins_total": admins_total,
+                        "system_users_total": system_users_total,
+
+                        "project_total": project_total,
+                        "group_total": group_total
+                    }
+                }
+            ) 
+        
+        else:
+            # Failure response if the user is requesting data when logged out
+            return JsonResponse(
+                {
+                    "status": "failure", 
+                    "message": "Server can't pass data on user who is logged out"
+                }
+            ) 
+
+
+@csrf_protect
 def USRER_ADMIN_PROMPT_remove_vm_from_group(request):
     if request.method == "POST":
         print("----------------------")

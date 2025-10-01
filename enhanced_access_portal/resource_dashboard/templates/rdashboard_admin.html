@@ -222,13 +222,6 @@
                                         </div>
                                         <div id = "project_display_vms_content" style = "width: 90%; height: 80%;">
                                             
-                                                <div class = "vms_content">
-                                                    <p class = "roboto_font project_entry_p2">Virtual machine: Ambroses VM | Status: Online | 255.193.321.0</p>
-                                                    <button id="x1" type="button" onclick="update_projects_content()" class="alternate_connect_button">
-                                                        Connect
-                                                    </button>
-                                                </div>
-                                            
                                         </div>
                                     </div>
 
@@ -544,21 +537,65 @@
                                     justify-content: center; 
                                     display: flex;
                                 "> 
-                                    <p class = "header_title" style = "margin-top: 1%; width: 100%; text-align: center;">VM searching is not available in this version</p>
+                                    <!-- Admins can see all VMS. Users can only see VMS that are not assigned coupled with the ones they can see based on the projects they're on -->
+                                    <p class = "header_title" style = "margin-top: 1%; width: 100%; text-align: center;">All VMS</p>
                                 </div>
 
                             </div>
 
                             <div id = "statistics_section" style = "display: none; width: 100%; height: 100%; justify-content: center; align-items: center;">
-                                
-                                <div style = 
-                                    "width: 100%; 
-                                    height: 20%; 
-                                    align-items: center; 
-                                    justify-content: center; 
-                                    display: flex;
-                                "> 
-                                    <p class = "header_title" style = "margin-top: 1%; width: 100%; text-align: center;">Statistics is not available in this version</p>
+                          
+                                <!-- Display is usually "block" for "project_display_vms" and "project_display_users"-->
+                                <div id = "statistics_panel_one" style = "width: 50%; height: 100%; overflow-y: auto; display: block;"> 
+                                    <div style = 
+                                        "width: 100%; 
+                                        height: 20%; 
+                                        align-items: center; 
+                                        justify-content: center; 
+                                        display: flex;
+                                     "> 
+                                        <p class = "header_title" style = "margin-top: 1%;">Resource stats</p>
+                                    </div>
+
+                                    <div id = "resource_display_content" style = "width: 90%; height: 80%;">
+                                        <p id = "vm_total_p" class="roboto_font project_entry_p1" style = "margin-left: 5%;">Total number of VMs: 0</p>
+                                        <p id = "vms_online_p" class="roboto_font project_entry_p1" style = "margin-left: 5%;">VMs online: 0</p>
+                                        <p id = "vms_offline_p" class="roboto_font project_entry_p1" style = "margin-left: 5%;">VMs offline: 0</p>
+                                        
+                                        <div class = "content_divider"></div>
+                                        
+                                        <p id = "unassigned_project_vms_p" class="roboto_font project_entry_p1" style = "margin-left: 5%;">Unassigned project VMs: 0</p>
+                                        <p id = "assigned_project_vms_p" class="roboto_font project_entry_p1" style = "margin-left: 5%;">Assigned project VMs: 0</p>
+
+                                        <div class = "content_divider"></div>
+
+                                        <p id = "version_number_p" class="roboto_font project_entry_p1" style = "margin-left: 5%;">Version number: 1.0</p>
+                                    </div>
+                                </div>
+
+                                <div id = "statistics_panel_two" style = "width: 50%; height: 100%; overflow-y: auto; display: block;"> 
+
+                                    <div style = 
+                                        "width: 100%; 
+                                        height: 20%; 
+                                        align-items: center; 
+                                        justify-content: center; 
+                                        display: flex;
+                                    "> 
+                                        <p class = "header_title" style = "margin-top: 1%;">Usage stats</p>
+                                    </div>
+
+                                    <div id = "usage_display_content" style = "width: 90%; height: 80%;">
+                                        <p id = "user_total_p" class="roboto_font project_entry_p1" style = "margin-left: 5%;">Total number of users: 0</p>
+                                        <p id = "admins_total_p" class="roboto_font project_entry_p1" style = "margin-left: 5%;">Total number of admins: 0</p>
+                                        <p id = "system_users_total_p" class="roboto_font project_entry_p1" style = "margin-left: 5%;">Overal number of system users: 0</p>
+                                        
+                                        <div class = "content_divider"></div>
+
+                                        <p id = "project_total_p" class="roboto_font project_entry_p1" style = "margin-left: 5%;">Total number of projects: 0</p>
+                                        <p id = "group_total_p" class="roboto_font project_entry_p1" style = "margin-left: 5%;">Total number of groups: 0</p>
+                                        
+                                    </div>
                                 </div>
     
                             </div>
@@ -798,6 +835,77 @@
             });
 
         }
+
+
+        function update_statistics() { 
+            
+            fetch(
+                "{% url 'statistics_request' %}", 
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "X-CSRFToken": getCookie('csrftoken') //https://www.geeksforgeeks.org/python/csrf-token-in-django/
+                    },
+                    body: new URLSearchParams(
+                        {}
+                    )
+                }
+            )
+            .then(response => response.json())
+            .then(data => {
+                
+                if (data.status == "success"){
+                    
+                    statistics_data = data.statistics; 
+
+                    // Resource stats - p elements
+                    const vm_total_p = document.getElementById("vm_total_p");
+                    const vms_online_p = document.getElementById("vms_online_p");
+                    const vms_offline_p = document.getElementById("vms_offline_p");
+
+                    const unassigned_project_vms_p = document.getElementById("unassigned_project_vms_p");
+                    const assigned_project_vms_p = document.getElementById("assigned_project_vms_p");
+
+                    const version_number_p = document.getElementById("version_number_p");
+
+                    // Resource stats - data insertion 
+                    vm_total_p.innerHTML = "Total number of VMs: " + statistics_data.vm_total;
+                    vms_online_p.innerHTML = "VMs online: " + statistics_data.vms_online; 
+                    vms_offline_p.innerHTML = "VMs offline: " + statistics_data.vms_offline;
+
+                    unassigned_project_vms_p.innerHTML = "Unassigned project VMs: " + statistics_data.unassigned_project_vms;
+                    assigned_project_vms_p.innerHTML = "Assigned project VMs: " + statistics_data.assigned_project_vms;
+                    
+                    version_number_p.innerHTML = "Version number: " + statistics_data.version_number;
+                    
+                    // Usage - p elements
+                    const user_total_p = document.getElementById("user_total_p");
+                    const admins_total_p = document.getElementById("admins_total_p");
+                    const system_users_total_p = document.getElementById("system_users_total_p");
+
+                    const project_total_p = document.getElementById("project_total_p");
+                    const group_total_p = document.getElementById("group_total_p");
+
+                    // Usage - p elements
+                    user_total_p.innerHTML = "Total number of users: " + statistics_data.user_total;
+                    admins_total_p.innerHTML = "Total number of admins: " + statistics_data.admins_total; 
+                    system_users_total_p.innerHTML = "Overal number of system users: " + statistics_data.system_users_total;
+
+                    project_total_p.innerHTML = "Total number of projects: " + statistics_data.project_total;
+                    group_total_p.innerHTML = "Total number of groups: " + statistics_data.group_total;
+                
+                }else{
+                    console.log(data.message);
+                }
+                                                                            
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        }
+        update_statistics();
+        setInterval(update_statistics, 1000); // Updating available vm content every second
 
 
         function ADMIN_PROMPT_rename_project(arg_list){

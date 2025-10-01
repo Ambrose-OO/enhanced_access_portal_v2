@@ -32,3 +32,12 @@
     height: 30px;
     pointer-events: none; /* allows clicks to pass through */
 }
+
+.content_divider {
+    width: 50%; 
+    height: 2px; 
+    background-color: #212529; 
+    margin-top: 5%; 
+    margin-bottom: 5%;
+    margin-left: 25%;
+}

@@ -25,5 +25,7 @@ urlpatterns = [
     path('delete_group_request/', views.USER_ADMIN_PROMPT_delete_vm_group, name="delete_group_request"),
     path('available_vms_for_group_request/', views.USRER_ADMIN_PROMPT_available_vms_for_group, name="available_vms_for_group_request"),
     path('add_vm_to_group_request/', views.USRER_ADMIN_PROMPT_add_vm_to_group, name="add_vm_to_group_request"),
-    path('remove_group_vm_request/', views.USRER_ADMIN_PROMPT_remove_vm_from_group, name="remove_group_vm_request")
+    path('remove_group_vm_request/', views.USRER_ADMIN_PROMPT_remove_vm_from_group, name="remove_group_vm_request"),
+
+    path('statistics_request/', views.USRER_ADMIN_PROMPT_statistics, name="statistics_request")
 ]
