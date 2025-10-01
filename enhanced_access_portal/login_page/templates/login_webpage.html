@@ -298,7 +298,135 @@
             }
             return cookieValue;
         }
+        
+
+
+        const notification_window = document.getElementById("notification_window");
+        const prompt_window = document.getElementById("prompt_window");
+        const confirmation_prompt_window = document.getElementById("confirmation_prompt_window");
+
+        const confirmation_prompt_button = document.getElementById("confirmation_prompt_button");
+
+        /*
+         * Reveals a notification or prompt window
+         * @param reveal_type {string a "notification" or "prompt" window you want revealed. Hides the other}
+         */
+        function reveal_notification_or_prompt(reveal_type){
+
+            if (reveal_type == "notification"){
+                notification_window.style.display = "flex";
+                prompt_window.style.display = "none";
+                confirmation_prompt_window.style.display = "none";
+            }else if (reveal_type == "prompt"){
+                notification_window.style.display = "none";
+                prompt_window.style.display = "flex";
+                confirmation_prompt_window.style.display = "none";
+            }else if (reveal_type == "confirmation_prompt"){
+                notification_window.style.display = "none";
+                prompt_window.style.display = "none";
+                confirmation_prompt_window.style.display = "flex";
+            }else if (reveal_type == "none"){
+                notification_window.style.display = "none";
+                prompt_window.style.display = "none";
+                confirmation_prompt_window.style.display = "none";
+            }else{
+                error("Wrong input");
+            }
+        }
+        reveal_notification_or_prompt("none");
+
+        /**
+         * Reveals a notification to the user
+         * @param notification_message {string The message to reveal}
+         * @param loading_icon {bool Whether to show the loading icon}
+         */
+         function notify_user(notification_message, loading_icon){
+
+            reveal_notification_or_prompt("notification");
+
+            const notification_message_p = document.getElementById("notification_message");
+            notification_message_p.innerHTML = notification_message;
+
+            const notification_loading_icon = document.getElementById("notification_loading_icon");
+
+            if (loading_icon){
+                if (loading_icon == true){
+                    notification_loading_icon.style.display = "block";
+                }else{
+                    notification_loading_icon.style.display = "none";
+                }
+            }else{
+                notification_loading_icon.style.display = "none";
+            }
+
+        }
+
+        /**
+         * Reveals a prompt to the user
+         * @param prompt_header {string The header message}
+         * @param prompt_message {string The prompt message}
+         */
+         function prompt_user(prompt_header, prompt_message){
+
+            reveal_notification_or_prompt("prompt");
+
+            const prompt_header_p = document.getElementById("prompt_header");
+            prompt_header_p.innerHTML = prompt_header;
+
+            const prompt_message_p = document.getElementById("prompt_message");
+            prompt_message_p.innerHTML = prompt_message;
+
+        }
+
+
+        /**
+         * Processes the result of a confirmation prompt made to a user
+         * @param function_to_call {string The name of the function to call}
+         * @param function_args {list A list of arguments to pass to the function call}
+         */
+        function continue_confirmation_prompt(function_to_call, function_args){
+            reveal_notification_or_prompt("none");
+            if (function_to_call == "ADMIN_PROMPT_delete_project"){
+                ADMIN_PROMPT_delete_project(function_args);
+            }
+            if (function_to_call == "ADMIN_PROMPT_rename_project"){
+                console.log("Called rename");
+                ADMIN_PROMPT_rename_project();
+            }
+        }
+
+        /**
+         * Reveals a confirmation prompt to the user
+         * @param prompt_header {string The header message}
+         * @param prompt_message {string The prompt message}
+         * @param function_to_call {string The name of the function to call}
+         * @param function_args {list A list of arguments to pass to the function call}
+         */
+         function confirmation_prompt_user(prompt_header, prompt_message, function_to_call, function_args){
+
+            reveal_notification_or_prompt("confirmation_prompt");
+
+            const confirmation_prompt_header_p = document.getElementById("confirmation_prompt_header");
+            confirmation_prompt_header.innerHTML = prompt_header;
+
+            const confirmation_prompt_message_p = document.getElementById("confirmation_prompt_message");
+            confirmation_prompt_message.innerHTML = prompt_message;
+
+            confirmation_prompt_button.onclick = () => continue_confirmation_prompt(function_to_call, function_args);
             
+        }
+
+        
+
+        /**
+         * Hides a prompt pop up
+         */
+        function prompt_continue_button(){
+            reveal_notification_or_prompt("none");
+        }
+
+
+
         function USER_PROMPT_login_attempt() {
             
             const email_login = document.getElementById("email_login");
@@ -357,111 +485,76 @@
             });
         }
 
-        function USER_PROMPT_forgot_password() {
-        
-        }
-        
+
         function USER_PROMPT_register(){
+
+            // HTML elements containing registration data
             const firstname_registration = document.getElementById("firstname_registration");
             const secondname_registration = document.getElementById("secondname_registration");
 
             const email_registration = document.getElementById("email_registration");
             const password_registration = document.getElementById("password_registration");
-            const password_repeat = document.getElementById("password_repeat");
+            const password_repeat_registration = document.getElementById("password_repeat");
            
             console.log(firstname_registration.value);
 
-            let empty_entry = false;
-
-            function check_empty_entry(){
-                
-                if (firstname_registration.value != ""){
-                    console.log("valid");
-                }else{
-                    empty_entry = true;
-                }
-
-                if (secondname_registration.value != ""){
-                    console.log("valid");
-                }else{
-                    empty_entry = true;
-                }
-
-                if (email_registration.value != ""){
-                    console.log("valid");
-                }else{
-                    empty_entry = true;
-                }
-
-                if (password_registration.value != ""){
-                    console.log("valid");
-                }else{
-                    empty_entry = true;
-                }
-
-                if (password_repeat.value != ""){
-                    console.log("valid");
-                }else{
-                    empty_entry = true;
-                }
-            }
-
-            check_empty_entry()
-            if (empty_entry == false){
-                // If there's no false entries then attempt registration
-                const register_button = document.getElementById("register_button");
-                const register_loading_icon = document.getElementById("register_loading_icon")
-
-                register_button.innerHTML = "Submitting";
-                register_loading_icon.style.display = "block";
-
-                fetch(
-                "{% url 'register_request' %}", 
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded",
-                        "X-CSRFToken": "{{ csrf_token }}"
-                    },
-                    body: new URLSearchParams(
-                        { 
-                            first_name: firstname_registration.value, 
-                            other_names: secondname_registration.value,
-
-                            email_address: email_registration.value,
-                            password: password_registration.value
-                        }
-                    )
-                }
-                )
-                .then(response => response.json())
-                .then(data => {
-
-                    setTimeout(function() {
-                       
-                        const register_button = document.getElementById("register_button");
-
-                        console.log("Done");
-                        console.log("Server Response:", data.message);
-
-                        register_loading_icon.style.display = "none"; 
-
-                        if (data.status == "success"){
-                            register_button.innerHTML = "Registration SUCCESS";
-                            register_button.style.backgroundColor = "#18b751";
-                        }else{
-                            register_button.innerHTML = "Registration ERROR";
-                            register_button.style.backgroundColor = "#FF4F6C";
-                        }
-
-                    }, 1000);
-                                                                  
-                })
-                .catch(error => {
-                    console.error("Error:", error);
-                });
-            }
             
+            // Attempt registration - Input checks done on the server and response sent back
+            const register_button = document.getElementById("register_button");
+            const register_loading_icon = document.getElementById("register_loading_icon")
+
+            register_button.innerHTML = "Submitting";
+            register_loading_icon.style.display = "block";
+
+            fetch(
+            "{% url 'register_request' %}", 
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: new URLSearchParams(
+                    { 
+                        first_name: firstname_registration.value, 
+                        other_names: secondname_registration.value,
+
+                        email_address: email_registration.value,
+                        password: password_registration.value,
+                        password_repeat: password_repeat_registration.value
+                    }
+                )
+            }
+            )
+            .then(response => response.json())
+            .then(data => {
+
+                setTimeout(function() {
+                    
+                    const register_button = document.getElementById("register_button");
+
+                    console.log("Done");
+                    console.log("Server Response:", data.message);
+
+                    register_loading_icon.style.display = "none"; 
+
+                    if (data.status == "success"){
+                        register_button.innerHTML = "Registration SUCCESS";
+                        register_button.style.backgroundColor = "#18b751";
+                    }else{
+                        register_button.innerHTML = "Registration ERROR";
+                        register_button.style.backgroundColor = "#FF4F6C";
+
+                        prompt_user(data.header_message, data.message);
+                    }
+
+                }, 1000);
+                                                                
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+
         }
 
 

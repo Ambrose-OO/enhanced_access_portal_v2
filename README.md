@@ -86,6 +86,14 @@ https://www.w3schools.com/django/django_update_data.php
 
 https://github.com/django/django/
 
+https://stackoverflow.com/questions/42082338/git-checkout-switching-back-to-head
+
+https://medium.com/swlh/using-git-how-to-go-back-to-a-previous-commit-8579ccc8180f
+
+https://www.w3schools.com/cssref/css3_pr_overflow-y.php#:~:text=The%20overflow%2Dy%20property%20specifies,the%20left%20and%20right%20edges.
+
+https://forum.djangoproject.com/t/understanding-django-include/21788/11
+
 https://developer.mozilla.org/en-US/docs/Web/CSS/repeat
 
 https://developer.mozilla.org/en-US/docs/Web/CSS/grid-template-columns
