@@ -1273,17 +1273,4 @@ def ADMIN_PROMPT_create_project(request):
     
     return JsonResponse({"status": "fail", "message": "Only POST allowed"}, status=405)
 
-@csrf_protect
-def ADMIN_PROMPT_update_project_name(request):
-    # Update all of the entities "project name" as well
-    print("empty")
-
-@csrf_protect
-def ADMIN_PROMPT_project_entity_addition(request):
-    print("empty")
-
-@csrf_protect
-def ADMIN_PROMPT_project_entity_removal(request):
-    print("empty")
-
 
