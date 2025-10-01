@@ -107,7 +107,7 @@
                         </div>
                         
                         <div style="text-align: right; margin-right: 0.45%;">
-                            <button id = "panel_toggle_button" type="button" onclick="" class = "panel_toggle_button" style = "width: 110%; height: 50px;">
+                            <button id = "panel_toggle_button" type="button" onclick="toggle_left_panel()" class = "panel_toggle_button" style = "width: 110%; height: 50px;">
                                 <img id="panel_toggle_button" src="{% static 'media/PanelToggleIcon.png' %}" class="nine_square_button_icon" alt="Panel toggle" />
                             </button>
                         </div>
@@ -129,7 +129,7 @@
                     
                     <div id = "content-panel" style = "align-items: center; display: flex; height: 70%;">
 
-                        <div class = "left_panel" style = "width: 12%; height: 100%; align-items: center;">
+                        <div id = "left_panel" class = "left_panel" style = "width: 12%; height: 100%; align-items: center;">
 
                             <button id = "projects_button" type="button" onclick="section_reveal('projects_section')" class = "panel_button" style = "margin-top: 5px;">
                                 <img id="panel_toggle_button" src="{% static 'media/ProjectsIcon2.png' %}" class="nine_square_button_icon" alt="Projects" style = "width: 80%; transform: translate(12%, 0%);"/>
@@ -780,6 +780,19 @@
         function prompt_continue_button(){
             reveal_notification_or_prompt("none");
         }
+
+        // Left panel toggle
+        const left_panel = document.getElementById("left_panel");
+
+        function toggle_left_panel(){
+            if (left_panel.style.display == "block"){
+                left_panel.style.display = "none";
+            }else{
+                left_panel.style.display = "block";
+            }
+        }
+
+
 
 
         let project_identifier = ""; // Variable used to pass a project identifer code when creating a project
