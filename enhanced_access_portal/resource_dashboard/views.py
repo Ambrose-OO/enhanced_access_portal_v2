@@ -345,8 +345,32 @@ def USER_ADMIN_PROMPT_delete_vm_group(request):
                             found_group.delete()
                     
                     group.delete()
-        
-                return JsonResponse({"status": "success", "message": "Group deleted"})
+
+                    return JsonResponse(
+                        {
+                            "status": "success", 
+                            "header_message": "Success: Server deleted the group",
+                            "message": "Server successfully deleted the project from the database."
+                        }
+                    ) 
+                else:
+                    return JsonResponse(
+                        {
+                            "status": "fail", 
+                            "header_message": "Error: You do not own the group you attempted to delete",
+                            "message": "There must be an issue with linking your user_id to your session. Please re-log in and try again."
+                        }
+                    ) 
+            else:
+                return JsonResponse(
+                    {
+                        "status": "fail", 
+                        "header_message": "Error: Group doesn't exist",
+                        "message": "The group you attempted to delete does not exist. Please try selecting a group again for deletion."
+                    }
+                ) 
+
+                
 
     return JsonResponse({"status": "fail", "message": "Only POST allowed"}, status=405)
 

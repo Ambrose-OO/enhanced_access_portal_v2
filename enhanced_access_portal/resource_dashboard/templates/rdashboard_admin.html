@@ -2360,6 +2360,7 @@
                 
                 if (data.status == "success"){
                     
+                    prompt_user(data.header_message, data.message);
                     // Removing the project entry display
                     // TODO: Figure out what the line below does again
                     group_entry_div.parentNode.removeChild(vms_content); // removing the listing after success
@@ -2371,7 +2372,7 @@
                 }else{
                     // If the VM has failed to be deleted, give a failed prompt
                     // then return back to normal
-                    console.log(data.message);
+                    prompt_user(data.header_message, data.message);
 
                     delete_group_button.innerHTML = "Failed.";
                     setTimeout(function() {
