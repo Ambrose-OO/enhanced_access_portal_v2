@@ -766,7 +766,8 @@ def USRER_ADMIN_PROMPT_remove_vm_from_group(request):
                         return JsonResponse(
                             {
                                 "status": "success", 
-                                "message": "Server succeeded removing vm from the group",
+                                "header_message": "Success: Server VM removal from group",
+                                "message": "Server succeeded in the removing of selected vm from the group.",
                                 "groups": {
                                     "listings": user_group_listings,
                                     "meta_data": group_metadata
