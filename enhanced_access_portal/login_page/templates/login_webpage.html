@@ -485,7 +485,13 @@
             });
         }
 
+        const register_button = document.getElementById("register_button");
 
+        function reset_signup_button_style(){
+            register_button.innerHTML = "Sign up";
+            register_button.style.backgroundColor = "#333579";
+        }
+        
         function USER_PROMPT_register(){
 
             // HTML elements containing registration data
@@ -500,8 +506,7 @@
 
             
             // Attempt registration - Input checks done on the server and response sent back
-            const register_button = document.getElementById("register_button");
-            const register_loading_icon = document.getElementById("register_loading_icon")
+            const register_loading_icon = document.getElementById("register_loading_icon");
 
             register_button.innerHTML = "Submitting";
             register_loading_icon.style.display = "block";
@@ -541,9 +546,18 @@
                     if (data.status == "success"){
                         register_button.innerHTML = "Registration SUCCESS";
                         register_button.style.backgroundColor = "#18b751";
+
+                        setTimeout(function() {
+                            reset_signup_button_style();
+                        }, 5000);
+                        
                     }else{
                         register_button.innerHTML = "Registration ERROR";
                         register_button.style.backgroundColor = "#FF4F6C";
+
+                        setTimeout(function() {
+                            reset_signup_button_style();
+                        }, 2000);
 
                         prompt_user(data.header_message, data.message);
                     }
