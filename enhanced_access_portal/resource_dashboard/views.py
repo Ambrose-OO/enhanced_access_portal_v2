@@ -557,13 +557,20 @@ def USRER_ADMIN_PROMPT_add_vm_to_group(request):
             group_name = request.POST.get("group_name")
 
             group_exists = False
+            vm_already_exists = False
             vm = fetch_vm_from_id(vm_id)
 
             for found_group in VM_Group.objects.all():    
                 if (found_group.vm_group_name == group_name):
                     group_exists = True
+
+                    # Since the loop will continue through every other entry for the group,
+                    # a check on whether the vm exists in the group can be made 
+                    if (found_group.vm_id == vm_id):
+                        vm_already_exists == True
+
             
-            if (group_exists) and (vm):
+            if (group_exists) and (vm) and (vm_already_exists == False):
                 user_id = request.session.get("user_id")  
             
                 group_root_entry = VM_Group(
@@ -581,28 +588,50 @@ def USRER_ADMIN_PROMPT_add_vm_to_group(request):
                 return JsonResponse(
                     {
                         "status": "success", 
-                        "message": "Server succeeded adding vm to the group",
+                        "header_message": "Success: Server added vm to the group",
+                        "message": "Server succeeded in adding the selected vm to the group.",
                         "groups": {
                             "listings": user_group_listings,
                             "meta_data": group_metadata
                         }
                     }
                 ) 
-        
-            return JsonResponse(
-                {
-                    "status": "error", 
-                    "message": "Server cannot add vm to the group"
-                }
-            ) 
+            else:
+                if (not group_exists):
+                    return JsonResponse(
+                        {
+                            "status": "fail", 
+                            "header_message": "Error: Can't identify selected group",
+                            "message": "The selected group to add the vm to does not exist."
+                        }
+                    )
+                elif (not vm):
+                    return JsonResponse(
+                        {
+                            "status": "fail", 
+                            "header_message": "Error: Can't identify selected vm",
+                            "message": "Selected vm to add to the group cannot be identified."
+                        }
+                    )
+                elif (vm_already_exists == True):
+                    return JsonResponse(
+                        {
+                            "status": "fail", 
+                            "header_message": "Error: VM already in the group",
+                            "message": "Selected vm to add to the group is already in the group."
+                        }
+                    )
+            
         else:
+            
             # Failure response if the user is requesting data when logged out
             return JsonResponse(
                 {
-                    "status": "failure", 
-                    "message": "Server can't pass data on user who is logged out"
+                    "status": "fail", 
+                    "header_message": "Error: Logged out",
+                    "message": "Server can't pass data on user who is logged out."
                 }
-            ) 
+            )
 
 
 @csrf_protect

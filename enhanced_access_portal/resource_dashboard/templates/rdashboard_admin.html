@@ -2257,7 +2257,9 @@
             .then(data => {
                 
                 if (data.status == "success"){
-                         
+                        
+                    prompt_user(data.header_message, data.message);
+
                     // Updating group information currently being displayed to the user
                     const group_listing_data = data.groups.listings;
                     const group_metadata_data = data.groups.meta_data;
@@ -2265,6 +2267,9 @@
                     update_group_display_with_group_data(group_listing_data, group_metadata_data);
 
                 }else{
+
+                    prompt_user(data.header_message, data.message);
+
                     // If the VM has failed to be added, give a failed prompt
                     // then return back to normal
 
@@ -2309,6 +2314,8 @@
                 console.log("RV B");
                 if (data.status == "success"){
                     
+                    prompt_user(data.header_message, data.message);
+
                     // Updating group information currently being displayed to the user
                     const group_listing_data = data.groups.listings;
                     const group_metadata_data = data.groups.meta_data;
@@ -2316,9 +2323,11 @@
                     update_group_display_with_group_data(group_listing_data, group_metadata_data);
             
                 }else{
+
+                    prompt_user(data.header_message, data.message);
+                    
                     // If the VM has failed to be added, give a failed prompt
                     // then return back to normal
-                    //console.log(data.message);
 
                     vm_remove_button.innerHTML = "Failed.";
                     setTimeout(function() {
