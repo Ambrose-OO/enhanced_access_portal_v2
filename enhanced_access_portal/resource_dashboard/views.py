@@ -287,9 +287,29 @@ def USER_ADMIN_PROMPT_create_vm_group(request):
             group_name = request.POST.get("group_name")
 
             if (group_name != None):
-
-                user_id = request.session.get("user_id")  
                 
+                if (len(group_name) < 3):
+                    return JsonResponse(
+                        {
+                            "status": "fail", 
+                            "header_message": "Error: VM group name length",
+                            "message": "Issue with creating a VM group. As the group name has less than three characters. Please try again."
+                        }
+                    )
+                
+                user_id = request.session.get("user_id")  
+                user = fetch_user_from_id(user_id)
+
+                for vm_group in VM_Group.objects.all():
+                    if (vm_group.vm_group_name == group_name) and (vm_group.owner_id == user):
+                        return JsonResponse(
+                            {
+                                "status": "fail", 
+                                "header_message": "Error: VM group duplicate name",
+                                "message": "Issue with creating a VM group. As one already exists with the same name. Please try again"
+                            }
+                        )
+                            
                 group_root_entry = VM_Group(
                     owner_id = fetch_user_from_id(user_id),
                     vm_group_name = group_name
@@ -1202,12 +1222,27 @@ def ADMIN_PROMPT_create_project(request):
 
                 if (project_name_value != ""):
                     if (len(project_name_value) > 2): 
+
+                        user = fetch_user_from_id(user_id)
+
+                        for project in Projects.objects.all():
+                            
+                            if (project.project_name == project_name_value):
+                                return JsonResponse(
+                                    {
+                                        "status": "fail", 
+                                        "header_message": "Error: Project duplicate name",
+                                        "message": "Issue with creating a project. As one already exists with the same name."
+                                    }
+                                )
+                        
+                        
                         project_root_entry = Projects(
-                        entity_type = "PROJECT",
-                        entity_id = 0, # Can just use the project identifier code to find records for a particulat project then hone in on "PROJECT" entity_type
-                        owner_id_id = user_id,
-                        project_name = project_name_value,
-                        project_identifier_code = project_identifier
+                            entity_type = "PROJECT",
+                            entity_id = 0, # Can just use the project identifier code to find records for a particulat project then hone in on "PROJECT" entity_type
+                            owner_id_id = user_id,
+                            project_name = project_name_value,
+                            project_identifier_code = project_identifier
                         )
                         project_root_entry.save()
 
