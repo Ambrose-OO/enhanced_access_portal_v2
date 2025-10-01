@@ -13,6 +13,9 @@
     -->
     
     <head>
+
+        <link rel = "stylesheet" href="{% static 'css/notification_and_prompt_style.css' %}">
+
         <link rel = "stylesheet" href="{% static 'css/main_style.css' %}">
         <link rel = "stylesheet" href="{% static 'css/button_style.css' %}">
         <link rel = "stylesheet" href="{% static 'css/text_style.css' %}">
@@ -20,11 +23,11 @@
     </head>
 
 
-    <body>
+    <body class = "resource_dashboard_body">
         
         <div class = "main_panel" style="display:flex">
             <!--- Display is either none or flex -->
-            <div id = "notification_window" style="display: none; justify-content: center; align-items: center; z-index: 5; width: 100%; height: 100%; background-color: #5f5f5f9d; position: absolute;"> 
+            <div id = "notification_window" class = "notification_window_style"> 
                 
                 <div style = "width: 40%; height: 20%; justify-content: center; align-items: center; display: flex; background-color: #212529ce; border-radius: 1.5rem;">
                     <p id = "notification_message" class = "roboto_font" style = "font-size: 2vw; margin: 0px; font-weight: bold; margin-right: 2%; color: #ffffff;">Logging out</p>
@@ -34,7 +37,7 @@
             </div>
 
             <!--- Display is either none or flex -->
-            <div id = "prompt_window" style="display: flex; justify-content: center; align-items: center; z-index: 5; width: 100%; height: 100%; background-color: #5f5f5f9d; position: absolute;"> 
+            <div id = "prompt_window" class = "prompt_window_style"> 
                 
                 <div style = "width: 50%; height: 60%; margin-top: 5%;">
                     <div style = "width: 100%; height: 15%; justify-content: center; align-items: center; display: flex; background-color: #212529ce; border-radius: 1.5rem;">
@@ -56,7 +59,7 @@
 
 
             <!--- Display is either none or flex -->
-            <div id = "confirmation_prompt_window" style="display: flex; justify-content: center; align-items: center; z-index: 5; width: 100%; height: 100%; background-color: #5f5f5f9d; position: absolute;"> 
+            <div id = "confirmation_prompt_window" class = "confirmation_prompt_window_style"> 
                 
                 <div style = "width: 50%; height: 60%; margin-top: 5%;">
                     <div style = "width: 100%; height: 15%; justify-content: center; align-items: center; display: flex; background-color: #212529ce; border-radius: 1.5rem;">
@@ -85,8 +88,8 @@
             </div>
 
 
-            <div class = "login_column">
-                <div class = "login_section " style="z-index: 1; position: relative;">
+            <div class = "resource_dashboard_column">
+                <div class = "main_section " style="z-index: 1; position: relative;">
                     
                     <div class = "upper_panel width_section_length" style = "align-items: center; display: flex; height: 12%">
                         <p class = "header_title" style = "padding-right: 15%; font-size: 140%; width: 60%;">

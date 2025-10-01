@@ -12,185 +12,22 @@
         - Overflows in x and y direction
         - Stack from the left when stacking horizontally
     -->
-    <style>
-        
-        body {
-            background-color: rgb(246, 247, 252);
-            height: 100%;
-            margin: 0;
-            display: flex;
-        }
 
-        .login_panel {
-            width: 50%;
-            height: 100vh; /* Full vertical height */
-            overflow: auto;
-        }
+    <head>
 
-        .login_panel_bg {
-            width: 50%;
-            height: 100vh; /* Full vertical height */
-            overflow: auto;
+        <link rel = "stylesheet" href="{% static 'css/login_page_style.css' %}">
 
-          
-           background-image: url("{% static 'media/ServerFarm2.png' %}"); 
-           background-size: cover; 
-           background-position: center;
-           background-color: #fb771a;
-        
-           position: relative;
-        }
+        <link rel = "stylesheet" href="{% static 'css/notification_and_prompt_style.css' %}">
 
-        .login_column {
-            width: 70%;
-            margin: auto; /* Centre column */
-            height: 100vh;
-            background-color: rgb(246, 247, 252); /* Debug colour:  rgb(186, 186, 189)*/
-            overflow: auto; /* Solves scrollbar issue */
+        <link rel = "stylesheet" href="{% static 'css/main_style.css' %}">
+        <link rel = "stylesheet" href="{% static 'css/button_style.css' %}">
+        <link rel = "stylesheet" href="{% static 'css/text_style.css' %}">
+        <link rel = "stylesheet" href="{% static 'css/styling_style.css' %}">
 
-            justify-content: center; /* Horizontal centre */
-            align-items: center; /* Vertical centre */
-            display: flex;
-        }
+    </head>
 
-        .login_entry_section {
-            margin-bottom: 3%;
-        }
 
-        .login_options {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .alternate_login_options {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding-top: 3%;
-        }
-
-        .login_section{
-            align-items: center;
-            /* https://blog.hubspot.com/website/css-margin-vs-padding#:~:text=What's%20the%20difference%20between%20margin,border%20and%20the%20element's%20content. */
-            margin-bottom: 10%;
-            padding-left: 3%;
-            padding-right: 3%;
-            padding-bottom: 4%;
-            width: 80%;
-
-            background-color: #FFFFFF;
-            border-radius: 0.5rem;
-            filter: drop-shadow(5px 5px 6px);
-            
-            /* Stops child elements from being visibile if it goes out of main element boundaries */
-            overflow: hidden;
-        }
-
-        .login_button{
-            color: #fff;
-            background-color: #333579;
-            border-color: #333579;
-            border: 1px solid transparent;
-            border-radius: 0.25rem;
-
-            width: 100%;
-            position: relative; 
-            z-index: 1; 
-            height: 54px;
-            display:block;
-            margin:auto;
-            margin-top: 9%; /*Using padding seems to shift the text position. Useful for later*/
-
-            font-size: 1.2em;
-            
-            /* https://www.w3schools.com/tags/tryit.asp?filename=tryhtml_button_css */
-            cursor: pointer;
-            text-align: center;
-        }
-        
-        .alternate_login_button{
-            color: #fff;
-            background-color: #212529;
-            border-color: #212529;
-            border: 1px solid transparent;
-            border-radius: 0.25rem;
-
-            width: 40%;
-            position: relative; 
-            z-index: 1; 
-            height: 30px;
-            display:block;
-            margin:auto;
-
-            font-size: 0.9em;
-            
-            /* https://www.w3schools.com/tags/tryit.asp?filename=tryhtml_button_css */
-            cursor: pointer;
-            text-align: center;
-        }
-
-        .login_button:hover {
-            /* https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Solve_CSS_problems/Transition_button */
-            background-color: #4F52BD;
-        }
-
-        .entry_style1{
-            width: -webkit-fill-available;
-            padding: 0.375rem 0.75rem;
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
-            display: block;
-            border-radius: 0.25rem;
-            overflow: auto;
-        }
-
-        a, span, label, h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
-            font-family: "Roboto", sans-serif;
-            color: #212529;
-        }
-
-        .roboto_font {
-            /* Alternative to the above text tag overrides*/
-            font-family: "Roboto", sans-serif;
-            color: #212529;
-        }
-
-        .login_page_slogan {
-            font-family: "Roboto", sans-serif;
-            font-weight: bold;
-            font-stretch: expanded;
-            color: #FFFFFF;
-            font-size: 2.5em;
-
-            position: relative;  /* ensures text is over background */
-            z-index: 1;
-            padding: 2rem;
-            transform: translate(30%, 40%);
-        }
-
-        input [type=submit] {
-            font-size: 1.5em;
-        }
-
-        .button_wrapper {
-            position: relative;
-            width: 100%;
-        }
-
-        .loader {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 24px;       /* adjust size as needed */
-            height: 24px;
-            transform: translate(220%, -50%);
-            display: none;     /* hidden by default. On show on 'block' */
-            pointer-events: none; /* allows clicks to pass through */
-            z-index: 2;
-        }
-
-    </style>
-
-    <body>
+    <body class = "login_page_body">
         
         <!-- Do not remove -->
         <form style="display:none;">
@@ -200,7 +37,7 @@
         <div class = "login_panel" style="display:flex">
 
              <!--- Display is either none or flex -->
-             <div id = "notification_window" style="display: none; justify-content: center; align-items: center; z-index: 5; width: 100%; height: 100%; background-color: #5f5f5f9d; position: absolute;"> 
+             <div id = "notification_window" class = "notification_window_style"> 
                 
                 <div style = "width: 40%; height: 20%; justify-content: center; align-items: center; display: flex; background-color: #212529ce; border-radius: 1.5rem;">
                     <p id = "notification_message" class = "roboto_font" style = "font-size: 2vw; margin: 0px; font-weight: bold; margin-right: 2%; color: #ffffff;">Logging out</p>
@@ -210,7 +47,7 @@
             </div>
 
             <!--- Display is either none or flex -->
-            <div id = "prompt_window" style="display: flex; justify-content: center; align-items: center; z-index: 5; width: 100%; height: 100%; background-color: #5f5f5f9d; position: absolute;"> 
+            <div id = "prompt_window" class = "prompt_window_style"> 
                 
                 <div style = "width: 50%; height: 60%; margin-top: 5%;">
                     <div style = "width: 100%; height: 15%; justify-content: center; align-items: center; display: flex; background-color: #212529ce; border-radius: 1.5rem;">
@@ -232,7 +69,7 @@
 
 
             <!--- Display is either none or flex -->
-            <div id = "confirmation_prompt_window" style="display: flex; justify-content: center; align-items: center; z-index: 5; width: 100%; height: 100%; background-color: #5f5f5f9d; position: absolute;"> 
+            <div id = "confirmation_prompt_window" class = "confirmation_prompt_window_style"> 
                 
                 <div style = "width: 50%; height: 60%; margin-top: 5%;">
                     <div style = "width: 100%; height: 15%; justify-content: center; align-items: center; display: flex; background-color: #212529ce; border-radius: 1.5rem;">
@@ -262,7 +99,7 @@
 
 
             <div class = "login_column">
-                <div class = "login_section" style="z-index: 1; position: relative;">
+                <div class = "main_section" style="z-index: 1; position: relative;">
                     
                     <h1>Enhanced access portal</h1>
                     
@@ -309,7 +146,7 @@
                                 <button id = "login_button" type="button" onclick="USER_PROMPT_login_attempt()" class = "login_button">
                                     Log in
                                 </button>
-                                <img id="login_loading_icon" src="{% static 'media/LoadingCircle.gif' %}" class="loader" alt="loading" />
+                                <img id="login_loading_icon" src="{% static 'media/LoadingCircle.gif' %}" class="loader_login_page" alt="loading" />
                             </div> 
     
                             <div class = "alternate_login_options">
@@ -320,246 +157,7 @@
                                     Register
                                 </button>
                             </div>
-    
-                            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-                            <script>
-                                function getCookie(name) {
-                                    let cookieValue = null;
-                                    if (document.cookie && document.cookie !== '') {
-                                        const cookies = document.cookie.split(';');
-                                        for (let i = 0; i < cookies.length; i++) {
-                                            const cookie = cookies[i].trim();
-                                            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                                                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                                                break;
-                                            }
-                                        }
-                                    }
-                                    return cookieValue;
-                                }
-                                    
-                                function USER_PROMPT_login_attempt() {
-                                    
-                                    const email_login = document.getElementById("email_login");
-                                    const password_login = document.getElementById("password_login");
-                                    
-                                    fetch(
-                                        "{% url 'login_request' %}", 
-                                        {
-                                            method: "POST",
-                                            headers: {
-                                                "Content-Type": "application/x-www-form-urlencoded",
-                                                "X-CSRFToken": getCookie('csrftoken') //https://www.geeksforgeeks.org/python/csrf-token-in-django/
-                                            },
-                                            body: new URLSearchParams(
-                                                { 
-                                                    email: email_login.value, 
-                                                    password: password_login.value
-                                                }
-                                            )
-                                        }
-                                    )
-                                    .then(response => response.json())
-                                    .then(data => {
-                                            console.log("Done");
-                                            console.log("Server Response:", data.message);
-                                            document.getElementById("login_button").innerHTML = "Submitting";
-                                            document.getElementById("login_loading_icon").style.display = "block";
 
-                                            if (data.status == "success"){
-                                                setTimeout(function() {
-                                                    document.getElementById("login_button").innerHTML = "Logging in...";
-                                                    document.getElementById("login_button").style.backgroundColor = "#18b751"; 
-                                                    
-                                                    document.getElementById("login_loading_icon").style.transform = "translate(260%, -50%)";
-                                                    //document.getElementById("login_section_page").style.position = "relative";
-                                                    //document.getElementById("login_section_page").style.top = "500px";
-                                                    
-                                                    setTimeout(function() {
-                                                        window.location.href = "/resource_dashboard/"
-                                                        
-                                                    }, 1000);
-                                                }, 1000);
-                                            }else{
-                                                setTimeout(function() {
-                                                    document.getElementById("login_button").innerHTML = "Incorrect credentials";
-                                                    document.getElementById("login_button").style.backgroundColor = "#FF4F6C"; 
-                                                    
-                                                    document.getElementById("login_loading_icon").style.display = "none";
-                                                }, 1000);
-                                            }
-                                            
-                                            
-                                    })
-                                    .catch(error => {
-                                        console.error("Error:", error);
-                                    });
-                                }
-    
-                                function USER_PROMPT_forgot_password() {
-                                
-                                }
-                                
-                                function USER_PROMPT_register(){
-                                    const firstname_registration = document.getElementById("firstname_registration");
-                                    const secondname_registration = document.getElementById("secondname_registration");
-
-                                    const email_registration = document.getElementById("email_registration");
-                                    const password_registration = document.getElementById("password_registration");
-                                    const password_repeat = document.getElementById("password_repeat");
-                                   
-                                    console.log(firstname_registration.value);
-
-                                    let empty_entry = false;
-
-                                    function check_empty_entry(){
-                                        
-                                        if (firstname_registration.value != ""){
-                                            console.log("valid");
-                                        }else{
-                                            empty_entry = true;
-                                        }
-
-                                        if (secondname_registration.value != ""){
-                                            console.log("valid");
-                                        }else{
-                                            empty_entry = true;
-                                        }
-
-                                        if (email_registration.value != ""){
-                                            console.log("valid");
-                                        }else{
-                                            empty_entry = true;
-                                        }
-
-                                        if (password_registration.value != ""){
-                                            console.log("valid");
-                                        }else{
-                                            empty_entry = true;
-                                        }
-
-                                        if (password_repeat.value != ""){
-                                            console.log("valid");
-                                        }else{
-                                            empty_entry = true;
-                                        }
-                                    }
-
-                                    check_empty_entry()
-                                    if (empty_entry == false){
-                                        // If there's no false entries then attempt registration
-                                        const register_button = document.getElementById("register_button");
-                                        const register_loading_icon = document.getElementById("register_loading_icon")
-
-                                        register_button.innerHTML = "Submitting";
-                                        register_loading_icon.style.display = "block";
-
-                                        fetch(
-                                        "{% url 'register_request' %}", 
-                                        {
-                                            method: "POST",
-                                            headers: {
-                                                "Content-Type": "application/x-www-form-urlencoded",
-                                                "X-CSRFToken": "{{ csrf_token }}"
-                                            },
-                                            body: new URLSearchParams(
-                                                { 
-                                                    first_name: firstname_registration.value, 
-                                                    other_names: secondname_registration.value,
-
-                                                    email_address: email_registration.value,
-                                                    password: password_registration.value
-                                                }
-                                            )
-                                        }
-                                        )
-                                        .then(response => response.json())
-                                        .then(data => {
-
-                                            setTimeout(function() {
-                                               
-                                                const register_button = document.getElementById("register_button");
-
-                                                console.log("Done");
-                                                console.log("Server Response:", data.message);
-
-                                                register_loading_icon.style.display = "none"; 
-
-                                                if (data.status == "success"){
-                                                    register_button.innerHTML = "Registration SUCCESS";
-                                                    register_button.style.backgroundColor = "#18b751";
-                                                }else{
-                                                    register_button.innerHTML = "Registration ERROR";
-                                                    register_button.style.backgroundColor = "#FF4F6C";
-                                                }
-
-                                            }, 1000);
-                                                                                          
-                                        })
-                                        .catch(error => {
-                                            console.error("Error:", error);
-                                        });
-                                    }
-                                    
-                                }
-
-
-                                function USER_PROMPT_register_section() {
-                                    const login_section_page = document.getElementById("login_section_page");
-                                    const register_section_page = document.getElementById("register_section_page");
-                                    let start = null;
-                                    let startPos = 0;
-                                    const endPos = 600;
-                                    const duration = 500;  // 0.5 second
-                                    
-                                    register_section_page.style.left = -endPos + "px";
-                                    register_section_page.style.display = "block";
-    
-                                    function animate(timestamp) {
-                                        if (!start) start = timestamp;
-                                        const progress = timestamp - start;
-                                        const percent = Math.min(progress / duration, 1);
-                                        login_section_page.style.left = (startPos + percent * (endPos - startPos)) + "px";
-                                        register_section_page.style.left = (-600 + percent * (endPos - startPos)) + "px";
-    
-                                        if (percent < 1) {
-                                        requestAnimationFrame(animate);
-                                        }
-                                    }
-    
-                                    requestAnimationFrame(animate);
-                                }
-
-                                function USER_PROMPT_register_cancel(){
-                                    const login_section_page = document.getElementById("login_section_page");
-                                    const register_section_page = document.getElementById("register_section_page");
-                                    let start = null;
-                                    let startPos = 0;
-                                    const endPos = 600;
-                                    const duration = 500;  // 0.5 second
-                                    
-                                    register_section_page.style.left = -endPos + "px";
-                                    register_section_page.style.display = "block";
-    
-                                    function animate(timestamp) {
-                                        if (!start) start = timestamp;
-                                        const progress = timestamp - start;
-                                        const percent = Math.min(progress / duration, 1);
-                                        login_section_page.style.left = (endPos - percent * (endPos - startPos)) + "px";
-                                        register_section_page.style.left = (startPos - percent * (endPos - startPos)) + "px";
-    
-                                        if (percent < 1) {
-                                        requestAnimationFrame(animate);
-                                        }
-                                        if (percent == 1){
-                                            register_section_page.style.display = "none";
-                                        }
-                                    }
-    
-                                    requestAnimationFrame(animate);
-                                }
-                            </script>
-    
                         </div>
                         
                         <div id = "register_section_page" style="display: none; z-index: 2; position: relative;  grid-area: 1 / 1;"> 
@@ -614,7 +212,7 @@
                                 <button id = "register_button" type="button" onclick="USER_PROMPT_register()" class = "login_button">
                                     Sign up
                                 </button>
-                                <img id="register_loading_icon" src="{% static 'media/LoadingCircle.gif' %}" class="loader" alt="loading" />
+                                <img id="register_loading_icon" src="{% static 'media/LoadingCircle.gif' %}" class="loader_login_page" alt="loading" />
                             </div> 
     
                             <div class = "alternate_login_options">
@@ -683,4 +281,243 @@
         </div>
 
     </body>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+            
+        function USER_PROMPT_login_attempt() {
+            
+            const email_login = document.getElementById("email_login");
+            const password_login = document.getElementById("password_login");
+            
+            fetch(
+                "{% url 'login_request' %}", 
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "X-CSRFToken": getCookie('csrftoken') //https://www.geeksforgeeks.org/python/csrf-token-in-django/
+                    },
+                    body: new URLSearchParams(
+                        { 
+                            email: email_login.value, 
+                            password: password_login.value
+                        }
+                    )
+                }
+            )
+            .then(response => response.json())
+            .then(data => {
+                    console.log("Done");
+                    console.log("Server Response:", data.message);
+                    document.getElementById("login_button").innerHTML = "Submitting";
+                    document.getElementById("login_loading_icon").style.display = "block";
+
+                    if (data.status == "success"){
+                        setTimeout(function() {
+                            document.getElementById("login_button").innerHTML = "Logging in...";
+                            document.getElementById("login_button").style.backgroundColor = "#18b751"; 
+                            
+                            document.getElementById("login_loading_icon").style.transform = "translate(260%, -50%)";
+                            //document.getElementById("login_section_page").style.position = "relative";
+                            //document.getElementById("login_section_page").style.top = "500px";
+                            
+                            setTimeout(function() {
+                                window.location.href = "/resource_dashboard/"
+                                
+                            }, 1000);
+                        }, 1000);
+                    }else{
+                        setTimeout(function() {
+                            document.getElementById("login_button").innerHTML = "Incorrect credentials";
+                            document.getElementById("login_button").style.backgroundColor = "#FF4F6C"; 
+                            
+                            document.getElementById("login_loading_icon").style.display = "none";
+                        }, 1000);
+                    }
+                    
+                    
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        }
+
+        function USER_PROMPT_forgot_password() {
+        
+        }
+        
+        function USER_PROMPT_register(){
+            const firstname_registration = document.getElementById("firstname_registration");
+            const secondname_registration = document.getElementById("secondname_registration");
+
+            const email_registration = document.getElementById("email_registration");
+            const password_registration = document.getElementById("password_registration");
+            const password_repeat = document.getElementById("password_repeat");
+           
+            console.log(firstname_registration.value);
+
+            let empty_entry = false;
+
+            function check_empty_entry(){
+                
+                if (firstname_registration.value != ""){
+                    console.log("valid");
+                }else{
+                    empty_entry = true;
+                }
+
+                if (secondname_registration.value != ""){
+                    console.log("valid");
+                }else{
+                    empty_entry = true;
+                }
+
+                if (email_registration.value != ""){
+                    console.log("valid");
+                }else{
+                    empty_entry = true;
+                }
+
+                if (password_registration.value != ""){
+                    console.log("valid");
+                }else{
+                    empty_entry = true;
+                }
+
+                if (password_repeat.value != ""){
+                    console.log("valid");
+                }else{
+                    empty_entry = true;
+                }
+            }
+
+            check_empty_entry()
+            if (empty_entry == false){
+                // If there's no false entries then attempt registration
+                const register_button = document.getElementById("register_button");
+                const register_loading_icon = document.getElementById("register_loading_icon")
+
+                register_button.innerHTML = "Submitting";
+                register_loading_icon.style.display = "block";
+
+                fetch(
+                "{% url 'register_request' %}", 
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "X-CSRFToken": "{{ csrf_token }}"
+                    },
+                    body: new URLSearchParams(
+                        { 
+                            first_name: firstname_registration.value, 
+                            other_names: secondname_registration.value,
+
+                            email_address: email_registration.value,
+                            password: password_registration.value
+                        }
+                    )
+                }
+                )
+                .then(response => response.json())
+                .then(data => {
+
+                    setTimeout(function() {
+                       
+                        const register_button = document.getElementById("register_button");
+
+                        console.log("Done");
+                        console.log("Server Response:", data.message);
+
+                        register_loading_icon.style.display = "none"; 
+
+                        if (data.status == "success"){
+                            register_button.innerHTML = "Registration SUCCESS";
+                            register_button.style.backgroundColor = "#18b751";
+                        }else{
+                            register_button.innerHTML = "Registration ERROR";
+                            register_button.style.backgroundColor = "#FF4F6C";
+                        }
+
+                    }, 1000);
+                                                                  
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                });
+            }
+            
+        }
+
+
+        function USER_PROMPT_register_section() {
+            const login_section_page = document.getElementById("login_section_page");
+            const register_section_page = document.getElementById("register_section_page");
+            let start = null;
+            let startPos = 0;
+            const endPos = 600;
+            const duration = 500;  // 0.5 second
+            
+            register_section_page.style.left = -endPos + "px";
+            register_section_page.style.display = "block";
+
+            function animate(timestamp) {
+                if (!start) start = timestamp;
+                const progress = timestamp - start;
+                const percent = Math.min(progress / duration, 1);
+                login_section_page.style.left = (startPos + percent * (endPos - startPos)) + "px";
+                register_section_page.style.left = (-600 + percent * (endPos - startPos)) + "px";
+
+                if (percent < 1) {
+                requestAnimationFrame(animate);
+                }
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        function USER_PROMPT_register_cancel(){
+            const login_section_page = document.getElementById("login_section_page");
+            const register_section_page = document.getElementById("register_section_page");
+            let start = null;
+            let startPos = 0;
+            const endPos = 600;
+            const duration = 500;  // 0.5 second
+            
+            register_section_page.style.left = -endPos + "px";
+            register_section_page.style.display = "block";
+
+            function animate(timestamp) {
+                if (!start) start = timestamp;
+                const progress = timestamp - start;
+                const percent = Math.min(progress / duration, 1);
+                login_section_page.style.left = (endPos - percent * (endPos - startPos)) + "px";
+                register_section_page.style.left = (startPos - percent * (endPos - startPos)) + "px";
+
+                if (percent < 1) {
+                requestAnimationFrame(animate);
+                }
+                if (percent == 1){
+                    register_section_page.style.display = "none";
+                }
+            }
+
+            requestAnimationFrame(animate);
+        }
+    </script>
 </html>

@@ -15,7 +15,7 @@ input [type=submit] {
 
 
 /* UTILITIES */
-body {
+.resource_dashboard_body {
     background-color: rgb(246, 247, 252);
     height: 100%;
     margin: 0;
@@ -33,21 +33,7 @@ body {
     overflow: auto;
 }
 
-
-/* GENERIC STYLES */
-.login_column {
-    width: 70%;
-    margin: auto; /* Centre column */
-    height: 100vh;
-    background-color: rgba(246, 247, 252, 0); /* Debug colour:  rgb(186, 186, 189)*/
-    overflow: auto; /* Solves scrollbar issue */
-
-    justify-content: center; /* Horizontal centre */
-    align-items: center; /* Vertical centre */
-    display: flex;
-}
-
-.login_section{
+.main_section{
     align-items: center;
     /* https://blog.hubspot.com/website/css-margin-vs-padding#:~:text=What's%20the%20difference%20between%20margin,border%20and%20the%20element's%20content. */
     margin-bottom: 2%;
@@ -63,6 +49,21 @@ body {
     
     /* Stops child elements from being visibile if it goes out of main element boundaries */
     overflow: hidden;
+}
+
+
+
+/* GENERIC STYLES */
+.resource_dashboard_column {
+    width: 70%;
+    margin: auto; /* Centre column */
+    height: 100vh;
+    background-color: rgba(246, 247, 252, 0); /* Debug colour:  rgb(186, 186, 189)*/
+    overflow: auto; /* Solves scrollbar issue */
+
+    justify-content: center; /* Horizontal centre */
+    align-items: center; /* Vertical centre */
+    display: flex;
 }
 
 

@@ -1,0 +1,128 @@
+
+/*
+    CSS Styling guide
+    https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Organizing#:~:text=Compiling%20component%20stylesheets,separate%20stylesheet%20for%20each%20component.
+*/
+
+/* GENERAL STYLES */
+.login_page_body {
+    background-color: rgb(246, 247, 252);
+    height: 100%;
+    margin: 0;
+    display: flex;
+}
+
+.login_panel {
+    width: 50%;
+    height: 100vh; /* Full vertical height */
+    overflow: auto;
+}
+
+.login_panel_bg {
+    width: 50%;
+    height: 100vh; /* Full vertical height */
+    overflow: auto;
+
+  
+   background-image: url("../media/ServerFarm2.png"); 
+   background-size: cover; 
+   background-position: center;
+   background-color: #fb771a;
+
+   position: relative;
+}
+
+.login_column {
+    width: 70%;
+    margin: auto; /* Centre column */
+    height: 100vh;
+    background-color: rgb(246, 247, 252); /* Debug colour:  rgb(186, 186, 189)*/
+    overflow: auto; /* Solves scrollbar issue */
+
+    justify-content: center; /* Horizontal centre */
+    align-items: center; /* Vertical centre */
+    display: flex;
+}
+
+.login_entry_section {
+    margin-bottom: 3%;
+}
+
+.login_options {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.alternate_login_options {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 3%;
+}
+
+.login_button{
+    color: #fff;
+    background-color: #333579;
+    border-color: #333579;
+    border: 1px solid transparent;
+    border-radius: 0.25rem;
+
+    width: 100%;
+    position: relative; 
+    z-index: 1; 
+    height: 54px;
+    display:block;
+    margin:auto;
+    margin-top: 9%; /*Using padding seems to shift the text position. Useful for later*/
+
+    font-size: 1.2em;
+    
+    /* https://www.w3schools.com/tags/tryit.asp?filename=tryhtml_button_css */
+    cursor: pointer;
+    text-align: center;
+}
+
+.alternate_login_button{
+    color: #fff;
+    background-color: #212529;
+    border-color: #212529;
+    border: 1px solid transparent;
+    border-radius: 0.25rem;
+
+    width: 40%;
+    position: relative; 
+    z-index: 1; 
+    height: 30px;
+    display:block;
+    margin:auto;
+
+    font-size: 0.9em;
+    
+    /* https://www.w3schools.com/tags/tryit.asp?filename=tryhtml_button_css */
+    cursor: pointer;
+    text-align: center;
+}
+
+.login_button:hover {
+    /* https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Solve_CSS_problems/Transition_button */
+    background-color: #4F52BD;
+}
+
+.login_page_slogan {
+    font-family: "Roboto", sans-serif;
+    font-weight: bold;
+    font-stretch: expanded;
+    color: #FFFFFF;
+    font-size: 2.5em;
+
+    position: relative;  /* ensures text is over background */
+    z-index: 1;
+    padding: 2rem;
+    transform: translate(30%, 40%);
+}
+
+.button_wrapper {
+    position: relative;
+    width: 100%;
+}

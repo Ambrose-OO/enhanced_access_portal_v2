@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +26,7 @@ SECRET_KEY = '-p+onc@nigs7*t%3l4($ljyz0^)#t-y#^p0u39$4^fy$f-#d=u'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["ambroseoo.pythonanywhere.com"]
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -123,3 +124,18 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # where collectstatic will copy them
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),  # where you keep your dev static files
+]
+
+# Media file uploads
+#MEDIA_URL = '/resources/'
+#MEDIA_ROOT = str(BASE_DIR) + "/resources/"
+
+#STATICFILES_DIRS = [
+#    
+#    str(BASE_DIR) + "/resources"   # allow apps to access static files here
+#]
+
