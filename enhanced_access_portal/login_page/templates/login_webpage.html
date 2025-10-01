@@ -191,12 +191,76 @@
     </style>
 
     <body>
-    
+        
+        <!-- Do not remove -->
         <form style="display:none;">
             {% csrf_token %}
         </form>
 
         <div class = "login_panel" style="display:flex">
+
+             <!--- Display is either none or flex -->
+             <div id = "notification_window" style="display: none; justify-content: center; align-items: center; z-index: 5; width: 100%; height: 100%; background-color: #5f5f5f9d; position: absolute;"> 
+                
+                <div style = "width: 40%; height: 20%; justify-content: center; align-items: center; display: flex; background-color: #212529ce; border-radius: 1.5rem;">
+                    <p id = "notification_message" class = "roboto_font" style = "font-size: 2vw; margin: 0px; font-weight: bold; margin-right: 2%; color: #ffffff;">Logging out</p>
+                    <img id="notification_loading_icon" src="{% static 'media/LoadingCircle.gif' %}" class="loader" alt="loading" />
+                </div>
+              
+            </div>
+
+            <!--- Display is either none or flex -->
+            <div id = "prompt_window" style="display: flex; justify-content: center; align-items: center; z-index: 5; width: 100%; height: 100%; background-color: #5f5f5f9d; position: absolute;"> 
+                
+                <div style = "width: 50%; height: 60%; margin-top: 5%;">
+                    <div style = "width: 100%; height: 15%; justify-content: center; align-items: center; display: flex; background-color: #212529ce; border-radius: 1.5rem;">
+                        <p id = "prompt_header" class = "roboto_font" style = "font-size: 1.5vw; margin: 0px; font-weight: bold; margin-right: 2%; color: #ffffff;">Error: Invalid project name</p>
+                    </div>
+
+                    <div style = "margin-top: 5%; padding-top: 2%; padding-left: 2%; width: 98%; height: 40%; justify-content: center; align-items: center; background-color: #212529ce; border-radius: 1.5rem;">
+                        <div style = "height: 65%; width: 100%">
+                            <p id = "prompt_message" class = "roboto_font" style = "font-size: 1.2vw; margin: 0px; margin-right: 2%; color: #ffffff;">Project name has no characters. Write in at least a 3 character stringxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</p>
+                        </div>
+                        
+                        <button id = "x1" type="button" onclick="prompt_continue_button()" class = "alternate_button" style = "height: 25%; margin-left: 40%; font-size: 1.2em;">
+                            Continue
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <!--- Display is either none or flex -->
+            <div id = "confirmation_prompt_window" style="display: flex; justify-content: center; align-items: center; z-index: 5; width: 100%; height: 100%; background-color: #5f5f5f9d; position: absolute;"> 
+                
+                <div style = "width: 50%; height: 60%; margin-top: 5%;">
+                    <div style = "width: 100%; height: 15%; justify-content: center; align-items: center; display: flex; background-color: #212529ce; border-radius: 1.5rem;">
+                        <p id = "confirmation_prompt_header" class = "roboto_font" style = "font-size: 1.5vw; margin: 0px; font-weight: bold; margin-right: 2%; color: #ffffff;">Error: Invalid project name</p>
+                    </div>
+
+                    <div style = "margin-top: 5%; padding-top: 2%; padding-left: 2%; width: 98%; height: 40%; justify-content: center; align-items: center; background-color: #212529ce; border-radius: 1.5rem;">
+                        <div style = "height: 65%; width: 100%">
+                            <p id = "confirmation_prompt_message" class = "roboto_font" style = "font-size: 1.2vw; margin: 0px; margin-right: 2%; color: #ffffff;">Project name has no characters. Write in at least a 3 character stringxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</p>
+                        </div>
+                        
+                        <div style = "height:20%; align-items: center; justify-content: space-around; display: flex;">
+
+                            <button id = "confirmation_prompt_button" style = "margin-left: 0%;" type="button" onclick=""" class = "alternate_button" style = "height: 25%; margin-left: 40%; font-size: 1.2em;">
+                                Confirm
+                            </button>
+
+                            <button id = "x1" style = "margin-left: 0%;" type="button" onclick="prompt_continue_button()" class = "alternate_button" style = "height: 25%; margin-left: 40%; font-size: 1.2em;">
+                                Cancel
+                            </button>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
             <div class = "login_column">
                 <div class = "login_section" style="z-index: 1; position: relative;">
                     
