@@ -12,13 +12,85 @@
         - Stack from the left when stacking horizontally
     -->
     
+    <head>
+        <link rel = "stylesheet" href="{% static 'css/notification_and_prompt_style.css' %}">
+
+        <link rel = "stylesheet" href="{% static 'css/main_style.css' %}">
+        <link rel = "stylesheet" href="{% static 'css/button_style.css' %}">
+        <link rel = "stylesheet" href="{% static 'css/text_style.css' %}">
+        <link rel = "stylesheet" href="{% static 'css/styling_style.css' %}">
+    </head>
 
     <body class = "resource_dashboard_body">
         
         <div class = "main_panel" style="display:flex">
+
+            <!--- Display is either none or flex -->
+            <div id = "notification_window" class = "notification_window_style"> 
+                
+                <div style = "width: 40%; height: 20%; justify-content: center; align-items: center; display: flex; background-color: #212529ce; border-radius: 1.5rem;">
+                    <p id = "notification_message" class = "roboto_font" style = "font-size: 2vw; margin: 0px; font-weight: bold; margin-right: 2%; color: #ffffff;">Logging out</p>
+                    <img id="notification_loading_icon" src="{% static 'media/LoadingCircle.gif' %}" class="loader" alt="loading" />
+                </div>
+              
+            </div>
+
+            <!--- Display is either none or flex -->
+            <div id = "prompt_window" class = "prompt_window_style"> 
+                
+                <div style = "width: 50%; height: 60%; margin-top: 5%;">
+                    <div style = "width: 100%; height: 15%; justify-content: center; align-items: center; display: flex; background-color: #212529ce; border-radius: 1.5rem;">
+                        <p id = "prompt_header" class = "roboto_font" style = "font-size: 1.5vw; margin: 0px; font-weight: bold; margin-right: 2%; color: #ffffff;">Error: Invalid project name</p>
+                    </div>
+
+                    <div style = "margin-top: 5%; padding-top: 2%; padding-left: 2%; width: 98%; height: 40%; justify-content: center; align-items: center; background-color: #212529ce; border-radius: 1.5rem;">
+                        <div style = "height: 65%; width: 100%">
+                            <p id = "prompt_message" class = "roboto_font" style = "font-size: 1.2vw; margin: 0px; margin-right: 2%; color: #ffffff;">Project name has no characters. Write in at least a 3 character stringxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</p>
+                        </div>
+                        
+                        <button id = "x1" type="button" onclick="prompt_continue_button()" class = "alternate_button" style = "height: 25%; margin-left: 40%; font-size: 1.2em;">
+                            Continue
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <!--- Display is either none or flex -->
+            <div id = "confirmation_prompt_window" class = "confirmation_prompt_window_style"> 
+                
+                <div style = "width: 50%; height: 60%; margin-top: 5%;">
+                    <div style = "width: 100%; height: 15%; justify-content: center; align-items: center; display: flex; background-color: #212529ce; border-radius: 1.5rem;">
+                        <p id = "confirmation_prompt_header" class = "roboto_font" style = "font-size: 1.5vw; margin: 0px; font-weight: bold; margin-right: 2%; color: #ffffff;">Error: Invalid project name</p>
+                    </div>
+
+                    <div style = "margin-top: 5%; padding-top: 2%; padding-left: 2%; width: 98%; height: 40%; justify-content: center; align-items: center; background-color: #212529ce; border-radius: 1.5rem;">
+                        <div style = "height: 65%; width: 100%">
+                            <p id = "confirmation_prompt_message" class = "roboto_font" style = "font-size: 1.2vw; margin: 0px; margin-right: 2%; color: #ffffff;">Project name has no characters. Write in at least a 3 character stringxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</p>
+                        </div>
+                        
+                        <div style = "height:20%; align-items: center; justify-content: space-around; display: flex;">
+
+                            <button id = "confirmation_prompt_button" style = "margin-left: 0%;" type="button" onclick=""" class = "alternate_button" style = "height: 25%; margin-left: 40%; font-size: 1.2em;">
+                                Confirm
+                            </button>
+
+                            <button id = "x1" style = "margin-left: 0%;" type="button" onclick="prompt_continue_button()" class = "alternate_button" style = "height: 25%; margin-left: 40%; font-size: 1.2em;">
+                                Cancel
+                            </button>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
             <div class = "resource_dashboard_column">
                 <div class = "main_section" style="z-index: 1; position: relative;">
                     
+                    <!-- Upper panel -->
                     <div class = "upper_panel width_section_length" style = "align-items: center; display: flex; height: 12%">
                         <p class = "header_title" style = "padding-right: 15%; font-size: 140%; width: 60%;">
                             Resource dashboard - User | Enhanced access 
@@ -34,9 +106,9 @@
                             </p>
                         </div>
                         
-                        <div style="text-align: right; margin-right: 0.45%;">
-                            <button id = "panel_toggle_button" type="button" onclick="" class = "panel_toggle_button" style = "width: 110%; height: 50px;">
-                                <img id="panel_toggle_button" src="{% static 'PanelToggleIcon.png' %}" class="nine_square_button_icon" alt="Panel toggle" />
+                       <div style="text-align: right; margin-right: 0.45%;">
+                            <button id = "panel_toggle_button" type="button" onclick="toggle_left_panel()" class = "panel_toggle_button" style = "width: 110%; height: 50px;">
+                                <img id="panel_toggle_button" src="{% static 'media/PanelToggleIcon.png' %}" class="nine_square_button_icon" alt="Panel toggle" />
                             </button>
                         </div>
                     </div>
@@ -46,42 +118,42 @@
 
                     <div class = "width_section_length" style="height: 5.5%; display: grid; align-items: center; display: flex; margin-bottom: 3%;" >
 
-                            <!-- "display: block;" helps put the elements on seperate lines */ -->
-                            <input type="text" placeholder="Search VMs" id="vm_search" class="entry_style1" style = "width: 80%; margin-right: 1%;"> 
-                    
-                            <button id = "x1" type="button" onclick="" class = "alternate_button">
-                                Search
-                            </button>
+                             <!-- "display: block;" helps put the elements on seperate lines */ -->
+                             <input type="text" placeholder="Search VMs" id="vm_search" class="entry_style1" style = "width: 80%; margin-right: 1%;"> 
+                     
+                             <button id = "search_button" type="button" onclick="search_all_vms()" class = "alternate_button">
+                                 Search
+                             </button>
                     
                     </div>
                     
                     <div id = "content-panel" style = "align-items: center; display: flex; height: 70%;">
 
-                        <div class = "left_panel" style = "width: 12%; height: 100%; align-items: center;">
+                        <div id = "left_panel" class = "left_panel" style = "width: 12%; height: 100%; align-items: center;">
 
                             <button id = "projects_button" type="button" onclick="section_reveal('projects_section')" class = "panel_button" style = "margin-top: 5px;">
-                                <img id="panel_toggle_button" src="{% static 'ProjectsIcon2.png' %}" class="nine_square_button_icon" alt="Projects" style = "width: 80%; transform: translate(12%, 0%);"/>
+                                <img id="panel_toggle_button" src="{% static 'media/ProjectsIcon2.png' %}" class="nine_square_button_icon" alt="Projects" style = "width: 80%; transform: translate(12%, 0%);"/>
                                 <p style = "color: #212529; margin: 0px">Projects</p>
                             </button>
     
                             <button id = "groups_button" type="button" onclick="section_reveal('groups_section')" class = "panel_button" style = "margin-top: 5px;">
-                                <img id="panel_toggle_button" src="{% static 'GroupsIcon.png' %}" class="nine_square_button_icon" alt="VM groupings" style = "width: 70%; transform: translate(19%, 0%);" />
+                                <img id="panel_toggle_button" src="{% static 'media/GroupsIcon.png' %}" class="nine_square_button_icon" alt="VM groupings" style = "width: 70%; transform: translate(19%, 0%);" />
                                 <p style = "color: #212529; margin: 0px">Groups</p>
                             </button>
 
                             <button id = "all_vms_button" type="button" onclick="section_reveal('all_vms_section')" class = "panel_button" style = "margin-top: 5px;">
-                                <img id="panel_toggle_button" src="{% static 'AllVMsIcon.png' %}" class="nine_square_button_icon" alt="All VMS" style = "width: 90%; transform: translate(5%, 0%);" />
+                                <img id="panel_toggle_button" src="{% static 'media/AllVMsIcon.png' %}" class="nine_square_button_icon" alt="All VMS" style = "width: 90%; transform: translate(5%, 0%);" />
                                 <p style = "color: #212529; margin: 0px">All VMs</p>
                             </button>
 
                             <button id = "statistics_button" type="button" onclick="section_reveal('statistics_section')" class = "panel_button" style = "margin-top: 5px;">
-                                <img id="panel_toggle_button" src="{% static 'StatisticsIcon.png' %}" class="nine_square_button_icon" alt="Statistics" style = "width: 80%; transform: translate(9.5%, 0%);" />
+                                <img id="panel_toggle_button" src="{% static 'media/StatisticsIcon.png' %}" class="nine_square_button_icon" alt="Statistics" style = "width: 80%; transform: translate(9.5%, 0%);" />
                                 <p style = "color: #212529; margin: 0px">Statistics</p>
                             </button>
 
 
                             <button id = "logout_button" type="button" onclick="USER_ADMIN_PROMPT_logout_attempt()" class = "panel_button" style = "margin-top: 30px; background-color: #4F52BD;">
-                                <img id="panel_toggle_button" src="{% static 'LogoutIcon.png' %}" class="nine_square_button_icon" alt="Logout" style = "transform: translate(14%, 0%); pointer-events: none;" />
+                                <img id="panel_toggle_button" src="{% static 'media/LogoutIcon.png' %}" class="nine_square_button_icon" alt="Logout" style = "transform: translate(14%, 0%); pointer-events: none;" />
                                 <p style = "color: #FFFFFF; margin: 0px; pointer-events: none;">Logout</p>
                             </button>
                             
@@ -93,7 +165,7 @@
                                 <div id = "logging_out_content" style = "width: 100%; height: 40%; align-items: center;">
                                     <div style = "justify-content: center; align-items: center; display: flex; height: 100%;">
                                         <p class = "roboto_font" style = "font-size: 2vw; margin: 0px; font-weight: bold; margin-right: 2%;">Logging out</p>
-                                        <img id="register_loading_icon" src="{% static 'LoadingCircle.gif' %}" class="loader" alt="loading" />
+                                        <img id="register_loading_icon" src="{% static 'media/LoadingCircle.gif' %}" class="loader" alt="loading" />
                                     </div>
                                 </div>
                             </div>
@@ -113,28 +185,28 @@
                                      ">
  
                                      <!-- 
-                                         <div style = 
-                                             "width: 100%; 
-                                             height: 20%; 
-                                             align-items: center; 
-                                             justify-content: center; 
-                                             display: flex;
-                                         "> 
-                                             <p class = "header_title" style = "margin-top: 1%; width: 100%; text-align: center;">No projects</p>
-                                         </div>
-                                     -->
- 
-                                     <!-- 
-                                         <div id = "project_entry" class = "rounded_container project_entry">
-                                             <p class = "roboto_font project_entry_p1">Project name: Adminstration team</p>
-                                             <p class = "roboto_font project_entry_p2">Id: zxawWga2</p>
-                                             <p class = "roboto_font">VMs (4) VMs online (2) Users (3) Admins (2)</p>
- 
-                                             <button id="x1" type="button" onclick="update_projects_content()" class="alternate_button">
-                                                 Open
-                                             </button>
-                                         </div>
-                                     -->
+                                        <div style = 
+                                            "width: 100%; 
+                                            height: 20%; 
+                                            align-items: center; 
+                                            justify-content: center; 
+                                            display: flex;
+                                        "> 
+                                            <p class = "header_title" style = "margin-top: 1%; width: 100%; text-align: center;">No projects</p>
+                                        </div>
+                                    -->
+
+                                    <!-- 
+                                        <div id = "project_entry" class = "rounded_container project_entry">
+                                            <p class = "roboto_font project_entry_p1">Project name: Adminstration team</p>
+                                            <p class = "roboto_font project_entry_p2">Id: zxawWga2</p>
+                                            <p class = "roboto_font">VMs (4) VMs online (2) Users (3) Admins (2)</p>
+
+                                            <button id="x1" type="button" onclick="update_projects_content()" class="alternate_button">
+                                                Open
+                                            </button>
+                                        </div>
+                                    -->
                                  </div>
                                 
                                 <!-- Display is typically "flex" for "project_display" -->
@@ -152,13 +224,6 @@
                                             <p class = "header_title" style = "margin-top: 1%;">Virtual machines</p>
                                         </div>
                                         <div id = "project_display_vms_content" style = "width: 90%; height: 80%;">
-                                            
-                                                <div class = "vms_content">
-                                                    <p class = "roboto_font project_entry_p2">Virtual machine: Ambroses VM | Status: Online | 255.193.321.0</p>
-                                                    <button id="x1" type="button" onclick="update_projects_content()" class="alternate_connect_button">
-                                                        Connect
-                                                    </button>
-                                                </div>
                                             
                                         </div>
                                     </div>
@@ -181,7 +246,7 @@
                                                     <p class = "roboto_font project_entry_p2">Ambrose | ambrose@gmail.com | Type: USER</p>
                                                 </div>
                                             -->
-                                           
+                                            
                                         </div>
                                     </div>
 
@@ -208,58 +273,239 @@
                                             
                                         </div>
                                     </div>
+
+                                    <!-- No need to add available_users_display as users can't add users to projects -->
                                 </div>
+
+                                <!-- No need for project_creation for users -->
+
+                                <!-- No need for project_rename_display for users -->
                             </div>
                             
                             <div id = "groups_section" style = "display: none; width: 100%; height: 100%;">
                                 
-                                <div style = 
-                                    "width: 100%; 
-                                    height: 20%; 
-                                    align-items: center; 
-                                    justify-content: center; 
-                                    display: flex;
-                                "> 
-                                    <p class = "header_title" style = "margin-top: 1%; width: 100%; text-align: center;">Groups is not available in this version</p>
+
+                                <div id = "group_content" style = "
+                                    display: grid; 
+                                    grid-template-columns: repeat(2, 1fr);
+                                    
+
+                                    width: 100%; 
+                                    height: 100%; 
+                                    align-items: center;
+                                    overflow-y: auto;
+                                    ">
+
+                                    <!-- 
+                                        <div id = "project_entry" class = "rounded_container project_entry">
+                                            <p class = "roboto_font project_entry_p1">Project name: Adminstration team</p>
+                                            <p class = "roboto_font project_entry_p2">Id: zxawWga2</p>
+                                            <p class = "roboto_font">VMs (4) VMs online (2) Users (3) Admins (2)</p>
+
+                                            <button id="x1" type="button" onclick="update_projects_content()" class="alternate_button">
+                                                Open
+                                            </button>
+                                        </div>
+                                    -->
+                                </div>
+                                
+
+                                <div id = "group_creation" style = "display: none; width: 100%; height: 100%; align-items: center; 
+                                justify-content: center; flex-direction: column;">
+                                    <div style = 
+                                            "width: 100%; 
+                                            height: 20%; 
+                                            align-items: center; 
+                                            justify-content: center; 
+                                            display: flex;
+                                         "> 
+                                            <p class = "header_title" style = "margin-top: 1%;">Group creation</p>
+                                    </div>
+
+                
+                                    <div id = "group_detail" class = "group_name_section" style = "display: block;">
+                                        <!-- "display: block;" helps put the elements on seperate lines */ -->
+                                        <label style="display: block; margin-bottom: 1%;"> 
+                                            Group name
+                                        </label>
+            
+                                        <!-- "display: block;" helps put the elements on seperate lines */ -->
+                                        <input type="text" placeholder="Project 2Xadakwl" id="group_name_entry" class="entry_style1"> 
+                                    </div>
+
+                                    <div id = "group_creation_loading" style = "height: 30%; display: none;">
+                                        <div style = "justify-content: center; align-items: center; display: flex; height: 100%;">
+                                            <p id = "group_creation_loading_text" class = "roboto_font" style = "font-size: 1vw; margin: 0px; font-weight: bold; margin-right: 2%;">Creating group</p>
+                                            <img id="register_loading_icon" src="{% static 'media/LoadingCircle.gif' %}" class="loader" alt="loading" />
+                                        </div>
+                                    </div>
+            
+                                    <div style = "
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: space-between;
+                                        padding-top: 3%;
+                                        width: 30%;
+                                    ">
+                                        <button id = "x1" type="button" onclick="ADMIN_USER_PROMPT_create_group_attempt()" class = "alternate_button" style = "width: 48%;">
+                                            Create
+                                        </button>
+                                        <button id = "project_creation_cancel_button" type="button" onclick="group_creation_cancellation()" class = "alternate_button" style = "width: 48%;">
+                                            Back
+                                        </button>
+                                    </div>
                                 </div>
 
+
+                                <div id = "group_display" style = "display: none; width: 100%; height: 100%;">
+
+                                    <!-- Display is usually "block" for "group_display_vms" -->
+                                    <div id = "group_display_vms" style = "width: 100%; height: 100%; overflow-y: auto; display: block;"> 
+                                        <div style = 
+                                            "width: 100%; 
+                                            height: 20%; 
+                                            align-items: center; 
+                                            justify-content: center; 
+                                            display: flex;
+                                         "> 
+                                            <p class = "header_title" style = "margin-top: 1%;">Virtual machines</p>
+                                        </div>
+                                        <div id = "group_display_vms_content" style = "width: 90%; height: 80%;">
+                                            
+                                        </div>
+                                    </div>
+
+                                </div>
+
+
+                                <div id = "available_group_vms_display" style = "width: 100%; height: 100%; overflow-y: auto; display: none;"> 
+
+                                    <div style = 
+                                        "width: 100%; 
+                                        height: 20%; 
+                                        align-items: center; 
+                                        justify-content: center; 
+                                        display: flex;
+                                    "> 
+                                        <p class = "header_title" style = "margin-top: 1%;">Available virtual machines</p>
+                                    </div>
+                                    
+                                    
+                                    
+                                    <div id = "group_available_vms_content" style = "width: 90%; height: 80%;">
+                                        <!--
+                                        <div class = "vms_content">
+                                            <p class = "roboto_font project_entry_p2">Virtual machine: Ambroses VM | Status: Online | 255.193.321.0</p>
+                                            <button id="x1" type="button" onclick="" class="alternate_connect_button">
+                                                Add VM
+                                            </button>
+                                        </div>
+                                        -->
+                                    </div>
+                                </div>
                             </div>
 
-                            <div id = "all_vms_section" style = "display: none; width: 100%; height: 100%;">
+
+                            <div id = "all_vms_section" style = "width: 100%; height: 100%; display: none;">
                                
-                                <div style = 
-                                    "width: 100%; 
-                                    height: 20%; 
-                                    align-items: center; 
-                                    justify-content: center; 
-                                    display: flex;
-                                "> 
-                                    <p class = "header_title" style = "margin-top: 1%; width: 100%; text-align: center;">VM searching is not available in this version</p>
-                                </div>
+                                <div style = "width: 100%; height: 100%; overflow-y: auto; display: block;">
 
+                                    <div style = 
+                                        "width: 100%; 
+                                        height: 20%; 
+                                        align-items: center; 
+                                        justify-content: center; 
+                                        display: flex;
+                                    "> 
+                                        <!-- Admins can see all VMS. Users can only see VMS that are not assigned coupled with the ones they can see based on the projects they're on -->
+                                        <p class = "header_title" style = "margin-top: 1%; width: 100%; text-align: center;">All VMS</p>
+                                    </div>
+
+                                    <div id = "all_vms_display_content" style = "width: 90%; height: 80%;">
+                                                
+                                    
+                                    </div>
+
+                                </div>
                             </div>
+
 
                             <div id = "statistics_section" style = "display: none; width: 100%; height: 100%; justify-content: center; align-items: center;">
-                                
-                                <div style = 
-                                    "width: 100%; 
-                                    height: 20%; 
-                                    align-items: center; 
-                                    justify-content: center; 
-                                    display: flex;
-                                "> 
-                                    <p class = "header_title" style = "margin-top: 1%; width: 100%; text-align: center;">Statistics is not available in this version</p>
+                          
+                                <!-- Display is usually "block" for "project_display_vms" and "project_display_users"-->
+                                <div id = "statistics_panel_one" style = "width: 50%; height: 100%; overflow-y: auto; display: block;"> 
+                                    <div style = 
+                                        "width: 100%; 
+                                        height: 20%; 
+                                        align-items: center; 
+                                        justify-content: center; 
+                                        display: flex;
+                                     "> 
+                                        <p class = "header_title" style = "margin-top: 1%;">Resource stats</p>
+                                    </div>
+
+                                    <div id = "resource_display_content" style = "width: 90%; height: 80%;">
+                                        <p id = "vm_total_p" class="roboto_font project_entry_p1" style = "margin-left: 5%;">Total number of VMs: 0</p>
+                                        <p id = "vms_online_p" class="roboto_font project_entry_p1" style = "margin-left: 5%;">VMs online: 0</p>
+                                        <p id = "vms_offline_p" class="roboto_font project_entry_p1" style = "margin-left: 5%;">VMs offline: 0</p>
+                                        
+                                        <div class = "content_divider"></div>
+                                        
+                                        <p id = "unassigned_project_vms_p" class="roboto_font project_entry_p1" style = "margin-left: 5%;">Unassigned project VMs: 0</p>
+                                        <p id = "assigned_project_vms_p" class="roboto_font project_entry_p1" style = "margin-left: 5%;">Assigned project VMs: 0</p>
+
+                                        <div class = "content_divider"></div>
+
+                                        <p id = "version_number_p" class="roboto_font project_entry_p1" style = "margin-left: 5%;">Version number: 1.0</p>
+                                    </div>
+                                </div>
+
+                                <div id = "statistics_panel_two" style = "width: 50%; height: 100%; overflow-y: auto; display: block;"> 
+
+                                    <div style = 
+                                        "width: 100%; 
+                                        height: 20%; 
+                                        align-items: center; 
+                                        justify-content: center; 
+                                        display: flex;
+                                    "> 
+                                        <p class = "header_title" style = "margin-top: 1%;">Usage stats</p>
+                                    </div>
+
+                                    <div id = "usage_display_content" style = "width: 90%; height: 80%;">
+                                        <p id = "user_total_p" class="roboto_font project_entry_p1" style = "margin-left: 5%;">Total number of users: 0</p>
+                                        <p id = "admins_total_p" class="roboto_font project_entry_p1" style = "margin-left: 5%;">Total number of admins: 0</p>
+                                        <p id = "system_users_total_p" class="roboto_font project_entry_p1" style = "margin-left: 5%;">Overal number of system users: 0</p>
+                                        
+                                        <div class = "content_divider"></div>
+
+                                        <p id = "project_total_p" class="roboto_font project_entry_p1" style = "margin-left: 5%;">Total number of projects: 0</p>
+                                        <p id = "group_total_p" class="roboto_font project_entry_p1" style = "margin-left: 5%;">Total number of groups: 0</p>
+                                        
+                                    </div>
                                 </div>
     
                             </div>
 
                         </div>
-                      
                     </div>
         
                     <div id = "lower_button_panel" style = "margin-top: 1%; align-items: center; justify-content: space-around; display: flex;">
                         <button id = "add_vm_button" type="button" onclick="reveal_project_display_available_vms()" class = "alternate_button_2" style = "display: none;">
                             Add VM
+                        </button>
+                        <button id = "add_group_button" type="button" onclick="navigate_to_group_creation()" class = "alternate_button_2" style = "display: none;">
+                            Create group
+                        </button>
+                        <button id = "add_group_vm_button" type="button" onclick="reveal_group_display_available_vms()" class = "alternate_button_2" style = "display: none;">
+                            Add VM
+                        </button>
+                        <button id = "back_to_projects_button" type="button" onclick="section_reveal('projects_section')" class = "alternate_button_2" style = "display: none;">
+                            Back to projects
+                        </button>
+
+                        <button id = "back_to_groups_button" type="button" onclick="section_reveal('groups_section')" class = "alternate_button_2" style = "display: none;">
+                            Back to groups
                         </button>
                     </div>
                     
