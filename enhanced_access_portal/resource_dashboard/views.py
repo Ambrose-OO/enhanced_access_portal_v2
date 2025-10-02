@@ -1038,65 +1038,77 @@ def ADMIN_PROMPT_remove_vm(request):
         ) 
 
 @csrf_protect
-def ADMIN_PROMPT_add_vm(request):
+def ADMIN_USER_PROMPT_add_vm(request):
     if request.method == "POST":
         print("----------------")
         print("Add vm")
 
         logged_in_status = request.session.get("logged_in")
-        user_type = request.session.get("user_type")
-
+    
         if (logged_in_status == True):
-            if (user_type == "ADMIN"):
+           
+            vm_id = request.POST.get("vm_id")
+            project_id = request.POST.get("project_id")
+            
+            vm = fetch_vm_from_id(vm_id)
+            project = fetch_project_from_id(project_id)
+        
+            if (vm != None) and (project != None):
+                if (vm.project_id == None):
+                    
+                    # Updating vm SQL data to match the given project
+                    # https://www.w3schools.com/django/django_update_data.php
 
-                vm_id = request.POST.get("vm_id")
-                project_id = request.POST.get("project_id")
-                print("b")
-                print(vm_id)
-                print(project_id)
-                vm = fetch_vm_from_id(vm_id)
-                project = fetch_project_from_id(project_id)
-                print("c")
+                    vm.project_id = project
+                    vm.save()
+                    
+                    admin_project_listings = collate_ADMIN_project_listings()
 
-                if (vm != None) and (project != None):
-                    if (vm.project_id == None):
-                        print("vm available to add")
-
-                        # Updating vm SQL data to match the given project
-                        # https://www.w3schools.com/django/django_update_data.php
-
-                        vm.project_id = project
-                        vm.save()
+                    return JsonResponse(
+                        {
+                            "status": "success", 
+                            "header_message": "Success: VM added to project", 
+                            "message": "Server successfully added vm to project",
+                            "projects": admin_project_listings
+                        }
+                    ) 
                         
-                        admin_project_listings = collate_ADMIN_project_listings()
-
-                        return JsonResponse(
-                            {
-                                "status": "success", 
-                                "message": "Server successfully added vm to project",
-                                "projects": admin_project_listings
-                            }
-                        ) 
-                            
-                    else:
-                        print("vm unavailable to add - error")
                 else:
-                    print("vm/project can't be found - error")
+                    return JsonResponse(
+                        {
+                            "status": "fail", 
+                            "header_message": "Error: VM is part of a project", 
+                            "message": "The VM is already part of a project."
+                        }
+                    )
+            else:
+                if (vm == None): 
+                    return JsonResponse(
+                        {
+                            "status": "fail", 
+                            "header_message": "Error: VM cannot be identified", 
+                            "message": "The VM to be added to the project could not be identified."
+                        }
+                    )
+                elif (project == None):
+                    return JsonResponse(
+                        {
+                            "status": "fail", 
+                            "header_message": "Error: Project cannot be identified", 
+                            "message": "The project for which the selected VM was to be added to cannot be identified."
+                        }
+                    )
+            
+        else:
 
-                return JsonResponse(
-                    {
-                        "status": "error", 
-                        "message": "Server cannot add vm to the project"
-                    }
-                ) 
-
-        # Failure response if the user is requesting data when logged out
-        return JsonResponse(
-            {
-                "status": "failure", 
-                "message": "Server can't pass data on user who is logged out"
-            }
-        ) 
+            # Failure response if the user is requesting data when logged out
+            return JsonResponse(
+                {
+                    "status": "fail", 
+                    "header_message": "Error: Logged out",
+                    "message": "Error adding VM to project as you are logged out. Please log in and try again."
+                }
+            )
     
 @csrf_protect
 def ADMIN_PROMPT_add_user_to_project(request):
