@@ -47,7 +47,7 @@ function section_reveal(name) {
             toggle_lower_button_panel(true);
             lower_button_toggle(false, false, false, true, false, false, false);
 
-            project_panel_navigation("project_content");
+            reset_project_navigation_to_project_panel();
             
             // Adjusting project button colour background to indicate its selected
             projects_button.style = "background-color: #FFFFFF; margin-top: 5px;";

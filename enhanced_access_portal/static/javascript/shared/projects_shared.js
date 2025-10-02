@@ -171,38 +171,21 @@ function reveal_project_display_available_vms(state)
 }
 
 
-function project_panel_navigation(panel){
+function reset_project_navigation_to_project_panel(){
 
-    previous_project_section = panel; 
+    previous_project_section = "project_content"; 
 
-    // Navigating to the section within the project section area
-    if (CORE_USER_TYPE == "ADMIN"){
-        const project_creation = document.getElementById("project_creation");
-    }
-  
     // Hiding all the panels in the project section
     if (CORE_USER_TYPE == "ADMIN"){
+        const project_creation = document.getElementById("project_creation");
         project_creation.style.display = "none";
     }
+
     project_display.style.display = "none";
-    project_content.style.display = "none";
+    project_content.style.display = "grid";
     project_rename_display.style.display = "none";
     available_vms_display.style.display = "none";
 
-    // Working on which one to reval and how
-    if (CORE_USER_TYPE == "ADMIN"){
-        if (panel == "project_creation"){
-            project_creation.style.display = "flex";
-        } 
-    }
-    else if (panel == "project_content"){
-        project_content.style.display = "grid";
-    }
-    else if (panel = "project_display"){
-        project_display.style.display = "";
-    } else if (panel = "project_rename_display"){
-        project_rename_display.style.display = "flex";
-    }
 }
 
 
