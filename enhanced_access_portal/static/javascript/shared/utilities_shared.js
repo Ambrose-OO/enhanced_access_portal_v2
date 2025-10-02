@@ -92,6 +92,97 @@ function generate_vm_element(
 }
 
 
+function substring_match(substring, fullString) {
+    // Convert both to lowercase for non-case sensitive comparison
+    const lower_sub = substring.toLowerCase();
+    const lower_full = fullString.toLowerCase();
+            
+    // Checking for a match
+    for (let i = 0; i < lower_sub.length; i++) {
+        if (lower_sub[i] != lower_full[i]){
+            return false
+        }
+    }
+
+    return true
+}
+
+
+function lower_button_toggle(
+    b_add_vm_button, 
+    b_add_user_button, 
+    b_add_group_button,
+    b_create_project_button,
+    b_add_group_vm_button,
+    b_back_to_projects_button,
+    b_back_to_groups_button
+){
+
+    const add_vm_button = document.getElementById("add_vm_button");
+
+    if (CORE_USER_TYPE == "ADMIN"){
+        const add_user_button = document.getElementById("add_user_button");
+    }
+
+    const add_group_button = document.getElementById("add_group_button");
+
+    if (CORE_USER_TYPE == "ADMIN"){
+        const create_project_button = document.getElementById("create_project_button");
+    }
+    const add_group_vm_button = document.getElementById("add_group_vm_button");
+
+    const back_to_projects_button = document.getElementById("back_to_projects_button");
+    const back_to_groups_button = document.getElementById("back_to_groups_button");
+    
+
+    if (b_add_vm_button == false){
+        add_vm_button.style.display = "none";
+    }else{
+        add_vm_button.style.display = "block";
+    }
+
+    if (CORE_USER_TYPE == "ADMIN"){
+        if (b_add_user_button == false){
+            add_user_button.style.display = "none";
+        }else{
+            add_user_button.style.display = "block";
+        }
+    }
+
+    if (b_add_group_button == false){
+        add_group_button.style.display = "none";
+    }else{
+        add_group_button.style.display = "block"
+    }
+
+    if (CORE_USER_TYPE == "ADMIN"){
+        if (b_create_project_button == false){
+            create_project_button.style.display = "none";
+        }else{
+            create_project_button.style.display = "block"
+        }
+    }
+
+    if (b_add_group_vm_button == false){
+        add_group_vm_button.style.display = "none";
+    }else{
+        add_group_vm_button.style.display = "block"
+    }
+
+    if (b_back_to_projects_button == false){
+        back_to_projects_button.style.display = "none";
+    }else{
+        back_to_projects_button.style.display = "block"
+    }
+
+    if (b_back_to_groups_button == false){
+        back_to_groups_button.style.display = "none";
+    }else{
+        back_to_groups_button.style.display = "block"
+    }
+}
+
+
 // Functions
 
 function USER_ADMIN_PROMPT_logout_attempt() {

@@ -646,17 +646,33 @@
 
     <!-- Critical variable declaration before importing scripts to use said variables -->
     <script>
+        // Core variables
+        const CORE_USER_TYPE = "ADMIN";
+
+
+        // Variables for left panel and bottom panel
+        let section_lock = false;
+        let lower_button_panel_toggle = false;
+
+        // Variables for left panel and bottom panel - and its elements from the DOM
+        const projects_button = document.getElementById("projects_button");
+        const groups_button = document.getElementById("groups_button");
+        const all_vms_button = document.getElementById("all_vms_button");
+        const statistics_button = document.getElementById("statistics_button");
+
+
         // Variables for projects
         let selected_project_id = "";
         let previous_project_section = "project_content";
 
-        // Variables for Projects and its elements from the DOM
-        const project_creation = document.getElementById("project_creation");
+        // Variables for Projects - and its elements from the DOM
+        const project_creation = document.getElementById("project_creation"); // Admin variable
         const project_display = document.getElementById("project_display");
         const project_content = document.getElementById("project_content");
-   
+        const project_rename_display = document.getElementById("project_rename_display"); 
+
         const available_vms_display = document.getElementById("available_vms_display");
-        const available_users_display = document.getElementById("available_users_display");
+        const available_users_display = document.getElementById("available_users_display"); // Admin variable
         const project_display_users = document.getElementById("project_display_users");
         const project_display_vms = document.getElementById("project_display_vms");
 
@@ -665,14 +681,43 @@
         const add_user_button = document.getElementById("add_user_button");
         const add_vm_button = document.getElementById("add_vm_button");
 
+
+        // Variables for groups
+        let previous_group_section = "group_content";
+        let selected_group_name = ""; // Default "", or name of a group
+
+        // Variables for groups - and its elements from the DOM
+        const group_creation = document.getElementById("group_creation");
+        const group_display = document.getElementById("group_display");
+        const group_content = document.getElementById("group_content");
+        const available_group_vms_display = document.getElementById("available_group_vms_display");
+
+        const add_group_vm_button = document.getElementById("add_group_vm_button");
+
+        const group_detail = document.getElementById("group_detail");
+        const group_creation_loading = document.getElementById("group_creation_loading");
+        const group_creation_loading_text = document.getElementById("group_creation_loading_text");
+
+
+        // Variables for all vms
+        let search_query = "";
+
+        // Variabels for all vms - and its elements from the DOM
+        const vm_search = document.getElementById("vm_search");
+        const search_button = document.getElementById("search_button");
+
+    
         // URLs - shared
         const email_name_request_url = "{% url 'email_name_request' %}";
         const logout_request_url = "{% url 'logout_request' %}";
         
+        const project_list_request_url = "{% url 'project_list_request' %}";
+
         const add_vm_request_url = "{% url 'add_vm_request' %}";
         const remove_vm_request_url = "{% url 'remove_vm_request' %}";
-
+        
         const group_list_request_url = "{% url 'group_list_request' %}";
+        const available_vms_for_group_request_url = "{% url 'available_vms_for_group_request' %}";
         const create_group_request_url = "{% url 'create_group_request' %}";
         const add_vm_to_group_request_url = "{% url 'add_vm_to_group_request' %}";
         const remove_group_vm_request_url = "{% url 'remove_group_vm_request' %}";
@@ -688,6 +733,10 @@
         const delete_project_request_url = "{% url 'delete_project_request' %}";
         const add_users_to_project_request_url = "{% url 'add_users_to_project_request' %}";
         const remove_user_from_project_request_url = "{% url 'remove_user_from_project_request' %}";
+
+        // Blank functions to make for User
+        // toggle_add_user_to_project_button_innertext
+
     </script>
 
     <!-- Shared scripts to import -->
@@ -697,607 +746,17 @@
     <script src="{% static 'javascript/shared/utilities_shared.js' %}"></script>
 
     <script src="{% static 'javascript/shared/notification_and_prompts.js' %}"></script>
-    <script src="{% static 'javascript/shared/left_panel.js' %}"></script>
+    
     
     <script src="{% static 'javascript/shared/projects_shared.js' %}"></script>
+
+    <script src="{% static 'javascript/shared/left_panel.js' %}"></script>
+
     <script src="{% static 'javascript/shared/group_shared.js' %}"></script>
+    <script src="{% static 'javascript/shared/all_vms_shared.js' %}"></script>
     <script src="{% static 'javascript/shared/statistics_shared.js' %}"></script>
 
     <!-- Admin specific scripts to import -->
     <script src="{% static 'javascript/admin/projects_admin.js' %}"></script>
 
-    <script>
-        
-        // Functions to modify for both admin and user usage
-        function reveal_project_display_available_users(state)
-        {
-            if (state == true){
-                available_vms_display.style.display = "none";
-
-                project_display_users.style.display = "none";
-                project_display_vms.style.display = "none";
-
-                available_users_display.style.display = "block";
-
-                toggle_add_vm_to_project_button_innertext(true);
-                toggle_add_user_to_project_button_innertext(false);
-            }else if (state == false){
-                available_vms_display.style.display = "none";
-
-                project_display_users.style.display = "block";
-                project_display_vms.style.display = "block";
-                
-                available_users_display.style.display = "none";
-
-                toggle_add_vm_to_project_button_innertext(false);
-                toggle_add_user_to_project_button_innertext(false);
-            }
-            else if (available_users_display.style.display == "block"){
-                available_vms_display.style.display = "none";
-
-                project_display_users.style.display = "block";
-                project_display_vms.style.display = "block";
-
-                available_users_display.style.display = "none";
-
-                toggle_add_vm_to_project_button_innertext(true);
-                toggle_add_user_to_project_button_innertext(true);
-            } else {
-                available_vms_display.style.display = "none";
-
-                project_display_users.style.display = "none";
-                project_display_vms.style.display = "none";
-
-                available_users_display.style.display = "block";
-
-                toggle_add_vm_to_project_button_innertext(true);
-                toggle_add_user_to_project_button_innertext(false);
-            }
-        }
-        function reveal_project_display_available_vms(state)
-        {
-            if (state == true){
-                available_vms_display.style.display = "block";
-
-                project_display_users.style.display = "none";
-                project_display_vms.style.display = "none";
-
-                available_users_display.style.display = "none";
-
-                toggle_add_vm_to_project_button_innertext(false);
-                toggle_add_user_to_project_button_innertext(true);
-            }else if (state == false){
-                available_vms_display.style.display = "none";
-
-                project_display_users.style.display = "block";
-                project_display_vms.style.display = "block";
-                
-                available_users_display.style.display = "none";
-
-                toggle_add_vm_to_project_button_innertext(true);
-                toggle_add_user_to_project_button_innertext(true);
-            }
-            else if (available_vms_display.style.display == "block"){
-                available_vms_display.style.display = "none";
-
-                project_display_users.style.display = "block";
-                project_display_vms.style.display = "block";
-
-                available_users_display.style.display = "none";
-
-                toggle_add_vm_to_project_button_innertext(true);
-                toggle_add_user_to_project_button_innertext(true);
-            } else {
-                available_vms_display.style.display = "block";
-
-                project_display_users.style.display = "none";
-                project_display_vms.style.display = "none";
-
-                available_users_display.style.display = "none";
-
-                toggle_add_vm_to_project_button_innertext(false);
-                toggle_add_user_to_project_button_innertext(true);
-            }
-        }
-
-        function project_panel_navigation(panel){
-
-            previous_project_section = panel; 
-
-            // Navigating to the section within the project section area
-            const project_creation = document.getElementById("project_creation");
-            const project_display = document.getElementById("project_display");
-            const project_content = document.getElementById("project_content");
-            const project_rename_display  = document.getElementById("project_rename_display");
-
-            // Hiding all the panels in the project section
-            project_creation.style.display = "none";
-            project_display.style.display = "none";
-            project_content.style.display = "none";
-            project_rename_display.style.display = "none";
-            available_vms_display.style.display = "none";
-
-            // Working on which one to reval and how
-            if (panel == "project_creation"){
-                project_creation.style.display = "flex";
-            } 
-            else if (panel == "project_content"){
-                project_content.style.display = "grid";
-            }
-            else if (panel = "project_display"){
-                project_display.style.display = "";
-            } else if (panel = "project_rename_display"){
-                project_rename_display.style.display = "flex";
-            }
-        }
-
-        function navigate_to_project_content() {
-            const project_content = document.getElementById("project_content");
-            const project_display = document.getElementById("project_display");
-            const project_rename_display = document.getElementById("project_rename_display"); 
-            
-            project_content.style.display = "grid";
-            project_display.style.display = "none";
-            project_rename_display.style.display = "none";
-        }
-
-        
-        function lower_button_toggle(
-            b_add_vm_button, 
-            b_add_user_button, 
-            b_add_group_button,
-            b_create_project_button,
-            b_add_group_vm_button,
-            b_back_to_projects_button,
-            b_back_to_groups_button
-        ){
-
-            const add_vm_button = document.getElementById("add_vm_button");
-            const add_user_button = document.getElementById("add_user_button");
-
-            const add_group_button = document.getElementById("add_group_button");
-
-            const create_project_button = document.getElementById("create_project_button");
-            
-            const add_group_vm_button = document.getElementById("add_group_vm_button");
-
-            const back_to_projects_button = document.getElementById("back_to_projects_button");
-            const back_to_groups_button = document.getElementById("back_to_groups_button");
-            
-
-            if (b_add_vm_button == false){
-                add_vm_button.style.display = "none";
-            }else{
-                add_vm_button.style.display = "block";
-            }
-
-            if (b_add_user_button == false){
-                add_user_button.style.display = "none";
-            }else{
-                add_user_button.style.display = "block";
-            }
-
-            if (b_add_group_button == false){
-                add_group_button.style.display = "none";
-            }else{
-                add_group_button.style.display = "block"
-            }
-
-            if (b_create_project_button == false){
-                create_project_button.style.display = "none";
-            }else{
-                create_project_button.style.display = "block"
-            }
-
-            if (b_add_group_vm_button == false){
-                add_group_vm_button.style.display = "none";
-            }else{
-                add_group_vm_button.style.display = "block"
-            }
-
-            if (b_back_to_projects_button == false){
-                back_to_projects_button.style.display = "none";
-            }else{
-                back_to_projects_button.style.display = "block"
-            }
-
-            if (b_back_to_groups_button == false){
-                back_to_groups_button.style.display = "none";
-            }else{
-                back_to_groups_button.style.display = "block"
-            }
-        }
-
-
-        
-
- 
-       
-        // Group section functionality
-        //////////////////////////////
-
-        let previous_group_section = "group_content";
-        let selected_group_name = ""; // Default "", or name of a group
-
-        const group_creation = document.getElementById("group_creation");
-        const group_display = document.getElementById("group_display");
-        const group_content = document.getElementById("group_content");
-        const available_group_vms_display = document.getElementById("available_group_vms_display");
-
-        const add_group_vm_button = document.getElementById("add_group_vm_button");
-
-
-        
-        // All VMs functionality
-        //////////////////////////////
-
-        let search_query = "";
-        const vm_search = document.getElementById("vm_search");
-        const search_button = document.getElementById("search_button");
-
-        function search_all_vms(){
-            if (search_button.innerHTML == "Search"){
-
-                if (vm_search.value == ""){
-                    prompt_user(
-                        "Error: Cannot run a search query",
-                        "Error handling the search query. As nothing has been entered into the 'Search VMs' entry box. Please try again."
-                    );
-                }else{
-                    search_query = vm_search.value;
-                    search_button.innerHTML = "Close search";
-                    prompt_user(
-                        "Success: Search query",
-                        "Search query went through sucessfully."
-                    );
-                }
-                
-            }else{
-                search_button.innerHTML = "Search";
-                search_query = "";
-            }
-            
-        }
-        function substring_match(substring, fullString) {
-            // Convert both to lowercase for non-case sensitive comparison
-            const lower_sub = substring.toLowerCase();
-            const lower_full = fullString.toLowerCase();
-                    
-            // Checking for a match
-            for (let i = 0; i < lower_sub.length; i++) {
-                if (lower_sub[i] != lower_full[i]){
-                    return false
-                }
-            }
-  
-            return true
-        }
-
-        function update_available_group_vms_content() {
-            const group_content = document.getElementById("group_content");
-            
-            const all_vms_display_content = document.getElementById("all_vms_display_content");
-
-            //console.log("fetch available group vms");
-                            
-            fetch(
-                "{% url 'available_vms_for_group_request' %}", 
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded",
-                        "X-CSRFToken": getCookie('csrftoken') //https://www.geeksforgeeks.org/python/csrf-token-in-django/
-                    },
-                    body: new URLSearchParams(
-                        {
-                            group_name_target: selected_group_name
-                        }
-                    )
-                }
-            )
-            .then(response => response.json())
-            .then(data => {
-
-                if (data.status == "success"){
-                    
-                    group_available_vms_content.innerHTML = ""; // Clearing all the elements under the div content container
-                    all_vms_display_content.innerHTML = ""; // Clearing elements for the all vms section
-                    vm_counter = 0;
-
-                    // Display available VM details
-                    for (const vm of data.vms){
-                        vm_counter += 1;
-
-                        // Generating vm entries for available vms for selection in a group
-                        generate_vm_element_returns = generate_vm_element(
-                            vm.vm_name,
-                            vm.vm_status,
-                            vm.vm_ip
-                        );
-                        vm_add_button = generate_vm_element_returns[0];
-                        vms_content = generate_vm_element_returns[1];
-                        
-                        vm_add_button.onclick = () => ADMIN_USER_PROMPT_add_vm_to_group(vms_content, vm_add_button, vm.vm_id);
-
-                        // Generating vm entries for available vms for selection in a group - Rendering the div we created into "group_available_vms_content"
-                        group_available_vms_content.appendChild(vms_content);
-
-
-
-
-                        // Generating vm entries for VM searching
-                        generate_vm_element_returns = generate_vm_element(
-                            vm.vm_name,
-                            vm.vm_status,
-                            vm.vm_ip
-                        );
-                        vm_add_button = generate_vm_element_returns[0];
-                        vm_add_button.remove();
-                        vms_content = generate_vm_element_returns[1];
-                        vm_title = generate_vm_element_returns[2];
-                        vm_name = generate_vm_element_returns[3];
-                        
-            
-                        if (search_query != ""){
-                            // Checking if the searched query matches with the given vm name. If not, pass.
-                            if (substring_match(search_query, vm_name) == false){
-                                continue;
-                            }
-                        }
-
-                        //vm_title.innerHTML = vm_counter + " . " + vm_title.innerHTML;
-                        vm_title.style.textAlign = "center";
-
-                        // Generating vm entries for VM searching - Rendering the div 
-                        all_vms_display_content.appendChild(vms_content);
-
-                        let divider = document.createElement("div");
-                        divider.className = "content_divider";
-                        divider.style.marginTop = "1%";
-                        divider.style.marginBottom = "1%";
-                        
-                        all_vms_display_content.appendChild(divider);
-                        
-
-                    }
-
-                }else{
-                    console.log(data.message);
-                }
-                                                                            
-            })
-            .catch(error => {
-                console.error("Error:", error);
-            });
-
-        }
-        update_available_group_vms_content() // On program launch, fetch project list
-        setInterval(update_available_group_vms_content, 1000); // Updating project content every 3 seconds
-
-        const group_detail = document.getElementById("group_detail");
-        const group_creation_loading = document.getElementById("group_creation_loading");
-        const group_creation_loading_text = document.getElementById("group_creation_loading_text");
-
- 
-
-        function navigate_to_group_display(group_listing_data, group_metadata_data, inputted_selected_group_name) {
-            // Updating knowledge on which project has been selected by changing
-            // the selected_project_id variable
-
-            selected_group_name = inputted_selected_group_name; 
-
-            // Hide all toggle buttons
-            lower_button_toggle(false, false, false, false, true, false, true);
-
-            // Navigates and provides data
-            group_content.style.display = "none";
-            group_display.style.display = "flex";
-            previous_group_section = "group_display";
-
-            // Updating displays for virtual machines
-            update_group_display_with_group_data(group_listing_data, group_metadata_data);
-        }
-
-
-        function update_projects_content() {
-            const project_content = document.getElementById("project_content");
-        
-            console.log("fetch project listings");
-                              
-            fetch(
-                "{% url 'project_list_request' %}", 
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded",
-                        "X-CSRFToken": getCookie('csrftoken') //https://www.geeksforgeeks.org/python/csrf-token-in-django/
-                    },
-                    body: new URLSearchParams({})
-                }
-            )
-            .then(response => response.json())
-            .then(data => {
-
-                if (data.status == "success"){
-                    
-                    project_content.innerHTML = ""; // Clearing all the elements under the div content container
-        
-                    // Display project details
-                    const project_detail_data = data.projects;
-
-                    for (const project of project_detail_data){
-                        if (project.entity_type == "PROJECT"){
-                            const project_entry_div = document.createElement("div");
-                            project_entry_div.className = "rounded_container project_entry";
-                            project_entry_div.id = "project_entry";
-
-                            // <p> class elements
-                            const project_title = document.createElement("p");
-                            project_title.className = "roboto_font project_entry_p1";
-                            project_title.innerHTML = "Project name: " + project.project_name;
-                            project_entry_div.appendChild(project_title);
-
-                            const project_id = document.createElement("p");
-                            project_id.className = "roboto_font project_entry_p2";
-                            project_id.innerHTML = "Id: " + project.project_identifier_code;
-                            project_entry_div.appendChild(project_id);
-
-                            const project_details = document.createElement("p");
-                            project_details.className = "roboto_font";
-                            project_details.innerHTML = "VMs (" + project.project_available_vms + ") VMs online (" + project.project_vms_online + ") Users (" + project.project_users + ") Admins (" + project.project_admins + ")";
-                            project_entry_div.appendChild(project_details);
-                            
-                            // <button> class elements
-                            const open_project_button = document.createElement("button");
-                            open_project_button.type = "button";
-                            open_project_button.className = "alternate_connect_button";
-                            open_project_button.onclick = () => navigate_to_project_display(project);
-                            open_project_button.innerHTML = "Open";
-                            open_project_button.style.marginRight = "3%";
-                            project_entry_div.appendChild(open_project_button);
-
-
-                            const delete_project_button = document.createElement("button");
-                            delete_project_button.type = "button";
-                            delete_project_button.className = "alternate_connect_button"
-
-                            let delete_project_args = [project_entry_div, delete_project_button, project.project_id];
-                            delete_project_button.onclick = () => confirmation_prompt_user(
-                                "Project deletion confirmation",
-                                "Clicking confirm will mean you will completely delete the project entry. There is no recovery of this data. Are you sure?",
-                                "ADMIN_PROMPT_delete_project",
-                                delete_project_args
-                            );
-   
-                            delete_project_button.innerHTML = "Delete";
-                            delete_project_button.style.marginRight = "3%";
-                            project_entry_div.appendChild(delete_project_button);
-                            
-
-                            
-                            const rename_project_button = document.createElement("button");
-                            rename_project_button.type = "button";
-                            rename_project_button.className = "alternate_connect_button";
-                            rename_project_button.onclick = () => navigate_to_project_rename_display(project);
-                            rename_project_button.innerHTML = "Rename";
-                            rename_project_button.style.marginRight = "3%";
-                            project_entry_div.appendChild(rename_project_button);
-
-                            project_content.appendChild(project_entry_div);
-                        }
-                    }
-                }else{
-                    //console.log(data.message);
-                }
-                                                                            
-            })
-            .catch(error => {
-                //console.error("Error:", error);
-            });
-        }
-        update_projects_content() // On program launch, fetch project list
-        setInterval(update_projects_content, 3000); // Updating project content every 3 seconds
-
-        
-
-        // Lower button panel variables
-        let section_lock = false;
-        let lower_button_panel_toggle = false;
-
-        // Section buttons
-        const projects_button = document.getElementById("projects_button");
-        const groups_button = document.getElementById("groups_button");
-        const all_vms_button = document.getElementById("all_vms_button");
-        const statistics_button = document.getElementById("statistics_button");
-
-        
-
-        function section_reveal(name) { 
-            if (section_lock == false){
-                // Reseting selcted vm 
-                selected_project_id = "";
-
-                // Hiding add vm and user buttons
-                lower_button_toggle(false, false, false, false, false, false, false);
-
-                // Section buttons
-                
-                reset_section_button_background();
-
-                // Hiding all the sections
-                const right_content = document.getElementById("right_content");
-                for (const child of right_content.children){
-                    child.style.display = "none";
-                }
-
-                // Revealing section of interest
-                const section_element = document.getElementById(name);
-                section_element.style.display = "flex";
-
-
-                if (name == "projects_section"){
-
-                    // Handling bottom panel buttons
-                    toggle_lower_button_panel(true);
-                    lower_button_toggle(false, false, false, true, false, false, false);
-
-                    project_panel_navigation("project_content");
-                    
-                    // Adjusting project button colour background to indicate its selected
-                    projects_button.style = "background-color: #FFFFFF; margin-top: 5px;";
-
-                } else if (name == "groups_section"){
-
-                    // Handling bottom panel buttons
-                    toggle_lower_button_panel(true);
-                    lower_button_toggle(false, false, true, false, false, false, false);
-                    
-                    group_panel_navigation("group_content");
-
-                    // Adjusting project button colour background to indicate its selected
-                    groups_button.style = "background-color: #FFFFFF; margin-top: 5px;";
-                    
-                    // Resetting a button state
-                    toggle_add_group_vm_button_innertext(true);
-
-                } else if (name == "all_vms_section"){
-
-                    // Handling bottom panel buttons
-                    toggle_lower_button_panel(false);
-                    lower_button_toggle(false, false, false, false, false, false, false);
-
-                    // Adjusting project button colour background to indicate its selected
-                    all_vms_button.style = "background-color: #FFFFFF; margin-top: 5px;";
-
-                } else if (name == "statistics_section"){
-                    
-                    // Handling bottom panel buttons
-                    toggle_lower_button_panel(false);
-                    lower_button_toggle(false, false, false, false, false, false, false);
-
-                    // Adjusting project button colour background to indicate its selected
-                    statistics_button.style = "background-color: #FFFFFF; margin-top: 5px;";
-
-                } else if (name == "logging_out_section"){
-
-                    // Handling bottom panel buttons
-                    toggle_lower_button_panel(false);
-                    lower_button_toggle(false, false, false, false, false, false, false);
-
-                    section_lock = true;
-
-                } else {
-                    toggle_lower_button_panel(false);
-                    lower_button_toggle(false, false, false, false, false, false, false);
-                }
-            }
-        }
-        section_reveal("projects_section");
-        // Doing this so on runtime for the dashboard we navigate to the correct area 
-
-        // Continue on here
-
-        
-
-    </script>
 </html>

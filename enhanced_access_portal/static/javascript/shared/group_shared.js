@@ -157,6 +157,25 @@ function update_group_display_with_group_data(group_listing_data, group_metadata
 }
 
 
+function navigate_to_group_display(group_listing_data, group_metadata_data, inputted_selected_group_name) {
+    // Updating knowledge on which project has been selected by changing
+    // the selected_project_id variable
+
+    selected_group_name = inputted_selected_group_name; 
+
+    // Hide all toggle buttons
+    lower_button_toggle(false, false, false, false, true, false, true);
+
+    // Navigates and provides data
+    group_content.style.display = "none";
+    group_display.style.display = "flex";
+    previous_group_section = "group_display";
+
+    // Updating displays for virtual machines
+    update_group_display_with_group_data(group_listing_data, group_metadata_data);
+}
+
+
 function update_groups_content() {
     const group_content = document.getElementById("group_content");
 
@@ -273,8 +292,110 @@ function update_groups_content() {
     });
 
 }
-update_groups_content() // On program launch, fetch project list
-setInterval(update_groups_content, 3000); // Updating project content every 3 seconds
+update_groups_content() 
+setInterval(update_groups_content, 3000); 
+
+
+function update_available_group_vms_content() {
+    const group_content = document.getElementById("group_content");
+    
+    const all_vms_display_content = document.getElementById("all_vms_display_content");
+
+    //console.log("fetch available group vms");
+                    
+    fetch(
+        available_vms_for_group_request_url, 
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "X-CSRFToken": getCookie('csrftoken') //https://www.geeksforgeeks.org/python/csrf-token-in-django/
+            },
+            body: new URLSearchParams(
+                {
+                    group_name_target: selected_group_name
+                }
+            )
+        }
+    )
+    .then(response => response.json())
+    .then(data => {
+
+        if (data.status == "success"){
+            
+            group_available_vms_content.innerHTML = ""; // Clearing all the elements under the div content container
+            all_vms_display_content.innerHTML = ""; // Clearing elements for the all vms section
+            vm_counter = 0;
+
+            // Display available VM details
+            for (const vm of data.vms){
+                vm_counter += 1;
+
+                // Generating vm entries for available vms for selection in a group
+                generate_vm_element_returns = generate_vm_element(
+                    vm.vm_name,
+                    vm.vm_status,
+                    vm.vm_ip
+                );
+                vm_add_button = generate_vm_element_returns[0];
+                vms_content = generate_vm_element_returns[1];
+                
+                vm_add_button.onclick = () => ADMIN_USER_PROMPT_add_vm_to_group(vms_content, vm_add_button, vm.vm_id);
+
+                // Generating vm entries for available vms for selection in a group - Rendering the div we created into "group_available_vms_content"
+                group_available_vms_content.appendChild(vms_content);
+
+
+
+
+                // Generating vm entries for VM searching
+                generate_vm_element_returns = generate_vm_element(
+                    vm.vm_name,
+                    vm.vm_status,
+                    vm.vm_ip
+                );
+                vm_add_button = generate_vm_element_returns[0];
+                vm_add_button.remove();
+                vms_content = generate_vm_element_returns[1];
+                vm_title = generate_vm_element_returns[2];
+                vm_name = generate_vm_element_returns[3];
+                
+    
+                if (search_query != ""){
+                    // Checking if the searched query matches with the given vm name. If not, pass.
+                    if (substring_match(search_query, vm_name) == false){
+                        continue;
+                    }
+                }
+
+                //vm_title.innerHTML = vm_counter + " . " + vm_title.innerHTML;
+                vm_title.style.textAlign = "center";
+
+                // Generating vm entries for VM searching - Rendering the div 
+                all_vms_display_content.appendChild(vms_content);
+
+                let divider = document.createElement("div");
+                divider.className = "content_divider";
+                divider.style.marginTop = "1%";
+                divider.style.marginBottom = "1%";
+                
+                all_vms_display_content.appendChild(divider);
+                
+
+            }
+
+        }else{
+            console.log(data.message);
+        }
+                                                                    
+    })
+    .catch(error => {
+        console.error("Error:", error);
+    });
+
+}
+update_available_group_vms_content() 
+setInterval(update_available_group_vms_content, 1000); 
 
 
 // Functions

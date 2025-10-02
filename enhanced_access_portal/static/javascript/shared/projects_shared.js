@@ -56,6 +56,155 @@ function navigate_to_project_rename_display(project) {
     previous_project_section = "project_rename_display";
 }
 
+function navigate_to_project_content() {
+    project_content.style.display = "grid";
+    project_display.style.display = "none";
+    project_rename_display.style.display = "none";
+}
+
+
+function reveal_project_display_available_users(state)
+{
+    if (state == true){
+        available_vms_display.style.display = "none";
+
+        project_display_users.style.display = "none";
+        project_display_vms.style.display = "none";
+
+        if (CORE_USER_TYPE == "ADMIN"){
+            available_users_display.style.display = "block";
+            toggle_add_user_to_project_button_innertext(false);
+        } 
+
+        toggle_add_vm_to_project_button_innertext(true);
+    }else if (state == false){
+        available_vms_display.style.display = "none";
+
+        project_display_users.style.display = "block";
+        project_display_vms.style.display = "block";
+        
+        if (CORE_USER_TYPE == "ADMIN"){
+            available_users_display.style.display = "none";
+            toggle_add_user_to_project_button_innertext(false);
+        } 
+
+        toggle_add_vm_to_project_button_innertext(false);
+    }
+    else if (available_users_display.style.display == "block"){
+        available_vms_display.style.display = "none";
+
+        project_display_users.style.display = "block";
+        project_display_vms.style.display = "block";
+
+        if (CORE_USER_TYPE == "ADMIN"){
+            available_users_display.style.display = "none";
+            toggle_add_user_to_project_button_innertext(true);
+        }
+
+        toggle_add_vm_to_project_button_innertext(true);
+    } else {
+        available_vms_display.style.display = "none";
+
+        project_display_users.style.display = "none";
+        project_display_vms.style.display = "none";
+
+        if (CORE_USER_TYPE == "ADMIN"){
+            available_users_display.style.display = "block";
+            toggle_add_user_to_project_button_innertext(false);
+        }
+
+        toggle_add_vm_to_project_button_innertext(true);
+    }
+}
+function reveal_project_display_available_vms(state)
+{
+    if (state == true){
+        available_vms_display.style.display = "block";
+
+        project_display_users.style.display = "none";
+        project_display_vms.style.display = "none";
+        
+        if (CORE_USER_TYPE == "ADMIN"){
+            available_users_display.style.display = "none";
+            toggle_add_user_to_project_button_innertext(true);
+        }
+
+        toggle_add_vm_to_project_button_innertext(false);
+    }else if (state == false){
+        available_vms_display.style.display = "none";
+
+        project_display_users.style.display = "block";
+        project_display_vms.style.display = "block";
+        
+        if (CORE_USER_TYPE == "ADMIN"){
+            available_users_display.style.display = "none";
+            toggle_add_user_to_project_button_innertext(true);
+        }
+
+        toggle_add_vm_to_project_button_innertext(true);
+    }
+    else if (available_vms_display.style.display == "block"){
+        available_vms_display.style.display = "none";
+
+        project_display_users.style.display = "block";
+        project_display_vms.style.display = "block";
+
+        if (CORE_USER_TYPE == "ADMIN"){
+            available_users_display.style.display = "none";
+            toggle_add_user_to_project_button_innertext(true);
+        }
+
+        toggle_add_vm_to_project_button_innertext(true);
+    } else {
+        available_vms_display.style.display = "block";
+
+        project_display_users.style.display = "none";
+        project_display_vms.style.display = "none";
+
+        if (CORE_USER_TYPE == "ADMIN"){
+            available_users_display.style.display = "none";
+            toggle_add_user_to_project_button_innertext(true);
+        }
+        
+        toggle_add_vm_to_project_button_innertext(false);
+    }
+}
+
+
+function project_panel_navigation(panel){
+
+    previous_project_section = panel; 
+
+    // Navigating to the section within the project section area
+    if (CORE_USER_TYPE == "ADMIN"){
+        const project_creation = document.getElementById("project_creation");
+    }
+  
+    // Hiding all the panels in the project section
+    if (CORE_USER_TYPE == "ADMIN"){
+        project_creation.style.display = "none";
+    }
+    project_display.style.display = "none";
+    project_content.style.display = "none";
+    project_rename_display.style.display = "none";
+    available_vms_display.style.display = "none";
+
+    // Working on which one to reval and how
+    if (CORE_USER_TYPE == "ADMIN"){
+        if (panel == "project_creation"){
+            project_creation.style.display = "flex";
+        } 
+    }
+    else if (panel == "project_content"){
+        project_content.style.display = "grid";
+    }
+    else if (panel = "project_display"){
+        project_display.style.display = "";
+    } else if (panel = "project_rename_display"){
+        project_rename_display.style.display = "flex";
+    }
+}
+
 
 function update_project_display_with_project_data(project){
     // Display virtual machines
@@ -137,6 +286,106 @@ function update_project_display_with_project_data(project){
         project_display_users_content.appendChild(member_content);
     }
 }
+
+
+function update_projects_content() {
+    const project_content = document.getElementById("project_content");
+
+    console.log("fetch project listings");
+                      
+    fetch(
+        project_list_request_url, 
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "X-CSRFToken": getCookie('csrftoken') //https://www.geeksforgeeks.org/python/csrf-token-in-django/
+            },
+            body: new URLSearchParams({})
+        }
+    )
+    .then(response => response.json())
+    .then(data => {
+
+        if (data.status == "success"){
+            
+            project_content.innerHTML = ""; // Clearing all the elements under the div content container
+
+            // Display project details
+            const project_detail_data = data.projects;
+
+            for (const project of project_detail_data){
+                if (project.entity_type == "PROJECT"){
+                    const project_entry_div = document.createElement("div");
+                    project_entry_div.className = "rounded_container project_entry";
+                    project_entry_div.id = "project_entry";
+
+                    // <p> class elements
+                    const project_title = document.createElement("p");
+                    project_title.className = "roboto_font project_entry_p1";
+                    project_title.innerHTML = "Project name: " + project.project_name;
+                    project_entry_div.appendChild(project_title);
+
+                    const project_id = document.createElement("p");
+                    project_id.className = "roboto_font project_entry_p2";
+                    project_id.innerHTML = "Id: " + project.project_identifier_code;
+                    project_entry_div.appendChild(project_id);
+
+                    const project_details = document.createElement("p");
+                    project_details.className = "roboto_font";
+                    project_details.innerHTML = "VMs (" + project.project_available_vms + ") VMs online (" + project.project_vms_online + ") Users (" + project.project_users + ") Admins (" + project.project_admins + ")";
+                    project_entry_div.appendChild(project_details);
+                    
+                    // <button> class elements
+                    const open_project_button = document.createElement("button");
+                    open_project_button.type = "button";
+                    open_project_button.className = "alternate_connect_button";
+                    open_project_button.onclick = () => navigate_to_project_display(project);
+                    open_project_button.innerHTML = "Open";
+                    open_project_button.style.marginRight = "3%";
+                    project_entry_div.appendChild(open_project_button);
+
+                    if (CORE_USER_TYPE == "ADMIN"){
+                        const delete_project_button = document.createElement("button");
+                        delete_project_button.type = "button";
+                        delete_project_button.className = "alternate_connect_button"
+
+                        let delete_project_args = [project_entry_div, delete_project_button, project.project_id];
+                        delete_project_button.onclick = () => confirmation_prompt_user(
+                            "Project deletion confirmation",
+                            "Clicking confirm will mean you will completely delete the project entry. There is no recovery of this data. Are you sure?",
+                            "ADMIN_PROMPT_delete_project",
+                            delete_project_args
+                        );
+
+                        delete_project_button.innerHTML = "Delete";
+                        delete_project_button.style.marginRight = "3%";
+                        project_entry_div.appendChild(delete_project_button);
+                    }
+
+                    
+                    const rename_project_button = document.createElement("button");
+                    rename_project_button.type = "button";
+                    rename_project_button.className = "alternate_connect_button";
+                    rename_project_button.onclick = () => navigate_to_project_rename_display(project);
+                    rename_project_button.innerHTML = "Rename";
+                    rename_project_button.style.marginRight = "3%";
+                    project_entry_div.appendChild(rename_project_button);
+
+                    project_content.appendChild(project_entry_div);
+                }
+            }
+        }else{
+            //console.log(data.message);
+        }
+                                                                    
+    })
+    .catch(error => {
+        //console.error("Error:", error);
+    });
+}
+update_projects_content() 
+setInterval(update_projects_content, 3000); 
 
 
 // Functions
