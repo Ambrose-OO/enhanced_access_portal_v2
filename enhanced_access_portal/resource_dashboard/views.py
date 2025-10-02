@@ -412,8 +412,9 @@ def USER_ADMIN_PROMPT_project_listings(request):
         logged_in_status = request.session.get("logged_in")
         user_type = request.session.get("user_type")
         user_id = request.session.get("user_id")  
+        user = fetch_user_from_id(user_id)
 
-        if (logged_in_status == True):
+        if (logged_in_status == True) and (user):
             if (user_type == "USER"):
                 # Variable to store data on projects that the user is allowed to see
                 user_project_listings = []
@@ -423,8 +424,8 @@ def USER_ADMIN_PROMPT_project_listings(request):
 
                     # If the user is part of a project then list the project details
                     # to the user
-                    if (project.entity_type == "USER"):
-                        if (project.entity_id == user_id):
+                    if (project.entity_type == "PROJECT"):
+                        if (user_exists_in_project(user, project) == True):
                             project_detail = fetch_project_details(project)    
                             user_project_listings.append(project_detail)
 
@@ -449,14 +450,15 @@ def USER_ADMIN_PROMPT_project_listings(request):
                         "projects": admin_project_listings
                     }
                 ) 
-        
-        # Failure response if the user is requesting data when logged out
-        return JsonResponse(
-            {
-                "status": "failure", 
-                "message": "Server can't pass data on user who is logged out"
-            }
-        ) 
+        else:
+            # Failure response if the user is requesting data when logged out
+            return JsonResponse(
+                {
+                    "status": "fail", 
+                    "header_message": "Error: Logged out",
+                    "message": "Error passing data on project listings as you are logged out. Please log in and try again."
+                }
+            )
 
 @csrf_protect
 def USRER_ADMIN_PROMPT_available_vms(request):
@@ -1003,13 +1005,11 @@ def user_exists_in_project(user, project):
     for found_project in Projects.objects.all():
         if (found_project.entity_type == "USER"):
 
-            found_user = found_project.entity_id
+            found_user = fetch_user_from_id(found_project.entity_id)
 
             # Finding the project entries the user sits in
             if (found_user == user):
                 
-                vm_project = vm.project_id
-
                 if (found_project.project_identifier_code == project.project_identifier_code):
                     user_in_project = True
 

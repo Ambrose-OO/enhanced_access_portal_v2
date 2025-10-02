@@ -287,13 +287,15 @@ function update_projects_content() {
     .then(data => {
 
         if (data.status == "success"){
-            
+            console.log("user receiving project listing");
             project_content.innerHTML = ""; // Clearing all the elements under the div content container
 
             // Display project details
             const project_detail_data = data.projects;
 
             for (const project of project_detail_data){
+                console.log(project.project_name);
+                console.log(project.entity_type);
                 if (project.entity_type == "PROJECT"){
                     const project_entry_div = document.createElement("div");
                     project_entry_div.className = "rounded_container project_entry";
@@ -419,6 +421,74 @@ setInterval(update_available_project_vms, 3000); // Updating available vm conten
 
 
 // Functions
+
+function ADMIN_USER_PROMPT_rename_project(arg_list){
+
+    console.log("-----------");
+    console.log("Renaming VM");
+
+    const rename_project_entry = document.getElementById("rename_project_entry");
+
+    if (selected_project_id == ""){
+        prompt_user(
+            "Error: Rename project query failed", 
+            "A project for renaming hasn't been selected."
+        );
+        return;
+    }else if (rename_project_entry.value == ""){
+        prompt_user(
+            "Error: Rename project query failed", 
+            "A project name to rename to hasn't been entered."
+        );
+        return;
+    } else { 
+        notify_user("Renaming project...", true);
+    }
+    
+    fetch(
+        rename_project_request_url, 
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "X-CSRFToken": getCookie('csrftoken') //https://www.geeksforgeeks.org/python/csrf-token-in-django/
+            },
+            body: new URLSearchParams(
+                {
+                    project_id: selected_project_id,
+                    new_project_name: rename_project_entry.value
+                }
+            )
+        }
+    )
+    .then(response => response.json())
+    .then(data => {
+        
+        if (data.status == "success"){
+            
+            prompt_user(data.header_message, data.message);
+            update_projects_content();
+            reset_project_navigation_to_project_content();
+
+            lower_button_toggle(false, false, false, true, false, false, false);
+        }else{
+            // If the VM has failed to be renamed, give a failed prompt
+            // then return back to normal
+            prompt_user(data.header_message, data.message);
+
+            delete_project_button.innerHTML = "Failed.";
+            setTimeout(function() {
+                delete_project_button.innerHTML = "Delete";
+            }, 3000);
+        }
+                                                                    
+    })
+    .catch(error => {
+        console.error("Error:", error);
+    });
+
+}
+
 
 function ADMIN_USER_PROMPT_add_vm(vms_content, vm_add_button, vm_id_to_add) {
     if (selected_project_id == ""){console.log("no selected vm"); return;}

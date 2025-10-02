@@ -17,7 +17,7 @@ function navigate_to_group_creation(){
     group_creation.style.display = "flex";
     group_display.style.display = "none";
     group_content.style.display = "none";
-    available_vms_davailable_group_vms_displayisplay.style.display = "none";
+    available_group_vms_display.style.display = "none";
 
 }
 
