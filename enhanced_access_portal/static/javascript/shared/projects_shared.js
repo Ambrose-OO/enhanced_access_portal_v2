@@ -367,6 +367,57 @@ update_projects_content()
 setInterval(update_projects_content, 3000); 
 
 
+function update_available_project_vms() { 
+    // Display virtual machines
+    const project_available_vms_content = document.getElementById("project_available_vms_content");
+    
+    fetch(
+        available_vms_request_url, 
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "X-CSRFToken": getCookie('csrftoken') //https://www.geeksforgeeks.org/python/csrf-token-in-django/
+            },
+            body: new URLSearchParams({})
+        }
+    )
+    .then(response => response.json())
+    .then(data => {
+        
+        if (data.status == "success"){
+            
+            project_available_vms_content.innerHTML = ""; // Clearing the content views
+         
+            for (const vm of data.vms){
+                
+                generate_vm_element_returns = generate_vm_element(
+                    vm.vm_name,
+                    vm.vm_status,
+                    vm.vm_ip
+                )
+                vm_add_button = generate_vm_element_returns[0];
+                vms_content = generate_vm_element_returns[1];
+
+
+                vm_add_button.onclick = () => ADMIN_USER_PROMPT_add_vm(vms_content, vm_add_button, vm.vm_id);
+
+                // Rendering the div we created into "project_available_vms_content"
+                project_available_vms_content.appendChild(vms_content);
+            }
+            
+        }else{
+            console.log(data.message);
+        }
+                                                                    
+    })
+    .catch(error => {
+        console.error("Error:", error);
+    });
+}
+setInterval(update_available_project_vms, 3000); // Updating available vm content every 3 seconds
+
+
 // Functions
 
 function ADMIN_USER_PROMPT_add_vm(vms_content, vm_add_button, vm_id_to_add) {

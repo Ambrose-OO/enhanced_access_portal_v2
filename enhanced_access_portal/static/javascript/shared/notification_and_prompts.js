@@ -94,8 +94,8 @@ function continue_confirmation_prompt(function_to_call, function_args){
     if (function_to_call == "ADMIN_PROMPT_delete_project"){
         ADMIN_PROMPT_delete_project(function_args);
     }
-    if (function_to_call == "ADMIN_PROMPT_rename_project"){
-        ADMIN_PROMPT_rename_project();
+    if (function_to_call == "ADMIN_USER_PROMPT_rename_project"){
+        ADMIN_USER_PROMPT_rename_project();
     }
     if (function_to_call == "ADMIN_USER_PROMPT_remove_vm_from_group"){
         ADMIN_USER_PROMPT_remove_vm_from_group(function_args);

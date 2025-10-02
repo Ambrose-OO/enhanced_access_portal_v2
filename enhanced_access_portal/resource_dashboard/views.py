@@ -924,7 +924,7 @@ def ADMIN_PROMPT_delete_project(request):
         )
     
 
-def ADMIN_PROMPT_rename_project(request):
+def ADMIN_USER_PROMPT_rename_project(request):
     if request.method == "POST":
         print("----------------")
         print("Renaming project")

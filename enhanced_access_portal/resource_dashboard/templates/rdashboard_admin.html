@@ -19,7 +19,6 @@
         <link rel = "stylesheet" href="{% static 'css/button_style.css' %}">
         <link rel = "stylesheet" href="{% static 'css/text_style.css' %}">
         <link rel = "stylesheet" href="{% static 'css/styling_style.css' %}">
-
     </head>
 
 
@@ -382,7 +381,7 @@
                                         <button id = "x1" type="button" onclick="confirmation_prompt_user(
                                             'Project rename confirmation',
                                             'Clicking confirm will mean you will change the name of the project entry. You can change this back later. Are you sure?',
-                                            'ADMIN_PROMPT_rename_project'
+                                            'ADMIN_USER_PROMPT_rename_project'
                                         )" class = "alternate_button" style = "width: 48%;">
                                             Rename
                                         </button>
@@ -514,7 +513,6 @@
                                         -->
                                     </div>
                                 </div>
-
                             </div>
 
                             <div id = "all_vms_section" style = "width: 100%; height: 100%; display: none;">
@@ -604,12 +602,15 @@
                         <button id = "create_project_button" type="button" onclick="navigate_to_project_creation()" class = "alternate_button_2">
                             Create project 
                         </button>
+
                         <button id = "add_vm_button" type="button" onclick="reveal_project_display_available_vms()" class = "alternate_button_2" style = "display: none;">
                             Add VM
                         </button>
+
                         <button id = "add_group_button" type="button" onclick="navigate_to_group_creation()" class = "alternate_button_2" style = "display: none;">
                             Create group
                         </button>
+
                         <button id = "add_group_vm_button" type="button" onclick="reveal_group_display_available_vms()" class = "alternate_button_2" style = "display: none;">
                             Add VM
                         </button>
@@ -714,6 +715,8 @@
         const logout_request_url = "{% url 'logout_request' %}";
         
         const project_list_request_url = "{% url 'project_list_request' %}";
+        const available_vms_request_url = "{% url 'available_vms_request' %}";
+        const rename_project_request_url = "{% url 'rename_project_request' %}";
 
         const add_vm_request_url = "{% url 'add_vm_request' %}";
         const remove_vm_request_url = "{% url 'remove_vm_request' %}";
@@ -729,9 +732,7 @@
 
         // URLs - admin
         const available_users_request_url = "{% url 'available_users_request' %}";
-        const available_vms_request_url = "{% url 'available_vms_request' %}";
         const create_project_request_url = "{% url 'create_project_request' %}";
-        const rename_project_request_url = "{% url 'rename_project_request' %}";
         const delete_project_request_url = "{% url 'delete_project_request' %}";
         const add_users_to_project_request_url = "{% url 'add_users_to_project_request' %}";
         const remove_user_from_project_request_url = "{% url 'remove_user_from_project_request' %}";
