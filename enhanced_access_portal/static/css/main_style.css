@@ -20,7 +20,7 @@ input [type=submit] {
     height: 100%;
     margin: 0;
     display: flex;
-    background-image: url("../images/BackdropImage1.png");
+    background-image: url("../media/BackdropImage1.png");
 }
 
 .width_section_length {
