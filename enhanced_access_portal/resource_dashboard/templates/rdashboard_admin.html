@@ -757,6 +757,9 @@
             if (function_to_call == "ADMIN_USER_PROMPT_remove_vm"){
                 ADMIN_USER_PROMPT_remove_vm(function_args);
             }
+            if (function_to_call == "ADMIN_PROMPT_remove_member_from_project"){
+                ADMIN_PROMPT_remove_member_from_project(function_args);
+            }
         }
 
         /**
@@ -1123,7 +1126,15 @@
                 member_remove_button.className = "alternate_connect_button";
                 
                 member_remove_button.onclick = () => ADMIN_PROMPT_remove_member_from_project(member_content, member_remove_button, member.user_id, project.project_id);
-               
+                
+                let remove_member_args = [member_content, member_remove_button, member.user_id, project.project_id];
+                member_remove_button.onclick = () => confirmation_prompt_user(
+                    "Member removal confirmation",
+                    "Clicking confirm will mean you will remove this member from the project. You can add them back later if they still exist in the system. Are you sure?",
+                    "ADMIN_PROMPT_remove_member_from_project",
+                    remove_member_args
+                );
+                
                 member_remove_button.innerHTML = "Remove";
                 member_content.appendChild(member_remove_button);
 
@@ -1254,11 +1265,15 @@
         }
 
 
-        function ADMIN_PROMPT_remove_member_from_project(member_content, member_remove_button, member_id_to_remove, project_id_to_remove_from) {
+        function ADMIN_PROMPT_remove_member_from_project(arg_list) {
+            
+            let member_content = arg_list[0];
+            let member_remove_button = arg_list[1];
+            let member_id_to_remove = arg_list[2];
+            let project_id_to_remove_from = arg_list[3];
+            
             if (project_id_to_remove_from == ""){console.log("no selected project"); return;}
-
-            //console.log("add user to project");
-                            
+             
             member_remove_button.innerHTML = "Removing...";
 
             fetch(
@@ -1282,6 +1297,8 @@
                 
                 if (data.status == "success"){
                     
+                    prompt_user(data.header_message, data.message);
+
                     // Updating available user data
                     update_available_project_users();
                     
@@ -1297,7 +1314,7 @@
                 }else{
                     // If the VM has failed to be added, give a failed prompt
                     // then return back to normal
-                    //console.log(data.message);
+                    prompt_user(data.header_message, data.message);
 
                     member_remove_button.innerHTML = "Failed.";
                     setTimeout(function() {

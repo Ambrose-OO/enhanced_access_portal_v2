@@ -1253,13 +1253,6 @@ def ADMIN_PROMPT_add_user_to_project(request):
                 }
             )
          
-        # Failure response if the user is requesting data when logged out
-        return JsonResponse(
-            {
-                "status": "failure", 
-                "message": "Server can't add user to project"
-            }
-        ) 
     
 
 @csrf_protect
@@ -1302,19 +1295,69 @@ def ADMIN_PROMPT_remove_user_from_project(request):
                                         return JsonResponse(
                                             {
                                                 "status": "success", 
-                                                "message": "Server succeeded in deleting the user from the project",
+                                                "header_message": "Success: Member removed the project", 
+                                                "message": "Server succeeded in deleting the user from the project.",
                                                 "projects": admin_project_listings
                                             }
                                         ) 
-                
-        # Failure response if the user is requesting data when logged out
-        return JsonResponse(
-            {
-                "status": "failure", 
-                "message": "Server can't add user to project"
-            }
-        ) 
+                        return JsonResponse(
+                            {
+                                "status": "fail", 
+                                "header_message": "Error: Cannot identify project member to remove", 
+                                "message": "The server could not find the user you wanted to delete from the project."
+                            }
+                        )
+                    else:
+                        return JsonResponse(
+                            {
+                                "status": "fail", 
+                                "header_message": "Error: Cannot remove yourself", 
+                                "message": "Cannot remove yourself from the project as an admin. If you wish to do so, go ahead and delete the project if okay."
+                            }
+                        )
+                else:
+                    return JsonResponse(
+                        {
+                            "status": "fail", 
+                            "header_message": "Error: Unauthorised request",
+                            "message": "You are not an admin to be making requests to remove users from projects."
+                        }
+                    ) 
+            else:
+                if (user == None):
+                    return JsonResponse(
+                        {
+                            "status": "fail", 
+                            "header_message": "Error: Cannot identify your user",
+                            "message": "Error identifying your user during the request. Please re-log in and try again."
+                        }
+                    )
+                elif (project == None):
+                    return JsonResponse(
+                        {
+                            "status": "fail", 
+                            "header_message": "Error: Project cannot be found",
+                            "message": "Project to remove the project member from cannot be found. Please try again."
+                        }
+                    )
+                elif (user_to_remove == None):
+                    return JsonResponse(
+                        {
+                            "status": "fail", 
+                            "header_message": "Error: Cannot identify project member to add",
+                            "message": "Cannot identify the member of the project to remove. Please refresh your page and try again."
+                        }
+                    )
 
+        else:
+             return JsonResponse(
+                {
+                    "status": "fail", 
+                    "header_message": "Error: Logged out",
+                    "message": "Error removing the memeber from the project as you are logged out. Please log in and try again."
+                }
+            )
+           
 
 @csrf_protect
 def ADMIN_PROMPT_available_users(request):
