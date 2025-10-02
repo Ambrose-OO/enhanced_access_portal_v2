@@ -94,6 +94,10 @@ https://www.w3schools.com/cssref/css3_pr_overflow-y.php#:~:text=The%20overflow%2
 
 https://forum.djangoproject.com/t/understanding-django-include/21788/11
 
+https://stackoverflow.com/questions/9371378/warning-not-found-favicon-ico-in-django
+
+https://cloudconvert.com/png-to-ico
+
 https://developer.mozilla.org/en-US/docs/Web/CSS/repeat
 
 https://developer.mozilla.org/en-US/docs/Web/CSS/grid-template-columns
