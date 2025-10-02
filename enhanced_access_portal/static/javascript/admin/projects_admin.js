@@ -374,7 +374,9 @@ function ADMIN_PROMPT_rename_project(arg_list){
             
             prompt_user(data.header_message, data.message);
             update_projects_content();
-            navigate_to_project_content();
+            reset_project_navigation_to_project_content();
+
+            lower_button_toggle(false, false, false, true, false, false, false);
         }else{
             // If the VM has failed to be renamed, give a failed prompt
             // then return back to normal

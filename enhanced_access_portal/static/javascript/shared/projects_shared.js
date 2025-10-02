@@ -56,11 +56,7 @@ function navigate_to_project_rename_display(project) {
     previous_project_section = "project_rename_display";
 }
 
-function navigate_to_project_content() {
-    project_content.style.display = "grid";
-    project_display.style.display = "none";
-    project_rename_display.style.display = "none";
-}
+
 
 
 function reveal_project_display_available_users(state)
@@ -171,7 +167,7 @@ function reveal_project_display_available_vms(state)
 }
 
 
-function reset_project_navigation_to_project_panel(){
+function reset_project_navigation_to_project_content(){
 
     previous_project_section = "project_content"; 
 
