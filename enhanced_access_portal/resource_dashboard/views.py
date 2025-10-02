@@ -1122,8 +1122,7 @@ def ADMIN_USER_PROMPT_add_vm(request):
                         # to add the VM to. As they don't have perms across all projects
                         # like admins do
 
-                        vm_project = vm.project_id
-                        user_in_project = user_exists_in_project(user, vm_project)
+                        user_in_project = user_exists_in_project(user, project)
 
                         if (user_in_project == False):
                             return JsonResponse(
