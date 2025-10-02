@@ -1222,6 +1222,8 @@
                 
                 if (data.status == "success"){
                     
+                    prompt_user(data.header_message, data.message);
+
                     // Updating available user data
                     update_available_project_users();
                     
@@ -1237,7 +1239,7 @@
                 }else{
                     // If the VM has failed to be added, give a failed prompt
                     // then return back to normal
-                    //console.log(data.message);
+                    prompt_user(data.header_message, data.message);
 
                     user_add_button.innerHTML = "Failed.";
                     setTimeout(function() {

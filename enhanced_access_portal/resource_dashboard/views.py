@@ -1206,11 +1206,53 @@ def ADMIN_PROMPT_add_user_to_project(request):
                     return JsonResponse(
                         {
                             "status": "success", 
+                            "header_message": "Success: Server added user to project",
                             "message": "Server succeeded adding user to project",
                             "projects": admin_project_listings
                         }
                     ) 
-                
+                else:
+                    return JsonResponse(
+                        {
+                            "status": "fail", 
+                            "header_message": "Error: Unauthorised request",
+                            "message": "You are not an admin to be adding users to the project."
+                        }
+                    )
+            else:
+                if (user == None):
+                    return JsonResponse(
+                        {
+                            "status": "fail", 
+                            "header_message": "Error: Cannot identify your user",
+                            "message": "Error identifying your user during the request. Please re-log in and try again."
+                        }
+                    )
+                elif (project == None):
+                    return JsonResponse(
+                        {
+                            "status": "fail", 
+                            "header_message": "Error: Project cannot be found",
+                            "message": "Project to add the user too cannot be found. Please try again."
+                        }
+                    )
+                elif (user_to_add == None):
+                    return JsonResponse(
+                        {
+                            "status": "fail", 
+                            "header_message": "Error: Cannot identify user to add",
+                            "message": "Cannot identify the user to add to the project. Please refresh your page and try again."
+                        }
+                    )
+        else:        
+            return JsonResponse(
+                {
+                    "status": "fail", 
+                    "header_message": "Error: Logged out",
+                    "message": "Error adding user to project as you are logged out. Please log in and try again."
+                }
+            )
+         
         # Failure response if the user is requesting data when logged out
         return JsonResponse(
             {
