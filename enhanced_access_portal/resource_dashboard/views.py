@@ -45,16 +45,36 @@ def insert_data():
     # Function used to add in VM data
     print("Inserting data")
     vm_logs = [
-        ["Mechanical Simulation", "Online", "123.0.255.1", 1, None],
-        ["C++ development", "Offline", "56.126.34.2", 1, None],
-        ["Python development", "Offline", "255.123.0.1", 1, None],
-        ["Hosting machine", "Offline", "233.123.255.3", 1, None],
-        ["C development", "Online", "233.255.56.2", 1, None],
-        ["Web development", "Online", "135.0.255.1", 1, None],
-        ["General Modelling & Simulation", "Online", "137.123.6.1", 1, None],
-        ["Ambroses Development VM", "Online", "255.56.7.1", 1, None],
-        ["Conans Development VM", "Offline", "41.123.23.1", 1, None],
-        ["Jacobs Development VM", "Online", "214.255.123.3", 1, None]
+        ["Data Analytics VM", "Online", "192.168.10.21", 1, None],
+        ["Machine Learning Node", "Offline", "172.16.34.56", 1, None],
+        ["AI Research VM", "Online", "10.45.123.77", 1, None],
+        ["Finance Modelling Server", "Offline", "203.0.113.45", 1, None],
+        ["HR Payroll Processing", "Online", "198.51.100.23", 1, None],
+        ["Testing Environment", "Offline", "192.0.2.111", 1, None],
+        ["Cybersecurity Sandbox", "Online", "156.34.78.9", 1, None],
+        ["Database Backup Node", "Offline", "145.23.56.200", 1, None],
+        ["Frontend Dev VM", "Online", "134.56.77.89", 1, None],
+        ["Backend Dev VM", "Online", "165.34.87.101", 1, None],
+        ["Linux Kernel Dev VM", "Offline", "176.56.120.33", 1, None],
+        ["Windows Build Server", "Online", "143.22.67.89", 1, None],
+        ["Cross-platform Testing", "Offline", "154.77.23.45", 1, None],
+        ["Networking Simulation Node", "Online", "190.123.67.22", 1, None],
+        ["GIS Analysis VM", "Offline", "201.56.89.76", 1, None],
+        ["Climate Modelling Server", "Online", "178.200.45.66", 1, None],
+        ["Legal Docs Processing", "Offline", "164.90.123.34", 1, None],
+        ["Digital Twin Engine", "Online", "177.23.44.55", 1, None],
+        ["Quantum Simulation Node", "Offline", "182.56.100.9", 1, None],
+        ["Big Data Processing", "Online", "143.67.210.11", 1, None],
+        ["Email Server VM", "Online", "198.12.34.56", 1, None],
+        ["Code Review Server", "Offline", "201.45.67.89", 1, None],
+        ["Continuous Integration VM", "Online", "172.88.99.44", 1, None],
+        ["Automated Testing VM", "Offline", "185.77.66.22", 1, None],
+        ["File Storage Node", "Online", "139.45.120.66", 1, None],
+        ["Load Balancer VM", "Offline", "204.12.44.78", 1, None],
+        ["API Gateway Server", "Online", "156.90.67.23", 1, None],
+        ["Blockchain Dev VM", "Offline", "193.120.45.99", 1, None],
+        ["Edge Computing Node", "Online", "154.56.200.77", 1, None],
+        ["IoT Device Management VM", "Offline", "178.66.99.123", 1, None]
     ]
 
     for log in vm_logs:
