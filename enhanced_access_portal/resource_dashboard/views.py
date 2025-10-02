@@ -977,65 +977,103 @@ def ADMIN_PROMPT_rename_project(request):
             }
         )
      
+def user_exists_in_project(user, project):
+    user_in_project = False
+
+    for found_project in Projects.objects.all():
+        if (found_project.entity_type == "USER"):
+
+            found_user = found_project.entity_id
+
+            # Finding the project entries the user sits in
+            if (found_user == user):
+                
+                vm_project = vm.project_id
+
+                if (found_project.project_identifier_code == project.project_identifier_code):
+                    user_in_project = True
+
+    return user_in_project
 
 @csrf_protect
-def ADMIN_PROMPT_remove_vm(request):
+def ADMIN_USER_PROMPT_remove_vm(request):
     if request.method == "POST":
         print("----------------")
         print("Remove vm")
 
         logged_in_status = request.session.get("logged_in")
         user_type = request.session.get("user_type")
+        user_id = request.session.get("user_id") 
+        user = fetch_user_from_id(user_id)
 
-        if (logged_in_status == True):
-            if (user_type == "ADMIN") or (user_type == "USER"):
+        if (logged_in_status == True) and (user):
+            
+            vm_id = request.POST.get("vm_id")
+            vm = fetch_vm_from_id(vm_id)
 
-                print("a")
+            if (vm != None):
+                if (vm.project_id != None):
+                    
+                    if (user_type == "USER"):
+                        # Need to check if the user is part of the project that they want
+                        # to remove the VM from. As they don't have perms across all projects
+                        # like admins do
 
-                vm_id = request.POST.get("vm_id")
-                print(vm_id)
-                vm = fetch_vm_from_id(vm_id)
+                        vm_project = vm.project_id
+                        user_in_project = user_exists_in_project(user, vm_project)
 
-                print("b")
-
-                if (vm != None):
-                    if (vm.project_id != None):
-                        print("vm has a project")
-
-                        # Updating vm SQL data to have the VM not be associated with a project
-                        # https://www.w3schools.com/django/django_update_data.php
-                        vm.project_id = None
-                        vm.save()
-                        
-                        admin_project_listings = collate_ADMIN_project_listings()
-
-                        return JsonResponse(
-                            {
-                                "status": "success", 
-                                "message": "Server successfully removed vm from project",
-                                "projects": admin_project_listings
-                            }
-                        ) 
+                        if (user_in_project == False):
+                            return JsonResponse(
+                                {
+                                    "status": "fail", 
+                                    "header_message": "Error: Unauthorised request",
+                                    "message": "You are not part of the project to be making requests to remove a VM from."
+                                }
+                            )
                             
-                    else:
-                        print("vm is already removed from a project - error")
-                else:
-                    print("vm can't be found - error")
 
+                    # Updating vm SQL data to have the VM not be associated with a project
+                    # https://www.w3schools.com/django/django_update_data.php
+                    vm.project_id = None
+                    vm.save()
+                    
+                    admin_project_listings = collate_ADMIN_project_listings()
+
+                    return JsonResponse(
+                        {
+                            "status": "success", 
+                            "header_message": "Success: Server removed VM from project",
+                            "message": "The selected VM for removal has been successfully removed from the project.",
+                            "projects": admin_project_listings
+                        }
+                    )
+                        
+                else:
+                    return JsonResponse(
+                        {
+                            "status": "fail", 
+                            "header_message": "Error: VM is not part of a project",
+                            "message": "The selected VM for removal is not part of a project."
+                        }
+                    )
+            else:
                 return JsonResponse(
                     {
-                        "status": "error", 
-                        "message": "Server cannot remove vm to the project for unknown reason"
+                        "status": "fail", 
+                        "header_message": "Error: VM cannot be identified",
+                        "message": "The VM for removal from the project cannot be identified."
                     }
-                ) 
+                )
 
-        # Failure response if the user is requesting data when logged out
-        return JsonResponse(
-            {
-                "status": "failure", 
-                "message": "Server can't pass data on user who is logged out"
-            }
-        ) 
+        else:
+            # Failure response if the user is requesting data when logged out
+            return JsonResponse(
+                {
+                    "status": "fail", 
+                    "header_message": "Error: Logged out",
+                    "message": "Error removing VM from project as you are logged out. Please log in and try again."
+                }
+            )
 
 @csrf_protect
 def ADMIN_USER_PROMPT_add_vm(request):
@@ -1044,7 +1082,10 @@ def ADMIN_USER_PROMPT_add_vm(request):
         print("Add vm")
 
         logged_in_status = request.session.get("logged_in")
-    
+        user_type = request.session.get("user_type")
+        user_id = request.session.get("user_id") 
+        user = fetch_user_from_id(user_id)
+
         if (logged_in_status == True):
            
             vm_id = request.POST.get("vm_id")
@@ -1055,6 +1096,23 @@ def ADMIN_USER_PROMPT_add_vm(request):
         
             if (vm != None) and (project != None):
                 if (vm.project_id == None):
+                    
+                    if (user_type == "USER"):
+                        # Need to check if the user is part of the project that they want
+                        # to add the VM to. As they don't have perms across all projects
+                        # like admins do
+
+                        vm_project = vm.project_id
+                        user_in_project = user_exists_in_project(user, vm_project)
+
+                        if (user_in_project == False):
+                            return JsonResponse(
+                                {
+                                    "status": "fail", 
+                                    "header_message": "Error: Unauthorised request",
+                                    "message": "You are not part of the project to be making requests to add a VM to."
+                                }
+                            )
                     
                     # Updating vm SQL data to match the given project
                     # https://www.w3schools.com/django/django_update_data.php

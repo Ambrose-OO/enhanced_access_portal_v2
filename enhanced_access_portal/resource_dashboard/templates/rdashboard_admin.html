@@ -754,6 +754,9 @@
             if (function_to_call == "ADMIN_USER_PROMPT_delete_group"){
                 ADMIN_USER_PROMPT_delete_group(function_args);
             }
+            if (function_to_call == "ADMIN_USER_PROMPT_remove_vm"){
+                ADMIN_USER_PROMPT_remove_vm(function_args);
+            }
         }
 
         /**
@@ -997,11 +1000,15 @@
             }
 
 
-        function ADMIN_USER_PROMPT_remove_vm(vms_content, vm_remove_button, vm_id_to_remove){
+        function ADMIN_USER_PROMPT_remove_vm(arg_list){
             
             console.log("-----------");
             console.log("Removing VM");
-                            
+            
+            let vms_content = arg_list[0];
+            let vm_remove_button = arg_list[1];
+            let vm_id_to_remove = arg_list[2];
+
             vm_remove_button.innerHTML = "Removing...";
 
             fetch(
@@ -1024,6 +1031,8 @@
                 
                 if (data.status == "success"){
                     
+                    prompt_user(data.header_message, data.message);
+
                     // Updating project information currently being displayed to the user
                     const project_detail_data = data.projects;
 
@@ -1036,7 +1045,7 @@
                 }else{
                     // If the VM has failed to be added, give a failed prompt
                     // then return back to normal
-                    //console.log(data.message);
+                    prompt_user(data.header_message, data.message);
 
                     vm_remove_button.innerHTML = "Failed.";
                     setTimeout(function() {
@@ -1079,8 +1088,14 @@
                 vm_remove_button.type = "button";
                 vm_remove_button.className = "alternate_connect_button";
                 
-                vm_remove_button.onclick = () => ADMIN_USER_PROMPT_remove_vm(vms_content, vm_remove_button, vm.vm_id);
-               
+                let remove_vm_args = [vms_content, vm_remove_button, vm.vm_id];
+                vm_remove_button.onclick = () => confirmation_prompt_user(
+                    "Project VM removal confirmation",
+                    "Clicking confirm will mean you will remove the VM from the project. You will be able to add it back later if it's available. Are you sure?",
+                    "ADMIN_USER_PROMPT_remove_vm",
+                    remove_vm_args
+                );
+
                 vm_remove_button.innerHTML = "Remove";
                 vms_content.appendChild(vm_remove_button);
 
@@ -1148,7 +1163,7 @@
                 if (data.status == "success"){
                     
                     prompt_user(data.header_message, data.message);
-                    
+
                     // After successfully removing a VM, request an update on the latest
                     // available vms
                     update_available_project_vms();
