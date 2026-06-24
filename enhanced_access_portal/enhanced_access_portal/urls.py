@@ -16,16 +16,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from django.conf import settings
-from django.conf.urls.static import static
 from django.views.generic import RedirectView
-from django.conf.urls import url
+
 
 urlpatterns = [
     path('', include('login_page.urls')),
     path('', include('resource_dashboard.urls')),
     path('admin/', admin.site.urls),
-    url(r'^favicon\.ico$',RedirectView.as_view(url='/static/media/dashboard.ico'))
+    path(r'^favicon\.ico$',RedirectView.as_view(url='/static/media/dashboard.ico'))
 ]
-
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
