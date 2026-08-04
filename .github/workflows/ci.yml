@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [ l6_dev_ops_main ]
+  pull_request:
+    branches: [ l6_dev_ops_main ]
+
+defaults:
+  run:
+    working-directory: enhanced_access_portal
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+          cache-dependency-path: enhanced_access_portal/requirements.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install ruff bandit pip-audit coverage
+
+      - name: Build gate - Django system checks
+        run: python manage.py check
+
+      - name: Static analysis gate - ruff
+        run: ruff check .
+
+      - name: Security gate - bandit (SAST)
+        run: bandit -r . -ll
+
+      - name: Security gate - pip-audit (dependency scan)
+        # Advisory until ADR-0002 (Django upgrade) is executed, then make blocking
+        continue-on-error: true
+        run: pip-audit -r requirements.txt
+
+      - name: Test gate - unit and integration tests with coverage
+        run: |
+          coverage run manage.py test
+          coverage report -m --fail-under=40
