@@ -266,7 +266,6 @@ def USER_ADMIN_PROMPT_group_listings(request):
         print("Group listings")
 
         logged_in_status = request.session.get("logged_in")
-        user_type = request.session.get("user_type")
         user_id = request.session.get("user_id")  
 
         if (logged_in_status == True):
@@ -467,8 +466,16 @@ def USRER_ADMIN_PROMPT_available_vms(request):
         print("Available project VMS")
 
         logged_in_status = request.session.get("logged_in")
-        user_type = request.session.get("user_type")
-        user_id = request.session.get("user_id")  
+        
+
+        """
+        Removed these two lines; Removed consideration on filtering available VMS based on user type
+            user_type = request.session.get("user_type")
+            user_id = request.session.get("user_id")  
+
+        Mostly because of the fact that in an organisation seeing the number of available VMS for transparency
+        and to spot any issues in available resources as an trusted employee makes sense.
+        """
         
         if (logged_in_status == True):
             
@@ -571,8 +578,7 @@ def USRER_ADMIN_PROMPT_add_vm_to_group(request):
         print("Add vm to group")
 
         logged_in_status = request.session.get("logged_in")
-        user_type = request.session.get("user_type")
-    
+        
         if (logged_in_status == True):
 
             vm_id = request.POST.get("vm_id")
@@ -932,8 +938,7 @@ def ADMIN_USER_PROMPT_rename_project(request):
         print("Renaming project")
 
         logged_in_status = request.session.get("logged_in")
-        user_type = request.session.get("user_type")
-
+    
         if (logged_in_status == True):
 
             project_id = request.POST.get("project_id")
