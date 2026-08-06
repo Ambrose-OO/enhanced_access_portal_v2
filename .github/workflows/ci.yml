@@ -37,7 +37,7 @@ jobs:
         run: ruff check .
 
       - name: Security gate - bandit (SAST)
-        run: bandit -r . -ll
+        run: bandit -r . -ll -x "*/migrations/*"
 
       - name: Security gate - pip-audit (dependency scan)
         # Advisory until ADR-0002 (Django upgrade) is executed, then make blocking

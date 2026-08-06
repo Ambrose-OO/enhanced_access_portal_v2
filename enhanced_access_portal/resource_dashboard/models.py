@@ -19,7 +19,7 @@ class VMs(models.Model):
 
     vm_name = models.CharField(max_length = 255, default = "undefined_vm_name")
     vm_online = models.CharField(max_length = 255, default = "offline")
-    vm_ip = models.CharField(max_length = 255, default = "0.0.0.0") 
+    vm_ip = models.CharField(max_length = 255, default = "0.0.0.0") # nosec B104 - database default value, not a network bind
     owner_id = models.ForeignKey(User, on_delete=models.SET_NULL, default = None, null = True, blank = True)
     # If the user entry is deleted and their foreign key resides in an entry for a VMs then the Vms entry 
     # is deleted too
