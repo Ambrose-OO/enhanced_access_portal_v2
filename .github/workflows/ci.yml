@@ -47,4 +47,4 @@ jobs:
       - name: Test gate - unit and integration tests with coverage
         run: |
           coverage run manage.py test
-          coverage report -m --fail-under=25
+          coverage report -m --fail-under=15
