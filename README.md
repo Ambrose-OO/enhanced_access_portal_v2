@@ -76,6 +76,63 @@ Password: Test22
 
 Since the IEAP has some areas of improvement, testing may come with some faults. Adhere to the report for understanding on what is the current state of the web application.
 
+### 10. Running the CI gates locally
+
+The continuous integration pipeline runs a series of quality gates on every
+push and pull request. The same gates can be run locally before pushing, which
+gives feedback in seconds rather than waiting for a workflow run to complete.
+
+#### Setting up the environment
+
+The project targets Python 3.9, recorded in `.python-version`, and its
+dependencies are pinned in `enhanced_access_portal/requirements.txt`. The
+environment is rebuilt from these files rather than being committed to the
+repository, so the developer machine, the CI runner and the host all install
+the same versions.
+
+From the repository root:
+`py -3.9 -m venv .venv`
+`.venv\Scripts\activate`
+`pip install -r enhanced_access_portal\requirements.txt`
+
+The analysis tools are not application dependencies and are installed
+separately, so that they are not deployed to the production host:
+
+`pip install ruff bandit coverage`
+
+#### Running the gates
+
+From the `enhanced_access_portal` directory, with the virtual environment
+active:
+
+`python manage.py check`
+`ruff check .`
+`bandit -r . -x "/migrations/"`
+`coverage run manage.py test`
+`coverage report -m`
+
+#### Gate explanation
+
+Each command corresponds to a gate in the pipeline:
+
+1. `manage.py check` validates the Django project configuration. This is the
+   build gate.
+2. `ruff check .` performs static analysis for maintainability issues,
+   configured by `ruff.toml`.
+3. `bandit` performs static application security testing across authored code.
+   Generated migration files are excluded, as recorded in ADR-0004.
+4. `coverage run manage.py test` executes the unit and integration test suite.
+5. `coverage report -m` reports line coverage, excluding generated files as
+   configured in `.coveragerc`. The pipeline fails this gate below the
+   threshold set in `.github/workflows/ci.yml`.
+
+The pipeline also runs `pip-audit` against the pinned dependencies. This gate
+currently reports known vulnerabilities in the pinned Django version and is
+configured as advisory rather than blocking, as recorded in ADR-0002.
+
+If any gate fails locally, it will fail in the pipeline, and the pull request
+cannot be merged until it passes.
+
 ## Extended bibliography
 
 https://www.youtube.com/watch?v=9BEKT0mEAso
