@@ -24,7 +24,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "insecure-key-for-local-development-only")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# An environment variable will control DEBUG from the render deployment
+DEBUG = os.environ.get("DEBUG", "True") == "True" 
 
 ALLOWED_HOSTS = []
 
