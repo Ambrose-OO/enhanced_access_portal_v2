@@ -27,7 +27,8 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "insecure-key-for-local-develop
 # An environment variable will control DEBUG from the render deployment
 DEBUG = os.environ.get("DEBUG", "True") == "True" 
 
-ALLOWED_HOSTS = []
+# An environment variable will control ALLOWED_HOSTS from the render deployment
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
 
 
 # Application definition
