@@ -128,7 +128,11 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # where collectstatic will copy them
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+if not DEBUG:
+    # For CI purposes, if a CI pipeline is ran Debug will be true so no point 
+    # of using static files storage which will fail the test, as the CI 
+    # does not built the static files, nor does it need to while in DEBUG = True
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),  # where you keep your dev static files
