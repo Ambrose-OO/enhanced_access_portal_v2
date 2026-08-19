@@ -23,5 +23,7 @@ urlpatterns = [
     path('', include('login_page.urls')),
     path('', include('resource_dashboard.urls')),
     path('admin/', admin.site.urls),
-    path(r'^favicon\.ico$',RedirectView.as_view(url='/static/media/dashboard.ico'))
+    path('favicon.ico',RedirectView.as_view(url='/static/media/dashboard.ico'))
 ]
+
+# path(r'^favicon\.ico$',RedirectView.as_view(url='/static/media/dashboard.ico'))
