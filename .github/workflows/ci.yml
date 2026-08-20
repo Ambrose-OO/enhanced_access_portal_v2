@@ -65,5 +65,5 @@ jobs:
 
       - name: Post-deploy smoke test
         run: |
-          curl --fail --show-error --max-time 60 \
+          curl --fail --silent --show-error --max-time 60 --output /dev/null \
             https://enhanced-access-portal-v2-l6-devops.onrender.com/login_page/
