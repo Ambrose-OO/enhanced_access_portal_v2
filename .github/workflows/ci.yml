@@ -48,3 +48,19 @@ jobs:
         run: |
           coverage run manage.py test
           coverage report -m --fail-under=15
+
+  deploy:
+    needs: ci
+    if: github.ref == 'refs/heads/l6_dev_ops_main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render deploy
+        run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
+
+      - name: Wait for deploy to complete
+        run: sleep 90
+
+      - name: Post-deploy smoke test
+        run: |
+          curl --fail --show-error --max-time 60 \
+            https://enhanced-access-portal-v2-l6-devops.onrender.com/login_page/
