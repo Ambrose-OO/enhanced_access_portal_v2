@@ -56,3 +56,11 @@ jobs:
     steps:
       - name: Trigger Render deploy
         run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
+
+      - name: Wait for deploy to complete
+        run: sleep 90
+
+      - name: Post-deploy smoke test
+        run: |
+          curl --fail --show-error --max-time 60 \
+            https://enhanced-access-portal-v2-l6-devops.onrender.com/login_page/
