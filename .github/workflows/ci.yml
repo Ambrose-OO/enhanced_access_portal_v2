@@ -48,3 +48,11 @@ jobs:
         run: |
           coverage run manage.py test
           coverage report -m --fail-under=15
+
+  deploy:
+    needs: ci
+    if: github.ref == 'refs/heads/l6_dev_ops_main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render deploy
+        run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
