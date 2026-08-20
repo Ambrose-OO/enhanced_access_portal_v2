@@ -53,6 +53,9 @@ jobs:
     needs: ci
     if: github.ref == 'refs/heads/l6_dev_ops_main'
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
     steps:
       - name: Trigger Render deploy
         run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
