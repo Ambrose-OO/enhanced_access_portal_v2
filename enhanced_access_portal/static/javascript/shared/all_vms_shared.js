@@ -7,6 +7,11 @@
 // Sub-functions
 
 function search_all_vms_call_handler(search_query){
+
+    const query_debug_id = generate_debug_id();
+
+    console.log(query_debug_id + "Client: Point A");
+    
     fetch(
         all_vms_request_url, 
         {
@@ -17,6 +22,7 @@ function search_all_vms_call_handler(search_query){
             },
             body: new URLSearchParams(
                 {
+                    debug_id: query_debug_id()
                 }
             )
         }
@@ -24,11 +30,14 @@ function search_all_vms_call_handler(search_query){
     .then(response => response.json())
     .then(data => {
 
+        console.log(query_debug_id + "Client: Point E");
+
         if (data.status == "success"){
 
             // Generating vm entries for VM searching
 
             all_vms_display_content.innerHTML = ""; // Clearing elements for the all vms section
+            console.log(query_debug_id + "Client: Point F");
 
             // Display available VM details
             for (const vm of data.vms){
@@ -65,17 +74,20 @@ function search_all_vms_call_handler(search_query){
                 
             }
 
+            console.log(query_debug_id + "Client: Point G");
             // Feedback relay to the user
             search_button.innerHTML = "Close search";
             prompt_user(
                 "Success: Search query",
                 "Search query went through sucessfully."
             );
+
+            console.log(query_debug_id + "Client: Point H");
                 
         }else{
             prompt_user(
-                "Error: Server error handling the search query",
-                "Error handling the search query. Please try again."
+                data.header_message,
+                data.message
             );
             search_button.innerHTML == "Search"
         }
