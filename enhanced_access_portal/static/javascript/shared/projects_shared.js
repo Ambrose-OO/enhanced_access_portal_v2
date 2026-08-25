@@ -270,7 +270,7 @@ function update_project_display_with_project_data(project){
 function update_projects_content() {
     const project_content = document.getElementById("project_content");
 
-    console.log("fetch project listings");
+    //console.log("fetch project listings");
                       
     fetch(
         project_list_request_url, 
@@ -287,15 +287,15 @@ function update_projects_content() {
     .then(data => {
 
         if (data.status == "success"){
-            console.log("user receiving project listing");
+            //console.log("user receiving project listing");
             project_content.innerHTML = ""; // Clearing all the elements under the div content container
 
             // Display project details
             const project_detail_data = data.projects;
 
             for (const project of project_detail_data){
-                console.log(project.project_name);
-                console.log(project.entity_type);
+                //console.log(project.project_name);
+                //console.log(project.entity_type);
                 if (project.entity_type == "PROJECT"){
                     const project_entry_div = document.createElement("div");
                     project_entry_div.className = "rounded_container project_entry";
@@ -409,7 +409,7 @@ function update_available_project_vms() {
             }
             
         }else{
-            console.log(data.message);
+            //console.log(data.message);
         }
                                                                     
     })
@@ -424,8 +424,8 @@ setInterval(update_available_project_vms, 3000); // Updating available vm conten
 
 function ADMIN_USER_PROMPT_rename_project(arg_list){
 
-    console.log("-----------");
-    console.log("Renaming VM");
+    //console.log("-----------");
+    //console.log("Renaming VM");
 
     const rename_project_entry = document.getElementById("rename_project_entry");
 
@@ -553,8 +553,8 @@ function ADMIN_USER_PROMPT_add_vm(vms_content, vm_add_button, vm_id_to_add) {
 
 function ADMIN_USER_PROMPT_remove_vm(arg_list){
             
-    console.log("-----------");
-    console.log("Removing VM");
+    //console.log("-----------");
+    //console.log("Removing VM");
     
     let vms_content = arg_list[0];
     let vm_remove_button = arg_list[1];

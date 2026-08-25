@@ -283,7 +283,7 @@ function update_groups_content() {
                 }
             }
         }else{
-            console.log(data.message);
+            //console.log(data.message);
         }
                                                                     
     })
@@ -385,7 +385,7 @@ function update_available_group_vms_content() {
             }
 
         }else{
-            console.log(data.message);
+            //console.log(data.message);
         }
                                                                     
     })
@@ -462,7 +462,10 @@ function ADMIN_USER_PROMPT_create_group_attempt(project_identifier_code){
 
 
 function ADMIN_USER_PROMPT_add_vm_to_group(vms_content, vm_add_button, vm_id_to_add) {
-    if (selected_group_name == ""){console.log("no selected group"); return;}
+    if (selected_group_name == ""){
+        //console.log("no selected group"); 
+        return;
+    }
 
     vm_add_button.innerHTML = "Adding vm...";
 
@@ -517,8 +520,8 @@ function ADMIN_USER_PROMPT_add_vm_to_group(vms_content, vm_add_button, vm_id_to_
 
 function ADMIN_USER_PROMPT_remove_vm_from_group(arg_list){
     
-    console.log("-----------------");
-    console.log("Removing group VM");
+    //console.log("-----------------");
+    //console.log("Removing group VM");
     
     let vms_content = arg_list[0];
     let vm_remove_button = arg_list[1];
@@ -577,8 +580,8 @@ function ADMIN_USER_PROMPT_remove_vm_from_group(arg_list){
 
 function ADMIN_USER_PROMPT_delete_group(arg_list){
 
-    console.log("--------------");
-    console.log("Deleting group");
+    //console.log("--------------");
+    //console.log("Deleting group");
     
     let group_entry_div = arg_list[0];
     let delete_group_button = arg_list[1];

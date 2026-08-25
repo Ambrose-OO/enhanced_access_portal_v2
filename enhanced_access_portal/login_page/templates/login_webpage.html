@@ -392,7 +392,7 @@
                 ADMIN_PROMPT_delete_project(function_args);
             }
             if (function_to_call == "ADMIN_USER_PROMPT_rename_project"){
-                console.log("Called rename");
+                //console.log("Called rename");
                 ADMIN_USER_PROMPT_rename_project();
             }
         }
@@ -465,8 +465,8 @@
             )
             .then(response => response.json())
             .then(data => {
-                    console.log("Done");
-                    console.log("Server Response:", data.message);
+                    //console.log("Done");
+                    //console.log("Server Response:", data.message);
                     document.getElementById("login_button").innerHTML = "Submitting";
                     document.getElementById("login_loading_icon").style.display = "block";
 
@@ -517,7 +517,7 @@
             const password_registration = document.getElementById("password_registration");
             const password_repeat_registration = document.getElementById("password_repeat");
            
-            console.log(firstname_registration.value);
+            //console.log(firstname_registration.value);
 
             
             // Attempt registration - Input checks done on the server and response sent back
@@ -553,8 +553,8 @@
                     
                     const register_button = document.getElementById("register_button");
 
-                    console.log("Done");
-                    console.log("Server Response:", data.message);
+                    //console.log("Done");
+                    //console.log("Server Response:", data.message);
 
                     register_loading_icon.style.display = "none"; 
 

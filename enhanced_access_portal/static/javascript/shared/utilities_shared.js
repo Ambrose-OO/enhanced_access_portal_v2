@@ -189,7 +189,7 @@ function USER_ADMIN_PROMPT_logout_attempt() {
 
     section_reveal('logging_out_section');
     
-    console.log("logout attempt");
+    //console.log("logout attempt");
 
     setTimeout(function() {
                                        

@@ -112,7 +112,7 @@ function update_available_project_users() {
             if (data.status == "success"){
                 
                 project_available_users_content.innerHTML = ""; // Clearing the content views
-                console.log("got available user data");
+                //console.log("got available user data");
                 for (const user of data.available_users_details){
 
                     const user_content = document.createElement("div");
@@ -137,7 +137,7 @@ function update_available_project_users() {
                 }
                 
             }else{
-                console.log(data.message);
+                //console.log(data.message);
             }
                                                                         
         })
@@ -225,8 +225,8 @@ function ADMIN_PROMPT_create_project_attempt(project_identifier_code){
 
 function ADMIN_PROMPT_delete_project(arg_list){
 
-    console.log("-----------");
-    console.log("Deleting VM");
+    //console.log("-----------");
+    //console.log("Deleting VM");
                     
     let delete_project_button = arg_list[1];
     let project_id_to_delete = arg_list[2];
@@ -278,7 +278,11 @@ function ADMIN_PROMPT_delete_project(arg_list){
 
 
 function ADMIN_PROMPT_add_user(user_content, user_add_button, user_id_to_add) {
-    if (selected_project_id == ""){console.log("no selected vm"); return;}
+    // Checking if a project is selected, if not, return and do nothing
+    if (selected_project_id == ""){
+        //console.log("no selected project"); 
+        return;
+    }   
 
     //console.log("add user to project");
                     
@@ -344,7 +348,10 @@ function ADMIN_PROMPT_remove_member_from_project(arg_list) {
     let member_id_to_remove = arg_list[2];
     let project_id_to_remove_from = arg_list[3];
     
-    if (project_id_to_remove_from == ""){console.log("no selected project"); return;}
+    if (project_id_to_remove_from == ""){
+        //console.log("no selected project"); 
+        return;
+    }
      
     member_remove_button.innerHTML = "Removing...";
 
