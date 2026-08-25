@@ -6,9 +6,7 @@
 
 // Sub-functions
 
-function search_all_vms_call_handler(search_query){
-
-    const query_debug_id = generate_debug_id();
+function search_all_vms_call_handler(search_query, query_debug_id){
 
     console.log(query_debug_id + "Client: Point A");
     
@@ -106,24 +104,31 @@ function search_all_vms_call_handler(search_query){
 
 
 function search_all_vms(){
+
+    console.log(query_debug_id + "Client: Point 1");
+    const query_debug_id = generate_debug_id();
+
     if (search_button.innerHTML == "Search"){
 
+        console.log(query_debug_id + "Client: Point 2");
         if (vm_search.value == ""){
             prompt_user(
                 "Error: Cannot run a search query",
                 "Error handling the search query. As nothing has been entered into the 'Search VMs' entry box. Please try again."
             );
         }else{
+            console.log(query_debug_id + "Client: Point 3");
             search_button.innerHTML = "Indexing..."
             search_query = vm_search.value;
 
-            search_all_vms_call_handler(search_query);
+            search_all_vms_call_handler(search_query, query_debug_id);
         }
         
     }else if(search_button.innerHTML == "Close search"){
+        console.log(query_debug_id + "Client: Point 4");
         search_button.innerHTML = "Search";
         search_query = "";
-        search_all_vms_call_handler(search_query);
+        search_all_vms_call_handler(search_query, query_debug_id);
     }
     
 }
