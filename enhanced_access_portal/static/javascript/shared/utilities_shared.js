@@ -93,6 +93,10 @@ function generate_vm_element(
 
 
 function substring_match(substring, fullString) {
+
+    // If the search query is empty, then we auto pass the match
+    if (substring == ""){return true;}
+
     // Convert both to lowercase for non-case sensitive comparison
     const lower_sub = substring.toLowerCase();
     const lower_full = fullString.toLowerCase();
