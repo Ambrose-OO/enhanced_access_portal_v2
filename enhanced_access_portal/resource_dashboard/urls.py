@@ -11,6 +11,8 @@ urlpatterns = [
     path('delete_project_request/', views.ADMIN_PROMPT_delete_project, name="delete_project_request"),
     path('rename_project_request/', views.ADMIN_USER_PROMPT_rename_project, name="rename_project_request"),
 
+    path('all_vms_request_url/', views.ADMIN_USER_PROMPT_all_vms, name="all_vms_request_url"),
+
     path('email_name_request/', views.USER_ADMIN_PROMPT_email_name, name="email_name_request"),
     path('available_vms_request/', views.USRER_ADMIN_PROMPT_available_vms, name="available_vms_request"),
     path('add_vm_request/', views.ADMIN_USER_PROMPT_add_vm, name="add_vm_request"),
