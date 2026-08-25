@@ -324,7 +324,6 @@ function update_available_group_vms_content() {
         if (data.status == "success"){
             
             group_available_vms_content.innerHTML = ""; // Clearing all the elements under the div content container
-            all_vms_display_content.innerHTML = ""; // Clearing elements for the all vms section
             vm_counter = 0;
 
             // Display available VM details
