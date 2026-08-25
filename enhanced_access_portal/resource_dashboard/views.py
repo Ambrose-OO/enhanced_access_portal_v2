@@ -1008,19 +1008,21 @@ def ADMIN_USER_PROMPT_all_vms(request):
     if request.method == "POST":
         debug_id = request.POST.get("debug_id")
 
+        print()
         print("-----------------")
         if debug_id:
-            print(debug_id + "Revealing all VMS")
+            print(debug_id + " Revealing all VMS")
         else:
             print("Revealing all VMS")
+        print("-----------------")
 
 
-        print(debug_id + "Server: Point B")
+        print(debug_id + " Server: Point B")
         logged_in_status = request.session.get("logged_in")
     
         if (logged_in_status == True):
 
-            print(debug_id + "Server: Point C")
+            print(debug_id + " Server: Point C")
 
             vms_list = []
 
@@ -1033,7 +1035,9 @@ def ADMIN_USER_PROMPT_all_vms(request):
                 vm_detail["vm_ip"] = vm.vm_ip 
                 vms_list.append(vm_detail) 
 
-            print(debug_id + "Server: Point D")
+            print(debug_id + " Server: Point D")
+
+            print("-----------------")
             
             return JsonResponse(
                 {
