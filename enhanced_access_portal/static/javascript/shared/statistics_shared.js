@@ -65,12 +65,12 @@ function update_statistics() {
             group_total_p.innerHTML = "Total number of groups: " + statistics_data.group_total;
         
         }else{
-            console.log(data.message);
+            //console.log(data.message);
         }
                                                                     
     })
     .catch(error => {
-        console.error("Error:", error);
+        //console.error("Error:", error);
     });
 }
 update_statistics();

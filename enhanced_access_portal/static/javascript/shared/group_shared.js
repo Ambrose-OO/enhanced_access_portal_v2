@@ -283,7 +283,7 @@ function update_groups_content() {
                 }
             }
         }else{
-            console.log(data.message);
+            //console.log(data.message);
         }
                                                                     
     })
@@ -324,7 +324,6 @@ function update_available_group_vms_content() {
         if (data.status == "success"){
             
             group_available_vms_content.innerHTML = ""; // Clearing all the elements under the div content container
-            all_vms_display_content.innerHTML = ""; // Clearing elements for the all vms section
             vm_counter = 0;
 
             // Display available VM details
@@ -345,47 +344,10 @@ function update_available_group_vms_content() {
                 // Generating vm entries for available vms for selection in a group - Rendering the div we created into "group_available_vms_content"
                 group_available_vms_content.appendChild(vms_content);
 
-
-
-
-                // Generating vm entries for VM searching
-                generate_vm_element_returns = generate_vm_element(
-                    vm.vm_name,
-                    vm.vm_status,
-                    vm.vm_ip
-                );
-                vm_add_button = generate_vm_element_returns[0];
-                vm_add_button.remove();
-                vms_content = generate_vm_element_returns[1];
-                vm_title = generate_vm_element_returns[2];
-                vm_name = generate_vm_element_returns[3];
-                
-    
-                if (search_query != ""){
-                    // Checking if the searched query matches with the given vm name. If not, pass.
-                    if (substring_match(search_query, vm_name) == false){
-                        continue;
-                    }
-                }
-
-                //vm_title.innerHTML = vm_counter + " . " + vm_title.innerHTML;
-                vm_title.style.textAlign = "center";
-
-                // Generating vm entries for VM searching - Rendering the div 
-                all_vms_display_content.appendChild(vms_content);
-
-                let divider = document.createElement("div");
-                divider.className = "content_divider";
-                divider.style.marginTop = "1%";
-                divider.style.marginBottom = "1%";
-                
-                all_vms_display_content.appendChild(divider);
-                
-
             }
 
         }else{
-            console.log(data.message);
+            //console.log(data.message);
         }
                                                                     
     })
@@ -462,7 +424,10 @@ function ADMIN_USER_PROMPT_create_group_attempt(project_identifier_code){
 
 
 function ADMIN_USER_PROMPT_add_vm_to_group(vms_content, vm_add_button, vm_id_to_add) {
-    if (selected_group_name == ""){console.log("no selected group"); return;}
+    if (selected_group_name == ""){
+        //console.log("no selected group"); 
+        return;
+    }
 
     vm_add_button.innerHTML = "Adding vm...";
 
@@ -517,8 +482,8 @@ function ADMIN_USER_PROMPT_add_vm_to_group(vms_content, vm_add_button, vm_id_to_
 
 function ADMIN_USER_PROMPT_remove_vm_from_group(arg_list){
     
-    console.log("-----------------");
-    console.log("Removing group VM");
+    //console.log("-----------------");
+    //console.log("Removing group VM");
     
     let vms_content = arg_list[0];
     let vm_remove_button = arg_list[1];
@@ -577,8 +542,8 @@ function ADMIN_USER_PROMPT_remove_vm_from_group(arg_list){
 
 function ADMIN_USER_PROMPT_delete_group(arg_list){
 
-    console.log("--------------");
-    console.log("Deleting group");
+    //console.log("--------------");
+    //console.log("Deleting group");
     
     let group_entry_div = arg_list[0];
     let delete_group_button = arg_list[1];

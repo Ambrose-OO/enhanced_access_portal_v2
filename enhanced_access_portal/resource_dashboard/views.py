@@ -1002,6 +1002,60 @@ def ADMIN_USER_PROMPT_rename_project(request):
                     "message": "Project rename failure. As the user is not logged in."
                 }
             )
+
+
+def ADMIN_USER_PROMPT_all_vms(request):
+    if request.method == "POST":
+        debug_id = request.POST.get("debug_id")
+
+        print()
+        print("-----------------")
+        if debug_id:
+            print(debug_id + " Revealing all VMS")
+        else:
+            print("Revealing all VMS")
+        print("-----------------")
+
+
+        print(debug_id + " Server: Point B")
+        logged_in_status = request.session.get("logged_in")
+    
+        if (logged_in_status == True):
+
+            print(debug_id + " Server: Point C")
+
+            vms_list = []
+
+            for vm in VMs.objects.all():
+                vm_detail = {}
+
+                vm_detail["vm_id"] = vm.id
+                vm_detail["vm_name"] = vm.vm_name
+                vm_detail["vm_status"] = vm.vm_online
+                vm_detail["vm_ip"] = vm.vm_ip 
+                vms_list.append(vm_detail) 
+
+            print(debug_id + " Server: Point D")
+
+            print("-----------------")
+            
+            return JsonResponse(
+                {
+                    "status": "success", 
+                    "message": "Server succeeded passing data on all vms",
+                    "vms": vms_list
+                }
+            ) 
+            
+        else:
+            return JsonResponse(
+                {
+                    "status": "fail", 
+                    "header_message": "Error: Server error handling the search query",
+                    "message": "Cannot pass all vms entries for unknown reason. Please try again."
+                }
+            )
+        
      
 def user_exists_in_project(user, project):
     user_in_project = False

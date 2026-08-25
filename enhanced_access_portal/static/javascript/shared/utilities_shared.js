@@ -93,6 +93,10 @@ function generate_vm_element(
 
 
 function substring_match(substring, fullString) {
+
+    // If the search query is empty, then we auto pass the match
+    if (substring == ""){return true;}
+
     // Convert both to lowercase for non-case sensitive comparison
     const lower_sub = substring.toLowerCase();
     const lower_full = fullString.toLowerCase();
@@ -183,13 +187,27 @@ function lower_button_toggle(
 }
 
 
+function generate_debug_id(length = 6){
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    let result = "";
+
+    for (let index = 0; index < length; index++) {
+        const randomIndex = Math.floor(Math.random() * characters.length);
+        result += characters[randomIndex];
+    }
+
+    return result;
+}
+
+
 // Functions
 
 function USER_ADMIN_PROMPT_logout_attempt() {
 
     section_reveal('logging_out_section');
     
-    console.log("logout attempt");
+    //console.log("logout attempt");
 
     setTimeout(function() {
                                        
