@@ -187,6 +187,20 @@ function lower_button_toggle(
 }
 
 
+function generate_debug_id(length = 6){
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    let result = "";
+
+    for (let index = 0; index < length; index++) {
+        const randomIndex = Math.floor(Math.random() * characters.length);
+        result += characters[randomIndex];
+    }
+
+    return result;
+}
+
+
 // Functions
 
 function USER_ADMIN_PROMPT_logout_attempt() {
