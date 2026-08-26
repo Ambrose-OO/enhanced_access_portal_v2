@@ -268,11 +268,16 @@ function update_project_display_with_project_data(project){
 
 
 function update_projects_content() {
+
+    const query_debug_id = generate_debug_id();
+    console.log(query_debug_id + " Client: Point 1");
+
+
     const project_content = document.getElementById("project_content");
 
-    //console.log("fetch project listings");
+    console.log(query_debug_id + " Client: Point A - Project listings");
                       
-    fetch(
+    return fetch(
         project_list_request_url, 
         {
             method: "POST",
@@ -280,13 +285,18 @@ function update_projects_content() {
                 "Content-Type": "application/x-www-form-urlencoded",
                 "X-CSRFToken": getCookie('csrftoken') //https://www.geeksforgeeks.org/python/csrf-token-in-django/
             },
-            body: new URLSearchParams({})
+            body: new URLSearchParams({
+                debug_id: query_debug_id
+            })
         }
     )
     .then(response => response.json())
     .then(data => {
 
         if (data.status == "success"){
+
+            console.log(query_debug_id + " Client: Point C - Project listings");
+
             //console.log("user receiving project listing");
             project_content.innerHTML = ""; // Clearing all the elements under the div content container
 
@@ -355,18 +365,24 @@ function update_projects_content() {
 
                     project_content.appendChild(project_entry_div);
                 }
+
+                console.log(query_debug_id + " Client: Point D - Project listings");
             }
         }else{
-            //console.log(data.message);
+            console.log(query_debug_id + " Client: Point C.2-Fail on data retrieve - Project listings");
         }
                                                                     
     })
     .catch(error => {
         //console.error("Error:", error);
+        console.log(query_debug_id + " Client: Point C.3-Server error - Project listings");
     });
 }
-update_projects_content() 
-//setInterval(update_projects_content, 3000); 
+update_projects_content()
+    .finally(() => {
+        // Once the first request has been handled, wait one second before doing the next call
+        setTimeout(update_projects_content, BASE_POLL_TIME);
+    });
 
 
 function update_available_project_vms() { 
