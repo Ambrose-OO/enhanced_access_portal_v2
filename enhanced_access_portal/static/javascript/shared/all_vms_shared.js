@@ -6,11 +6,16 @@
 
 // Sub-functions
 
-function search_all_vms_call_handler(search_query, query_debug_id, silence_feedback = false){
+function search_all_vms_call_handler(
+    search_query, 
+    query_debug_id, 
+    silence_feedback = false,
+    polling_loop = false
+){
 
     console.log(query_debug_id + " Client: Point A");
     
-    fetch(
+    return fetch(
         all_vms_request_url, 
         {
             method: "POST",
@@ -104,14 +109,15 @@ function search_all_vms_call_handler(search_query, query_debug_id, silence_feedb
                 "Error handling the search query. Please try again."
             );
         }
-        
-        search_button.innerHTML = "Search"
 
+        search_button.innerHTML = "Search"
     });
 }
 
 
 function search_all_vms(){
+
+    // Function call when the vm search button is clicked
 
     const query_debug_id = generate_debug_id();
     console.log(query_debug_id + " Client: Point 1");
@@ -163,11 +169,11 @@ function update_all_vms(){
     const query_debug_id = generate_debug_id();
     console.log(query_debug_id + " Client: Point 1");
 
-    search_all_vms_call_handler(search_query, query_debug_id, true);
-
+    search_all_vms_call_handler(search_query, query_debug_id, true, true)
+        .finally(() => {
+            // Once the first request has been handled, wait one second before doing the next call
+            setTimeout(update_all_vms, BASE_POLL_TIME);
+        });
 }
 
 update_all_vms();
-setInterval(update_all_vms, 1000); // Updating available vm content every second
-
-
