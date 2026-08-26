@@ -9,8 +9,7 @@
 function search_all_vms_call_handler(
     search_query, 
     query_debug_id, 
-    silence_feedback = false,
-    polling_loop = false
+    silence_feedback = false
 ){
 
     console.log(query_debug_id + " Client: Point A");
