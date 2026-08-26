@@ -9,7 +9,8 @@
 function search_all_vms_call_handler(
     search_query, 
     query_debug_id, 
-    silence_feedback = false
+    silence_feedback = false,
+    polling_loop = false
 ){
 
     console.log(query_debug_id + " Client: Point A");
@@ -91,25 +92,19 @@ function search_all_vms_call_handler(
             console.log(query_debug_id + " Client: Point H");
         
         }else{
-            prompt_user(
-                data.header_message,
-                data.message
-            );
-            search_button.innerHTML = "Search"
-  
+            prompt_user(data.header_message, data.message);
+            if (!polling_loop) {
+                search_button.innerHTML = "Search"
+            }
         }
                                                                     
     })
     .catch(error => {
         console.error("Error:", error);
-        if (silence_feedback == false){
-            prompt_user(
-                "Error: Server error handling the search query",
-                "Error handling the search query. Please try again."
-            );
+        prompt_user(data.header_message, data.message);
+        if (!polling_loop) {
+            search_button.innerHTML = "Search"
         }
-
-        search_button.innerHTML = "Search"
     });
 }
 
