@@ -401,6 +401,22 @@ def USER_ADMIN_PROMPT_delete_vm_group(request):
 def USER_ADMIN_PROMPT_remove_group_vm(request):
     return
 
+def collate_USER_project_listings(user):
+    # Variable to store data on projects that the user is allowed to see
+    user_project_listings = []
+    
+    for project in Projects.objects.all():
+        project_detail = {}
+
+        # If the user is part of a project then list the project details
+        # to the user
+        if (project.entity_type == "PROJECT"):
+            if (user_exists_in_project(user, project) == True):
+                project_detail = fetch_project_details(project)    
+                user_project_listings.append(project_detail)
+
+    return
+
 # Project listings
 @csrf_protect
 def USER_ADMIN_PROMPT_project_listings(request):
@@ -422,18 +438,8 @@ def USER_ADMIN_PROMPT_project_listings(request):
                 print(debug_id + " Server: Point B.1.1-User - Project listings\n")
 
                 # Variable to store data on projects that the user is allowed to see
-                user_project_listings = []
+                user_project_listings = collate_USER_project_listings(user)
                 
-                for project in Projects.objects.all():
-                    project_detail = {}
-
-                    # If the user is part of a project then list the project details
-                    # to the user
-                    if (project.entity_type == "PROJECT"):
-                        if (user_exists_in_project(user, project) == True):
-                            project_detail = fetch_project_details(project)    
-                            user_project_listings.append(project_detail)
-
                 print(debug_id + " Server: Point B.1.2-User - Project listings\n")
 
                 # Returning project data in JSON format back to the user
@@ -1572,8 +1578,13 @@ def ADMIN_PROMPT_create_project(request):
                         project_admin_entry.save()
 
                         print(debug_id + " Server: Point E.1.2.A.5 - Create project attempt")
-
-                        return JsonResponse({"status": "success", "message": "Project registered"})
+                        
+                        return JsonResponse(
+                            {
+                                "status": "success", 
+                                "message": "Project registered",
+                                "projects": collate_ADMIN_project_listings()
+                            })
                     else:
                         print(debug_id + " Server: Point E.1.2.B - Create project attempt")
                         return JsonResponse(
