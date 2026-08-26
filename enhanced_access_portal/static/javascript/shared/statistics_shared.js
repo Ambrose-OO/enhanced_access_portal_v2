@@ -74,4 +74,4 @@ function update_statistics() {
     });
 }
 update_statistics();
-setInterval(update_statistics, 1000); // Updating available vm content every second
+//setInterval(update_statistics, 1000); // Updating available vm content every second

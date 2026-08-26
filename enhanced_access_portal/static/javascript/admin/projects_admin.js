@@ -146,7 +146,7 @@ function update_available_project_users() {
         });
     }
 }
-setInterval(update_available_project_users, 3000); // Updating available vm content every 3 seconds
+//setInterval(update_available_project_users, 3000); // Updating available vm content every 3 seconds
 
 
 // Functions

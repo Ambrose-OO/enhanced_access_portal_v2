@@ -293,7 +293,7 @@ function update_groups_content() {
 
 }
 update_groups_content() 
-setInterval(update_groups_content, 3000); 
+//setInterval(update_groups_content, 3000); 
 
 
 function update_available_group_vms_content() {
@@ -357,7 +357,7 @@ function update_available_group_vms_content() {
 
 }
 update_available_group_vms_content() 
-setInterval(update_available_group_vms_content, 1000); 
+//setInterval(update_available_group_vms_content, 1000); 
 
 
 // Functions
