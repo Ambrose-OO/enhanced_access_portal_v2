@@ -405,16 +405,31 @@ def USER_ADMIN_PROMPT_remove_group_vm(request):
 @csrf_protect
 def USER_ADMIN_PROMPT_project_listings(request):
     if request.method == "POST":
-        print("----------------")
-        print("Project listings")
 
+        debug_id = request.POST.get("debug_id")
+
+        print()
+        print("----------------")
+        if debug_id:
+            print(debug_id + " Project listings")
+            
+        else:
+            print("----------------")
+            print("Project listings")
+            print("----------------")
+
+            
+                
         logged_in_status = request.session.get("logged_in")
         user_type = request.session.get("user_type")
         user_id = request.session.get("user_id")  
         user = fetch_user_from_id(user_id)
 
+        print(debug_id + " Server: Point B - Project listings")
+
         if (logged_in_status == True) and (user):
             if (user_type == "USER"):
+                print(debug_id + " Server: Point B.1.1-User - Project listings")
                 # Variable to store data on projects that the user is allowed to see
                 user_project_listings = []
                 
@@ -428,6 +443,8 @@ def USER_ADMIN_PROMPT_project_listings(request):
                             project_detail = fetch_project_details(project)    
                             user_project_listings.append(project_detail)
 
+                print(debug_id + " Server: Point B.1.2-User - Project listings")
+
                 # Returning project data in JSON format back to the user
                 return JsonResponse(
                     {
@@ -438,8 +455,12 @@ def USER_ADMIN_PROMPT_project_listings(request):
                 ) 
             elif (user_type == "ADMIN"):
 
+                print(debug_id + " Server: Point B.2.1-Admin - Project listings")
+
                 # Variable to store all data on projects for the admin to see
                 admin_project_listings = collate_ADMIN_project_listings()
+
+                print(debug_id + " Server: Point B.2.2-Admin - Project listings")
 
                 # Returning project data in JSON format back to the user
                 return JsonResponse(
