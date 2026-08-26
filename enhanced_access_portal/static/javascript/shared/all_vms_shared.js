@@ -119,7 +119,7 @@ function search_all_vms(){
 
     // Function call when the vm search button is clicked
 
-    const query_debug_id = generate_debug_id();
+    const query_debug_id = generate_debug_id() + "_button_click";
     console.log(query_debug_id + " Client: Point 1");
 
     const search_button = document.getElementById("search_button");
