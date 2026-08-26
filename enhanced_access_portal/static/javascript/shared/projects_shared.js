@@ -491,11 +491,6 @@ function ADMIN_USER_PROMPT_rename_project(arg_list){
             // If the VM has failed to be renamed, give a failed prompt
             // then return back to normal
             prompt_user(data.header_message, data.message);
-
-            delete_project_button.innerHTML = "Failed.";
-            setTimeout(function() {
-                delete_project_button.innerHTML = "Delete";
-            }, 3000);
         }
                                                                     
     })
