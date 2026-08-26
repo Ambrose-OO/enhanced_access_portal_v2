@@ -113,6 +113,8 @@ function search_all_vms(){
 
     // Function call when the vm search button is clicked
 
+    section_reveal('all_vms_section'); // Revealing the all vms section
+
     const query_debug_id = generate_debug_id() + "_button_click";
     console.log(query_debug_id + " Client: Point 1");
 
