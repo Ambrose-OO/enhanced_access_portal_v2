@@ -366,7 +366,7 @@ function update_projects_content() {
     });
 }
 update_projects_content() 
-setInterval(update_projects_content, 3000); 
+//setInterval(update_projects_content, 3000); 
 
 
 function update_available_project_vms() { 
