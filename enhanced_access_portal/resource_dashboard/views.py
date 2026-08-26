@@ -1009,12 +1009,12 @@ def ADMIN_USER_PROMPT_all_vms(request):
         debug_id = request.POST.get("debug_id")
 
         print()
-        print("-----------------")
+        print("-----------------------")
         if debug_id:
             print(debug_id + " Revealing all VMS")
         else:
             print("Revealing all VMS")
-        print("-----------------")
+        print("-----------------------")
 
 
         print(debug_id + " Server: Point B")
@@ -1038,7 +1038,7 @@ def ADMIN_USER_PROMPT_all_vms(request):
             print(debug_id + " Server: Point D")
 
             print("-----------------")
-            
+
             return JsonResponse(
                 {
                     "status": "success", 
