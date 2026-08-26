@@ -262,8 +262,8 @@ def fetch_group_listings(user_id):
 @csrf_protect
 def USER_ADMIN_PROMPT_group_listings(request):
     if request.method == "POST":
-        print("--------------")
-        print("Group listings")
+        # print("--------------")
+        # print("Group listings")
 
         logged_in_status = request.session.get("logged_in")
         user_id = request.session.get("user_id")  
@@ -483,8 +483,8 @@ def USER_ADMIN_PROMPT_project_listings(request):
 @csrf_protect
 def USRER_ADMIN_PROMPT_available_vms(request):
     if request.method == "POST":
-        print("---------------------")
-        print("Available project VMS")
+        # print("---------------------")
+        # print("Available project VMS")
 
         logged_in_status = request.session.get("logged_in")
         
@@ -533,8 +533,8 @@ def USRER_ADMIN_PROMPT_available_vms(request):
 @csrf_protect
 def USRER_ADMIN_PROMPT_available_vms_for_group(request):
     if request.method == "POST":
-        print("-----------------------")
-        print("Available VMS for group")
+        # print("-----------------------")
+        # print("Available VMS for group")
 
         logged_in_status = request.session.get("logged_in")
         user_type = request.session.get("user_type")
@@ -595,8 +595,8 @@ def USRER_ADMIN_PROMPT_available_vms_for_group(request):
 @csrf_protect
 def USRER_ADMIN_PROMPT_add_vm_to_group(request):
     if request.method == "POST":
-        print("----------------")
-        print("Add vm to group")
+        # print("----------------")
+        # print("Add vm to group")
 
         logged_in_status = request.session.get("logged_in")
         
@@ -686,8 +686,8 @@ def USRER_ADMIN_PROMPT_add_vm_to_group(request):
 @csrf_protect
 def USRER_ADMIN_PROMPT_statistics(request):
     if request.method == "POST":
-        print("-------------------")
-        print("Statistics request")
+        # print("-------------------")
+        # print("Statistics request")
 
         logged_in_status = request.session.get("logged_in")
        
@@ -780,8 +780,8 @@ def USRER_ADMIN_PROMPT_statistics(request):
 @csrf_protect
 def USRER_ADMIN_PROMPT_remove_vm_from_group(request):
     if request.method == "POST":
-        print("----------------------")
-        print("Removing vm from group")
+        # print("----------------------")
+        # print("Removing vm from group")
 
         logged_in_status = request.session.get("logged_in")
     
@@ -790,10 +790,10 @@ def USRER_ADMIN_PROMPT_remove_vm_from_group(request):
             vm_id = request.POST.get("vm_id")
             group_name = request.POST.get("group_name")
 
-            print("found group name")
-            print(group_name)
-            print("vm id")
-            print(vm_id)
+            # print("found group name")
+            # print(group_name)
+            # print("vm id")
+            # print(vm_id)
 
             for found_group in VM_Group.objects.all():
                 if (found_group.vm_id != None):    
@@ -844,8 +844,8 @@ def USRER_ADMIN_PROMPT_remove_vm_from_group(request):
 @csrf_protect
 def USER_ADMIN_PROMPT_email_name(request):
     if request.method == "POST":
-        print("----------------------")
-        print("Email and name display")
+        # print("----------------------")
+        # print("Email and name display")
 
         logged_in_status = request.session.get("logged_in")
         user_id = request.session.get("user_id")  
@@ -877,14 +877,14 @@ def USER_ADMIN_PROMPT_email_name(request):
 # Logging out
 def USER_ADMIN_PROMPT_logout_attempt(request):
     if request.method == "POST":
-        print("--------------")
-        print("Logout request")
+        # print("--------------")
+        # print("Logout request")
         logged_in_status = request.session.get("logged_in")
-        print("Logged in?: " + str(logged_in_status))
+        # print("Logged in?: " + str(logged_in_status))
 
         if (logged_in_status is not None):
             if (logged_in_status == True):
-                print("logging out")
+                # print("logging out")
                 request.session.flush() # Clearing server side session data on the User
                 return JsonResponse(
                     {
@@ -909,8 +909,8 @@ def USER_ADMIN_PROMPT_logout_attempt(request):
 @csrf_protect
 def ADMIN_PROMPT_delete_project(request):
     if request.method == "POST":
-        print("----------------")
-        print("Delete project")
+        # print("----------------")
+        # print("Delete project")
 
         logged_in_status = request.session.get("logged_in")
         user_type = request.session.get("user_type")
@@ -922,10 +922,10 @@ def ADMIN_PROMPT_delete_project(request):
                 project = fetch_project_from_id(project_id)
 
                 if (project != None):
-                    print("attempting to delete project")
+                    # print("attempting to delete project")
                     project.delete()
                 
-                    print("deleted project")
+                    # print("deleted project")
 
                     return JsonResponse(
                         {
@@ -955,8 +955,8 @@ def ADMIN_PROMPT_delete_project(request):
 
 def ADMIN_USER_PROMPT_rename_project(request):
     if request.method == "POST":
-        print("----------------")
-        print("Renaming project")
+        # print("----------------")
+        # print("Renaming project")
 
         logged_in_status = request.session.get("logged_in")
     
@@ -990,7 +990,7 @@ def ADMIN_USER_PROMPT_rename_project(request):
                             found_project.project_name = new_project_name
                             found_project.save()
                     
-                    print("renamed project")
+                    # print("renamed project")
 
                     return JsonResponse(
                         {
@@ -1097,8 +1097,8 @@ def user_exists_in_project(user, project):
 @csrf_protect
 def ADMIN_USER_PROMPT_remove_vm(request):
     if request.method == "POST":
-        print("----------------")
-        print("Remove vm")
+        # print("----------------")
+        # print("Remove vm")
 
         logged_in_status = request.session.get("logged_in")
         user_type = request.session.get("user_type")
@@ -1177,8 +1177,8 @@ def ADMIN_USER_PROMPT_remove_vm(request):
 @csrf_protect
 def ADMIN_USER_PROMPT_add_vm(request):
     if request.method == "POST":
-        print("----------------")
-        print("Add vm")
+        # print("----------------")
+        # print("Add vm")
 
         logged_in_status = request.session.get("logged_in")
         user_type = request.session.get("user_type")
@@ -1269,8 +1269,8 @@ def ADMIN_USER_PROMPT_add_vm(request):
 @csrf_protect
 def ADMIN_PROMPT_add_user_to_project(request):
     if request.method == "POST":
-        print("---------------------")
-        print("Adding user to project")
+        # print("---------------------")
+        # print("Adding user to project")
 
         logged_in_status = request.session.get("logged_in")
         user_type = request.session.get("user_type")
@@ -1356,8 +1356,8 @@ def ADMIN_PROMPT_add_user_to_project(request):
 @csrf_protect
 def ADMIN_PROMPT_remove_user_from_project(request):
     if request.method == "POST":
-        print("--------------------------")
-        print("Removing user from project")
+        # print("--------------------------")
+        # print("Removing user from project")
 
         logged_in_status = request.session.get("logged_in")
         user_type = request.session.get("user_type")
@@ -1460,8 +1460,8 @@ def ADMIN_PROMPT_remove_user_from_project(request):
 @csrf_protect
 def ADMIN_PROMPT_available_users(request):
     if request.method == "POST":
-        print("---------------------")
-        print("Available users")
+        # print("---------------------")
+        # print("Available users")
 
       
         logged_in_status = request.session.get("logged_in")
