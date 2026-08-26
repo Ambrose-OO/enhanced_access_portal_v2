@@ -92,25 +92,19 @@ function search_all_vms_call_handler(
             console.log(query_debug_id + " Client: Point H");
         
         }else{
-            prompt_user(
-                data.header_message,
-                data.message
-            );
-            search_button.innerHTML = "Search"
-  
+            prompt_user(data.header_message, data.message);
+            if (!polling_loop) {
+                search_button.innerHTML = "Search"
+            }
         }
                                                                     
     })
     .catch(error => {
         console.error("Error:", error);
-        if (silence_feedback == false){
-            prompt_user(
-                "Error: Server error handling the search query",
-                "Error handling the search query. Please try again."
-            );
+        prompt_user(data.header_message, data.message);
+        if (!polling_loop) {
+            search_button.innerHTML = "Search"
         }
-
-        search_button.innerHTML = "Search"
     });
 }
 
@@ -118,6 +112,8 @@ function search_all_vms_call_handler(
 function search_all_vms(){
 
     // Function call when the vm search button is clicked
+
+    section_reveal('all_vms_section'); // Revealing the all vms section
 
     const query_debug_id = generate_debug_id() + "_button_click";
     console.log(query_debug_id + " Client: Point 1");

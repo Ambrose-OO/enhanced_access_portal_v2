@@ -417,7 +417,7 @@ function update_available_project_vms() {
         console.error("Error:", error);
     });
 }
-setInterval(update_available_project_vms, 3000); // Updating available vm content every 3 seconds
+//setInterval(update_available_project_vms, 3000); // Updating available vm content every 3 seconds
 
 
 // Functions
