@@ -206,6 +206,12 @@ function ADMIN_PROMPT_create_project_attempt(project_identifier_code){
                 }, 3000);
 
                 console.log(query_debug_id + " Client: Point F.1.2 - Create project attempt");
+                    
+                // Refreshing projects view
+                const project_detail_data = data.projects;
+                generate_projects_content_with_project_data(project_detail_data);
+
+                console.log(query_debug_id + " Client: Point F.1.3 - Create project attempt");
 
             }else{
                 

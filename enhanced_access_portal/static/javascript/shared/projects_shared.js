@@ -267,13 +267,82 @@ function update_project_display_with_project_data(project){
 }
 
 
+function generate_projects_content_with_project_data(project_detail_data){
+    const project_content = document.getElementById("project_content");
+
+    project_content.innerHTML = ""; // Clearing all the elements under the div content container
+
+    // Display project details
+
+    for (const project of project_detail_data){
+        //console.log(project.project_name);
+        //console.log(project.entity_type);
+        if (project.entity_type == "PROJECT"){
+            const project_entry_div = document.createElement("div");
+            project_entry_div.className = "rounded_container project_entry";
+            project_entry_div.id = "project_entry";
+
+            // <p> class elements
+            const project_title = document.createElement("p");
+            project_title.className = "roboto_font project_entry_p1";
+            project_title.innerHTML = "Project name: " + project.project_name;
+            project_entry_div.appendChild(project_title);
+
+            const project_id = document.createElement("p");
+            project_id.className = "roboto_font project_entry_p2";
+            project_id.innerHTML = "Id: " + project.project_identifier_code;
+            project_entry_div.appendChild(project_id);
+
+            const project_details = document.createElement("p");
+            project_details.className = "roboto_font";
+            project_details.innerHTML = "VMs (" + project.project_available_vms + ") VMs online (" + project.project_vms_online + ") Users (" + project.project_users + ") Admins (" + project.project_admins + ")";
+            project_entry_div.appendChild(project_details);
+            
+            // <button> class elements
+            const open_project_button = document.createElement("button");
+            open_project_button.type = "button";
+            open_project_button.className = "alternate_connect_button";
+            open_project_button.onclick = () => navigate_to_project_display(project);
+            open_project_button.innerHTML = "Open";
+            open_project_button.style.marginRight = "3%";
+            project_entry_div.appendChild(open_project_button);
+
+            if (CORE_USER_TYPE == "ADMIN"){
+                const delete_project_button = document.createElement("button");
+                delete_project_button.type = "button";
+                delete_project_button.className = "alternate_connect_button"
+
+                let delete_project_args = [project_entry_div, delete_project_button, project.project_id];
+                delete_project_button.onclick = () => confirmation_prompt_user(
+                    "Project deletion confirmation",
+                    "Clicking confirm will mean you will completely delete the project entry. There is no recovery of this data. Are you sure?",
+                    "ADMIN_PROMPT_delete_project",
+                    delete_project_args
+                );
+
+                delete_project_button.innerHTML = "Delete";
+                delete_project_button.style.marginRight = "3%";
+                project_entry_div.appendChild(delete_project_button);
+            }
+
+            
+            const rename_project_button = document.createElement("button");
+            rename_project_button.type = "button";
+            rename_project_button.className = "alternate_connect_button";
+            rename_project_button.onclick = () => navigate_to_project_rename_display(project);
+            rename_project_button.innerHTML = "Rename";
+            rename_project_button.style.marginRight = "3%";
+            project_entry_div.appendChild(rename_project_button);
+
+            project_content.appendChild(project_entry_div);
+        }
+    }
+}
+
+
 function update_projects_content() {
 
     const query_debug_id = generate_debug_id();
-    console.log(query_debug_id + " Client: Point 1");
-
-
-    const project_content = document.getElementById("project_content");
 
     console.log(query_debug_id + " Client: Point A - Project listings");
                       
@@ -297,77 +366,11 @@ function update_projects_content() {
 
             console.log(query_debug_id + " Client: Point C - Project listings");
 
-            //console.log("user receiving project listing");
-            project_content.innerHTML = ""; // Clearing all the elements under the div content container
-
-            // Display project details
             const project_detail_data = data.projects;
+            generate_projects_content_with_project_data(project_detail_data);
+           
+            console.log(query_debug_id + " Client: Point D - Project listings");
 
-            for (const project of project_detail_data){
-                //console.log(project.project_name);
-                //console.log(project.entity_type);
-                if (project.entity_type == "PROJECT"){
-                    const project_entry_div = document.createElement("div");
-                    project_entry_div.className = "rounded_container project_entry";
-                    project_entry_div.id = "project_entry";
-
-                    // <p> class elements
-                    const project_title = document.createElement("p");
-                    project_title.className = "roboto_font project_entry_p1";
-                    project_title.innerHTML = "Project name: " + project.project_name;
-                    project_entry_div.appendChild(project_title);
-
-                    const project_id = document.createElement("p");
-                    project_id.className = "roboto_font project_entry_p2";
-                    project_id.innerHTML = "Id: " + project.project_identifier_code;
-                    project_entry_div.appendChild(project_id);
-
-                    const project_details = document.createElement("p");
-                    project_details.className = "roboto_font";
-                    project_details.innerHTML = "VMs (" + project.project_available_vms + ") VMs online (" + project.project_vms_online + ") Users (" + project.project_users + ") Admins (" + project.project_admins + ")";
-                    project_entry_div.appendChild(project_details);
-                    
-                    // <button> class elements
-                    const open_project_button = document.createElement("button");
-                    open_project_button.type = "button";
-                    open_project_button.className = "alternate_connect_button";
-                    open_project_button.onclick = () => navigate_to_project_display(project);
-                    open_project_button.innerHTML = "Open";
-                    open_project_button.style.marginRight = "3%";
-                    project_entry_div.appendChild(open_project_button);
-
-                    if (CORE_USER_TYPE == "ADMIN"){
-                        const delete_project_button = document.createElement("button");
-                        delete_project_button.type = "button";
-                        delete_project_button.className = "alternate_connect_button"
-
-                        let delete_project_args = [project_entry_div, delete_project_button, project.project_id];
-                        delete_project_button.onclick = () => confirmation_prompt_user(
-                            "Project deletion confirmation",
-                            "Clicking confirm will mean you will completely delete the project entry. There is no recovery of this data. Are you sure?",
-                            "ADMIN_PROMPT_delete_project",
-                            delete_project_args
-                        );
-
-                        delete_project_button.innerHTML = "Delete";
-                        delete_project_button.style.marginRight = "3%";
-                        project_entry_div.appendChild(delete_project_button);
-                    }
-
-                    
-                    const rename_project_button = document.createElement("button");
-                    rename_project_button.type = "button";
-                    rename_project_button.className = "alternate_connect_button";
-                    rename_project_button.onclick = () => navigate_to_project_rename_display(project);
-                    rename_project_button.innerHTML = "Rename";
-                    rename_project_button.style.marginRight = "3%";
-                    project_entry_div.appendChild(rename_project_button);
-
-                    project_content.appendChild(project_entry_div);
-                }
-
-                console.log(query_debug_id + " Client: Point D - Project listings");
-            }
         }else{
             console.log(query_debug_id + " Client: Point C.2-Fail on data retrieve - Project listings");
         }
