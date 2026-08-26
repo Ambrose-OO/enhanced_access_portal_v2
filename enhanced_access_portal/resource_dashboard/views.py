@@ -1509,24 +1509,40 @@ def ADMIN_PROMPT_available_users(request):
 def ADMIN_PROMPT_create_project(request):
     if request.method == "POST":
 
+        print()
+
+        debug_id = request.POST.get("debug_id")
+        print(debug_id + " Server: Point C - Create project attempt")
+
         logged_in_status = request.session.get("logged_in")
-        
+    
         if (logged_in_status == True):
+
+            print(debug_id + " Server: Point D - Create project attempt")
 
             user_type = request.session.get("user_type")
 
             if (user_type == "ADMIN"):
+
+                print(debug_id + " Server: Point E.1.1 - Create project attempt")
+
                 user_id = request.session.get("user_id")  
 
                 project_name_value = request.POST.get("project_name")
                 project_identifier = request.POST.get("project_identifier")
 
                 if (project_name_value != ""):
+
+                    print(debug_id + " Server: Point E.1.2.A - Create project attempt")
+
                     if (len(project_name_value) > 2): 
+
+                        print(debug_id + " Server: Point E.1.2.A.1 - Create project attempt")
 
                         for project in Projects.objects.all():
                             
                             if (project.project_name == project_name_value):
+                                print(debug_id + " Server: Point E.1.2.A.2 - Create project attempt")
                                 return JsonResponse(
                                     {
                                         "status": "fail", 
@@ -1535,7 +1551,7 @@ def ADMIN_PROMPT_create_project(request):
                                     }
                                 )
                         
-                        
+                        print(debug_id + " Server: Point E.1.2.A.3 - Create project attempt")
                         project_root_entry = Projects(
                             entity_type = "PROJECT",
                             entity_id = 0, # Can just use the project identifier code to find records for a particulat project then hone in on "PROJECT" entity_type
@@ -1545,6 +1561,7 @@ def ADMIN_PROMPT_create_project(request):
                         )
                         project_root_entry.save()
 
+                        print(debug_id + " Server: Point E.1.2.A.4 - Create project attempt")
                         project_admin_entry = Projects(
                             entity_type = user_type,
                             entity_id = user_id,
@@ -1554,8 +1571,11 @@ def ADMIN_PROMPT_create_project(request):
                         )
                         project_admin_entry.save()
 
+                        print(debug_id + " Server: Point E.1.2.A.5 - Create project attempt")
+
                         return JsonResponse({"status": "success", "message": "Project registered"})
                     else:
+                        print(debug_id + " Server: Point E.1.2.B - Create project attempt")
                         return JsonResponse(
                         {
                             "status": "fail", 
@@ -1564,6 +1584,7 @@ def ADMIN_PROMPT_create_project(request):
                         }
                     )
                 else:
+                    print(debug_id + " Server: Point E.2 - Create project attempt")
                     return JsonResponse(
                         {
                             "status": "fail", 

@@ -152,7 +152,12 @@ function update_available_project_users() {
 // Functions
 
 function ADMIN_PROMPT_create_project_attempt(project_identifier_code){
+
+    const query_debug_id = generate_debug_id() + "_button_click";
+    console.log(query_debug_id + " Client: Point A - Create project attempt");
+
     // Hiding the project creation form and revealing project loading icon
+
     const project_detail = document.getElementById("project_detail");
     
     const project_name_entry = document.getElementById("project_name_entry");
@@ -161,6 +166,7 @@ function ADMIN_PROMPT_create_project_attempt(project_identifier_code){
     project_creation_loading.style.display = "block";
     
     // Post request to create project
+    console.log(query_debug_id + " Client: Point B - Create project attempt");
     setTimeout(function() {
                                        
         fetch(
@@ -174,15 +180,18 @@ function ADMIN_PROMPT_create_project_attempt(project_identifier_code){
                 body: new URLSearchParams(
                     {
                         project_name: project_name_entry.value,
-                        project_identifier: project_identifier
+                        project_identifier: project_identifier,
+                        debug_id: query_debug_id
                     }
                 )
             }
         )
         .then(response => response.json())
         .then(data => {
+            console.log(query_debug_id + " Client: Point F - Create project attempt");
 
             if (data.status == "success"){
+                console.log(query_debug_id + " Client: Point F.1.1 - Create project attempt");
   
                 const project_detail = document.getElementById("project_detail");
 
@@ -196,12 +205,18 @@ function ADMIN_PROMPT_create_project_attempt(project_identifier_code){
 
                 }, 3000);
 
+                console.log(query_debug_id + " Client: Point F.1.2 - Create project attempt");
+
             }else{
                 
+                console.log(query_debug_id + " Client: Point F.2.1 - Create project attempt");
+
                 if (data.header_message == "Error: Invalid project name"){
+                     console.log(query_debug_id + " Client: Point F.2.2 - Create project attempt");
                     prompt_user(data.header_message, data.message);
                     project_creation_cancellation(false); // Resettingt he project creation screen
                 }else{
+                    console.log(query_debug_id + " Client: Point F.2.3 - Create project attempt");
                     const register_loading_text = document.getElementById("register_loading_text");
                     register_loading_text.innerHTML = "Project failed to create";
 
@@ -211,12 +226,16 @@ function ADMIN_PROMPT_create_project_attempt(project_identifier_code){
                         project_creation_cancellation(true); // Moving user back to main project display section
                         register_loading_text.innerHTML = "Creating project"; // Resetting text
                     }, 3000);
+
+                     console.log(query_debug_id + " Client: Point F.2.4 - Create project attempt");
                 }
             }
                                                                         
         })
         .catch(error => {
             console.error("Error:", error);
+            prompt_user("Error: Unknown error", "Root cause not known.");
+            console.log(query_debug_id + " Client: Point F.2.5 - Create project attempt");
         });
 
     }, 1000);
