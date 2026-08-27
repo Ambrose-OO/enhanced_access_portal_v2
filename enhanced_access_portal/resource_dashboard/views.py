@@ -928,7 +928,8 @@ def ADMIN_PROMPT_delete_project(request):
                         {
                             "status": "success", 
                             "header_message": "Success: Server deleted the project",
-                            "message": "Server successfully deleted the project from the database."
+                            "message": "Server successfully deleted the project from the database.",
+                            "projects": collate_ADMIN_project_listings()
                         }
                     ) 
                      

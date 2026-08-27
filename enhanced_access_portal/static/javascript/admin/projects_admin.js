@@ -280,7 +280,9 @@ function ADMIN_PROMPT_delete_project(arg_list){
             
             prompt_user(data.header_message, data.message);
             delete_project_button.innerHTML = "Success!"
-            update_projects_content()
+            
+            const project_detail_data = data.projects;
+            generate_projects_content_with_project_data(project_detail_data);
           
         }else{
             // If the VM has failed to be deleted, give a failed prompt
