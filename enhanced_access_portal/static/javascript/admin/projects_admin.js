@@ -88,6 +88,10 @@ function project_creation_cancellation(full_cancel){
 
 function update_available_project_users() { 
     if (selected_project_id != ""){
+
+        const query_debug_id = generate_debug_id() + "_button_click";
+        console.log(query_debug_id + " Client: Point A - Available project users");
+
          // Display users
         const project_available_users_content = document.getElementById("project_available_users_content");
         
@@ -108,9 +112,9 @@ function update_available_project_users() {
         )
         .then(response => response.json())
         .then(data => {
-            
+            console.log(query_debug_id + " Client: Point C - Available project users");
             if (data.status == "success"){
-                
+                console.log(query_debug_id + " Client: Point D - Available project users");
                 project_available_users_content.innerHTML = ""; // Clearing the content views
                 //console.log("got available user data");
                 for (const user of data.available_users_details){
@@ -137,15 +141,25 @@ function update_available_project_users() {
                 }
                 
             }else{
+                console.log(query_debug_id + " Client: Point E - Available project users");
                 //console.log(data.message);
             }
                                                                         
         })
         .catch(error => {
             console.error("Error:", error);
+        })
+        .finally(() => {
+            console.log(" Client: Point F - Project listings");
+            setTimeout(update_available_project_users, BASE_POLL_TIME);
+            console.log(" Client: Point G - Project listings");
         });
+    } else {
+        setTimeout(update_available_project_users, BASE_POLL_TIME);
     }
 }
+update_available_project_users();
+
 //setInterval(update_available_project_users, 3000); // Updating available vm content every 3 seconds
 
 
@@ -339,7 +353,7 @@ function ADMIN_PROMPT_add_user(user_content, user_add_button, user_id_to_add) {
             prompt_user(data.header_message, data.message);
 
             // Updating available user data
-            update_available_project_users();
+            update_available_project_users(); // TODO: Make it so the request that comes back provides the data 
             
             // Updating project information currently being displayed to the user
             const project_detail_data = data.projects;
@@ -406,7 +420,7 @@ function ADMIN_PROMPT_remove_member_from_project(arg_list) {
             prompt_user(data.header_message, data.message);
 
             // Updating available user data
-            update_available_project_users();
+            update_available_project_users(); // TODO: Make it so the request that comes back provides the data 
             
             // Updating project information currently being displayed to the user
             const project_detail_data = data.projects;
