@@ -1398,8 +1398,8 @@ def ADMIN_PROMPT_remove_user_from_project(request):
                         return JsonResponse(
                             {
                                 "status": "fail", 
-                                "header_message": "Error: Cannot remove yourself", 
-                                "message": "Cannot remove yourself from the project as an admin. If you wish to do so, go ahead and delete the project if okay."
+                                "header_message": "Error: Cannot remove project owner from the project", 
+                                "message": "Cannot remove the project owner from the project. If you wish to do so, go ahead and delete the project if okay."
                             }
                         )
                 else:
