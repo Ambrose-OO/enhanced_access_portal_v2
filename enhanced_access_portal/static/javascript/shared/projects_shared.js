@@ -247,7 +247,6 @@ function update_project_display_with_project_data(project){
         member_remove_button.type = "button";
         member_remove_button.className = "alternate_connect_button";
         
-        member_remove_button.onclick = () => ADMIN_PROMPT_remove_member_from_project(member_content, member_remove_button, member.user_id, project.project_id);
         
         let remove_member_args = [member_content, member_remove_button, member.user_id, project.project_id];
         member_remove_button.onclick = () => confirmation_prompt_user(
