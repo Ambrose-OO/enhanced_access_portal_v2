@@ -357,13 +357,12 @@ function ADMIN_PROMPT_add_user(user_content, user_add_button, user_id_to_add) {
             
             // Updating project information currently being displayed to the user
             const project_detail_data = data.projects;
-
             for (const project of project_detail_data){
-                if (project.project_id == selected_project_id) { 
+                if (project.project_id == selected_project_id) {
                     update_project_display_with_project_data(project);
                 }
             }
-            
+
         }else{
             // If the VM has failed to be added, give a failed prompt
             // then return back to normal
@@ -418,13 +417,12 @@ function ADMIN_PROMPT_remove_member_from_project(arg_list) {
         if (data.status == "success"){
             
             prompt_user(data.header_message, data.message);
-
-            // Updating available user data
-            update_available_project_users(); // TODO: Make it so the request that comes back provides the data 
-            
-            // Updating project information currently being displayed to the user
+ 
+            // Updating project details in case the user goes back to the project detail page
             const project_detail_data = data.projects;
+            generate_projects_content_with_project_data(project_detail_data);
 
+            // Updating project information currently being displayed to the user
             for (const project of project_detail_data){
                 if (project.project_id == selected_project_id) { 
                     update_project_display_with_project_data(project);
