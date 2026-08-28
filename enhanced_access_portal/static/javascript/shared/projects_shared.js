@@ -384,9 +384,9 @@ function update_projects_content() {
 update_projects_content()
     .finally(() => {
         // Once the first request has been handled, wait one second before doing the next call
-        console.log(query_debug_id + " Client: Point E - Project listings");
+        console.log(" Client: Point E - Project listings");
         setTimeout(update_projects_content, BASE_POLL_TIME);
-        console.log(query_debug_id + " Client: Point G - Project listings");
+        console.log(" Client: Point G - Project listings");
     });
 
 
