@@ -1254,6 +1254,77 @@ def ADMIN_USER_PROMPT_add_vm(request):
                     "message": "Error adding VM to project as you are logged out. Please log in and try again."
                 }
             )
+
+
+def collate_available_users_given_project(project):
+    available_users_details = []
+                        
+    # Filtering users who are already in the project
+    for found_user in User.objects.all():
+        user_in_project_of_focus = False
+
+        for found_project in Projects.objects.all():
+            
+            if (found_project.entity_type == "ADMIN") or (found_project.entity_type == "USER"):
+                
+                found_project_entity_id = int(found_project.entity_id)
+                found_user_id = int(found_user.id)
+
+                if (found_project_entity_id == found_user_id):
+                    if (found_project.project_identifier_code == project.project_identifier_code):
+                        user_in_project_of_focus = True
+    
+        if (user_in_project_of_focus == False):
+            
+            member_detail = {}
+            member_detail["firstname"] = found_user.firstname
+            member_detail["emailaddress"] = found_user.emailaddress
+            member_detail["type"] = found_user.user_type
+            member_detail["user_id"] = found_user.id
+
+            available_users_details.append(member_detail)
+
+    return available_users_details
+
+
+@csrf_protect
+def ADMIN_PROMPT_available_users(request):
+    if request.method == "POST":
+        # print("---------------------")
+        # print("Available users")
+
+      
+        logged_in_status = request.session.get("logged_in")
+        user_type = request.session.get("user_type")
+        
+        user_id = request.session.get("user_id")  
+        user = fetch_user_from_id(user_id)
+        
+        project_id = int(request.POST.get("project_id"))
+        project = fetch_project_from_id(project_id)
+        
+        if (logged_in_status == True):
+    
+            if (user != None) and (project != None):
+                if (user_type == "ADMIN"):
+                    
+                    # Returning project data in JSON format back to the user
+                    return JsonResponse(
+                        {
+                            "status": "success", 
+                            "message": "Server succeeded passing data on available users",
+                            "available_users_details": collate_available_users_given_project(project)
+                        }
+                    ) 
+                
+        # Failure response if the user is requesting data when logged out
+        return JsonResponse(
+            {
+                "status": "failure", 
+                "message": "Server can't pass data on user who is logged out"
+            }
+        ) 
+
     
 @csrf_protect
 def ADMIN_PROMPT_add_user_to_project(request):
@@ -1295,7 +1366,8 @@ def ADMIN_PROMPT_add_user_to_project(request):
                             "status": "success", 
                             "header_message": "Success: Server added user to project",
                             "message": "Server succeeded adding user to project",
-                            "projects": admin_project_listings
+                            "projects": admin_project_listings,
+                            "available_users_details": collate_available_users_given_project(project)
                         }
                     ) 
                 else:
@@ -1446,72 +1518,6 @@ def ADMIN_PROMPT_remove_user_from_project(request):
             )
            
 
-@csrf_protect
-def ADMIN_PROMPT_available_users(request):
-    if request.method == "POST":
-        # print("---------------------")
-        # print("Available users")
-
-      
-        logged_in_status = request.session.get("logged_in")
-        user_type = request.session.get("user_type")
-        
-        user_id = request.session.get("user_id")  
-        user = fetch_user_from_id(user_id)
-        
-        project_id = int(request.POST.get("project_id"))
-        project = fetch_project_from_id(project_id)
-        
-        if (logged_in_status == True):
-    
-            if (user != None) and (project != None):
-                if (user_type == "ADMIN"):
-                    
-                    available_users_details = []
-                    
-                    # Filtering users who are already in the project
-                    for found_user in User.objects.all():
-                        user_in_project_of_focus = False
-
-                        for found_project in Projects.objects.all():
-                            
-                            if (found_project.entity_type == "ADMIN") or (found_project.entity_type == "USER"):
-                                
-                                found_project_entity_id = int(found_project.entity_id)
-                                found_user_id = int(found_user.id)
-
-                                if (found_project_entity_id == found_user_id):
-                                    if (found_project.project_identifier_code == project.project_identifier_code):
-                                        user_in_project_of_focus = True
-                 
-                        if (user_in_project_of_focus == False):
-                            
-                            member_detail = {}
-                            member_detail["firstname"] = found_user.firstname
-                            member_detail["emailaddress"] = found_user.emailaddress
-                            member_detail["type"] = found_user.user_type
-                            member_detail["user_id"] = found_user.id
-
-                            available_users_details.append(member_detail)
-                            
-                    # Returning project data in JSON format back to the user
-                    return JsonResponse(
-                        {
-                            "status": "success", 
-                            "message": "Server succeeded passing data on available users",
-                            "available_users_details": available_users_details
-                        }
-                    ) 
-                
-        # Failure response if the user is requesting data when logged out
-        return JsonResponse(
-            {
-                "status": "failure", 
-                "message": "Server can't pass data on user who is logged out"
-            }
-        ) 
-    
-    
 @csrf_protect
 def ADMIN_PROMPT_create_project(request):
     if request.method == "POST":

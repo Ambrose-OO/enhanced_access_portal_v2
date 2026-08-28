@@ -70,6 +70,7 @@ function reveal_project_display_available_users(state)
         if (CORE_USER_TYPE == "ADMIN"){
             available_users_display.style.display = "block";
             toggle_add_user_to_project_button_innertext(false);
+            update_available_project_users(false);
         } 
 
         toggle_add_vm_to_project_button_innertext(true);
@@ -107,6 +108,7 @@ function reveal_project_display_available_users(state)
         if (CORE_USER_TYPE == "ADMIN"){
             available_users_display.style.display = "block";
             toggle_add_user_to_project_button_innertext(false);
+            update_available_project_users(false);
         }
 
         toggle_add_vm_to_project_button_innertext(true);

@@ -86,13 +86,47 @@ function project_creation_cancellation(full_cancel){
 }
 
 
-function update_available_project_users() { 
+function generate_available_project_users_content(available_users_details_data){
+    const project_available_users_content = document.getElementById("project_available_users_content");
+    project_available_users_content.innerHTML = ""; // Clearing the content views
+
+    //console.log("got available user data");
+    for (const user of available_users_details_data){
+
+        const user_content = document.createElement("div");
+        user_content.className = "vms_content";
+
+        const member_title = document.createElement("p");
+        member_title.className = "roboto_font project_entry_p2";
+        member_title.innerHTML = user.firstname + " | " + user.emailaddress + " | Type: " + user.type; 
+        user_content.appendChild(member_title);
+                    
+        const user_add_button = document.createElement("button");
+        user_add_button.type = "button";
+        user_add_button.className = "alternate_connect_button";
+
+        user_add_button.onclick = () => ADMIN_PROMPT_add_user(user_content, user_add_button, user.user_id);
+        
+        user_add_button.innerHTML = "Add user";
+        user_content.appendChild(user_add_button);
+
+        // Rendering the div we created into "project_available_users_content"
+        project_available_users_content.appendChild(user_content);
+    }
+}
+
+
+function update_available_project_users(poll_update = true) { 
+
+    const timeout_controller = new AbortController();
+    const timeout_id = setTimeout(() => timeout_controller.abort(), 10000); // network timeout, kept shorter than BASE_POLL_TIME on purpose
+
     if (selected_project_id != ""){
 
         const query_debug_id = generate_debug_id() + "_button_click";
         console.log(query_debug_id + " Client: Point A - Available project users");
 
-         // Display users
+        // Display users
         const project_available_users_content = document.getElementById("project_available_users_content");
         
         fetch(
@@ -107,7 +141,8 @@ function update_available_project_users() {
                     {
                         project_id: selected_project_id
                     }
-                )
+                ),
+                signal: timeout_controller.signal
             }
         )
         .then(response => response.json())
@@ -115,31 +150,9 @@ function update_available_project_users() {
             console.log(query_debug_id + " Client: Point C - Available project users");
             if (data.status == "success"){
                 console.log(query_debug_id + " Client: Point D - Available project users");
-                project_available_users_content.innerHTML = ""; // Clearing the content views
-                //console.log("got available user data");
-                for (const user of data.available_users_details){
 
-                    const user_content = document.createElement("div");
-                    user_content.className = "vms_content";
+                generate_available_project_users_content(data.available_users_details);
 
-                    const member_title = document.createElement("p");
-                    member_title.className = "roboto_font project_entry_p2";
-                    member_title.innerHTML = user.firstname + " | " + user.emailaddress + " | Type: " + user.type; 
-                    user_content.appendChild(member_title);
-                                
-                    const user_add_button = document.createElement("button");
-                    user_add_button.type = "button";
-                    user_add_button.className = "alternate_connect_button";
-
-                    user_add_button.onclick = () => ADMIN_PROMPT_add_user(user_content, user_add_button, user.user_id);
-                    
-                    user_add_button.innerHTML = "Add user";
-                    user_content.appendChild(user_add_button);
-
-                    // Rendering the div we created into "project_available_users_content"
-                    project_available_users_content.appendChild(user_content);
-                }
-                
             }else{
                 console.log(query_debug_id + " Client: Point E - Available project users");
                 //console.log(data.message);
@@ -150,17 +163,22 @@ function update_available_project_users() {
             console.error("Error:", error);
         })
         .finally(() => {
-            console.log(" Client: Point F - Project listings");
-            setTimeout(update_available_project_users, BASE_POLL_TIME);
-            console.log(" Client: Point G - Project listings");
+            clearTimeout(timeout_id);
+            if (poll_update == true){
+                console.log(" Client: Point F - Project listings");
+                setTimeout(update_available_project_users, BASE_POLL_TIME);
+                console.log(" Client: Point G - Project listings");
+            }
         });
     } else {
-        setTimeout(update_available_project_users, BASE_POLL_TIME);
+        clearTimeout(timeout_id);
+        if (poll_update == true){
+            setTimeout(update_available_project_users, BASE_POLL_TIME);
+        }
     }
 }
-update_available_project_users();
+update_available_project_users(truee);
 
-//setInterval(update_available_project_users, 3000); // Updating available vm content every 3 seconds
 
 
 // Functions
@@ -362,6 +380,9 @@ function ADMIN_PROMPT_add_user(user_content, user_add_button, user_id_to_add) {
                     update_project_display_with_project_data(project);
                 }
             }
+
+            // Updating available project users display
+            generate_available_project_users_content(data.available_users_details);
 
         }else{
             // If the VM has failed to be added, give a failed prompt
