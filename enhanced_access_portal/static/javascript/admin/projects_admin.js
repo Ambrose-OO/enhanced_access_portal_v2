@@ -352,11 +352,11 @@ function ADMIN_PROMPT_add_user(user_content, user_add_button, user_id_to_add) {
             
             prompt_user(data.header_message, data.message);
 
-            // Updating available user data
-            update_available_project_users(); // TODO: Make it so the request that comes back provides the data 
-            
-            // Updating project information currently being displayed to the user
+            // Updating project details in case the user goes back to the project detail page
             const project_detail_data = data.projects;
+            generate_projects_content_with_project_data(project_detail_data);
+
+            // Updating project information currently being displayed to the user
             for (const project of project_detail_data){
                 if (project.project_id == selected_project_id) {
                     update_project_display_with_project_data(project);
