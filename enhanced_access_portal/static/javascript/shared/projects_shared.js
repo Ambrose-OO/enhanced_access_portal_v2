@@ -345,9 +345,12 @@ function update_projects_content() {
     const query_debug_id = generate_debug_id();
 
     console.log(query_debug_id + " Client: Point A - Project listings");
-                      
+
+    const timeout_controller = new AbortController();
+    const timeout_id = setTimeout(() => timeout_controller.abort(), 10000); // network timeout, kept shorter than BASE_POLL_TIME on purpose
+
     return fetch(
-        project_list_request_url, 
+        project_list_request_url,
         {
             method: "POST",
             headers: {
@@ -356,7 +359,8 @@ function update_projects_content() {
             },
             body: new URLSearchParams({
                 debug_id: query_debug_id
-            })
+            }),
+            signal: timeout_controller.signal
         }
     )
     .then(response => response.json())
@@ -368,26 +372,27 @@ function update_projects_content() {
 
             const project_detail_data = data.projects;
             generate_projects_content_with_project_data(project_detail_data);
-           
+
             console.log(query_debug_id + " Client: Point D - Project listings");
 
         }else{
             console.log(query_debug_id + " Client: Point C.2-Fail on data retrieve - Project listings");
         }
-                                                                    
+
     })
     .catch(error => {
         //console.error("Error:", error);
         console.log(query_debug_id + " Client: Point C.3-Server error - Project listings");
+    })
+    .finally(() => {
+        clearTimeout(timeout_id);
+        // Reschedule from inside every call (not just the first) so the loop is actually self-sustaining
+        console.log(query_debug_id + " Client: Point E - Project listings");
+        setTimeout(update_projects_content, BASE_POLL_TIME);
+        console.log(query_debug_id + " Client: Point G - Project listings");
     });
 }
-update_projects_content()
-    .finally(() => {
-        // Once the first request has been handled, wait one second before doing the next call
-        console.log(" Client: Point E - Project listings");
-        setTimeout(update_projects_content, BASE_POLL_TIME);
-        console.log(" Client: Point G - Project listings");
-    });
+update_projects_content();
 
 
 function update_available_project_vms() { 
