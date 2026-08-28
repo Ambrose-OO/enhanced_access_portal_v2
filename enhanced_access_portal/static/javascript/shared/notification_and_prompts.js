@@ -36,7 +36,7 @@ function reveal_notification_or_prompt(reveal_type){
         error("Wrong input");
     }
 }
-//reveal_notification_or_prompt("none");
+reveal_notification_or_prompt("none");
 
 
 /**
