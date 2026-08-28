@@ -436,7 +436,7 @@ function ADMIN_PROMPT_remove_member_from_project(arg_list) {
 
             member_remove_button.innerHTML = "Failed.";
             setTimeout(function() {
-                member_remove_button.innerHTML = "Add User";
+                member_remove_button.innerHTML = "Remove";
             }, 3000);
         }
                                                                     
