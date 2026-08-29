@@ -128,6 +128,7 @@ function reveal_project_display_available_vms(state)
         }
 
         toggle_add_vm_to_project_button_innertext(false);
+        update_available_project_vms(false);
     }else if (state == false){
         available_vms_display.style.display = "none";
 
@@ -165,6 +166,7 @@ function reveal_project_display_available_vms(state)
         }
         
         toggle_add_vm_to_project_button_innertext(false);
+        update_available_project_vms(false);
     }
 }
 
