@@ -477,6 +477,23 @@ def USER_ADMIN_PROMPT_project_listings(request):
                 }
             )
 
+def collate_available_project_vms():
+
+    available_vms = []
+    
+    for vm in VMs.objects.all():
+        if (vm.project_id == None):
+            vm_detail = {}
+
+            vm_detail["vm_id"] = vm.id
+            vm_detail["vm_name"] = vm.vm_name
+            vm_detail["vm_status"] = vm.vm_online
+            vm_detail["vm_ip"] = vm.vm_ip 
+            available_vms.append(vm_detail) 
+
+    return available_vms
+
+    
 @csrf_protect
 def USRER_ADMIN_PROMPT_available_vms(request):
     if request.method == "POST":
@@ -497,24 +514,12 @@ def USRER_ADMIN_PROMPT_available_vms(request):
         
         if (logged_in_status == True):
             
-            available_vms = []
-
-            for vm in VMs.objects.all():
-                if (vm.project_id == None):
-                    vm_detail = {}
-
-                    vm_detail["vm_id"] = vm.id
-                    vm_detail["vm_name"] = vm.vm_name
-                    vm_detail["vm_status"] = vm.vm_online
-                    vm_detail["vm_ip"] = vm.vm_ip 
-                    available_vms.append(vm_detail) 
-
             # Returning project data in JSON format back to the user
             return JsonResponse(
                 {
                     "status": "success", 
                     "message": "Server succeeded pass data on available vms",
-                    "vms": available_vms
+                    "vms": collate_available_project_vms()
                 }
             ) 
             
@@ -522,6 +527,7 @@ def USRER_ADMIN_PROMPT_available_vms(request):
         return JsonResponse(
             {
                 "status": "failure", 
+                "header_message": "Error: Error in retrieving data",
                 "message": "Server can't pass data on user who is logged out"
             }
         )
@@ -1214,7 +1220,8 @@ def ADMIN_USER_PROMPT_add_vm(request):
                             "status": "success", 
                             "header_message": "Success: VM added to project", 
                             "message": "Server successfully added vm to project",
-                            "projects": admin_project_listings
+                            "projects": admin_project_listings,
+                            "vms": collate_available_project_vms()
                         }
                     ) 
                         
