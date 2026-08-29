@@ -398,56 +398,87 @@ function update_projects_content() {
 update_projects_content();
 
 
-function update_available_project_vms() { 
-    // Display virtual machines
+function generate_available_project_vms_content_with_vm_data(vms_data){
     const project_available_vms_content = document.getElementById("project_available_vms_content");
-    
-    fetch(
-        available_vms_request_url, 
-        {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-                "X-CSRFToken": getCookie('csrftoken') //https://www.geeksforgeeks.org/python/csrf-token-in-django/
-            },
-            body: new URLSearchParams({})
-        }
-    )
-    .then(response => response.json())
-    .then(data => {
-        
-        if (data.status == "success"){
-            
-            project_available_vms_content.innerHTML = ""; // Clearing the content views
+    project_available_vms_content.innerHTML = ""; // Clearing the content views
          
-            for (const vm of data.vms){
-                
-                generate_vm_element_returns = generate_vm_element(
-                    vm.vm_name,
-                    vm.vm_status,
-                    vm.vm_ip
-                )
-                vm_add_button = generate_vm_element_returns[0];
-                vms_content = generate_vm_element_returns[1];
+    for (const vm of vms_data){
+        
+        generate_vm_element_returns = generate_vm_element(
+            vm.vm_name,
+            vm.vm_status,
+            vm.vm_ip
+        )
+        vm_add_button = generate_vm_element_returns[0];
+        vms_content = generate_vm_element_returns[1];
 
 
-                vm_add_button.onclick = () => ADMIN_USER_PROMPT_add_vm(vms_content, vm_add_button, vm.vm_id);
+        vm_add_button.onclick = () => ADMIN_USER_PROMPT_add_vm(vms_content, vm_add_button, vm.vm_id);
 
-                // Rendering the div we created into "project_available_vms_content"
-                project_available_vms_content.appendChild(vms_content);
-            }
-            
-        }else{
-            //console.log(data.message);
-        }
-                                                                    
-    })
-    .catch(error => {
-        console.error("Error:", error);
-    });
+        // Rendering the div we created into "project_available_vms_content"
+        project_available_vms_content.appendChild(vms_content);
+    }
 }
-//setInterval(update_available_project_vms, 3000); // Updating available vm content every 3 seconds
 
+
+function update_available_project_vms(poll_updates = true) { 
+
+    console.log("Checking if feasible to run an update for the available project vms");
+
+    if (available_vms_display.style.display == "block"){
+        // If the available vms display window is open, then query the update
+        const timeout_controller = new AbortController();
+        const timeout_id = setTimeout(() => timeout_controller.abort(), 10000); // network timeout, kept shorter than BASE_POLL_TIME on purpose
+
+        // Display virtual machines
+        fetch(
+            available_vms_request_url, 
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-CSRFToken": getCookie('csrftoken') //https://www.geeksforgeeks.org/python/csrf-token-in-django/
+                },
+                body: new URLSearchParams({}),
+                signal: timeout_controller.signal
+            }
+        )
+        .then(response => response.json())
+        .then(data => {
+            
+            if (data.status == "success"){
+                
+                generate_available_project_vms_content_with_vm_data(data.vms);
+                
+            }else{
+                prompt_user(data.header_message, data.message);
+                console.log("update_available_project_vms errored in retrieving data");
+            }
+                                                                        
+        })
+        .catch(error => {
+            prompt_user("Error: Caught unknown error in retrieving available project vms", "Re-login and try again after hard refreshing the page.");
+            console.error("Error:", error);
+        })
+        .finally(() => {
+            clearTimeout(timeout_id);
+            // Reschedule from inside every call (not just the first) so the loop is actually self-sustaining
+            
+            if (poll_updates == true){
+                setTimeout(update_available_project_vms, BASE_POLL_TIME);
+            }
+        });
+
+    }else{
+        // Else, do not query the update as it is a waste of resourecs, and wait for the
+        // the next iteration to check agani 
+        if (poll_updates == true){
+            setTimeout(update_available_project_vms, BASE_POLL_TIME);
+        }
+    }
+    
+}
+update_available_project_vms(true);
 
 // Functions
 
@@ -541,12 +572,10 @@ function ADMIN_USER_PROMPT_add_vm(vms_content, vm_add_button, vm_id_to_add) {
     .then(data => {
         
         if (data.status == "success"){
-            
             prompt_user(data.header_message, data.message);
 
-            // After successfully removing a VM, request an update on the latest
-            // available vms
-            update_available_project_vms();
+            // After successfully removing a VM, update the vm list
+            generate_available_project_vms_content_with_vm_data(data.vms);
 
             // Updating project information currently being displayed to the user
             const project_detail_data = data.projects;
