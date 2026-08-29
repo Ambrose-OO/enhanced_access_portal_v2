@@ -177,7 +177,7 @@ function update_available_project_users(poll_update = true) {
         }
     }
 }
-update_available_project_users(truee);
+update_available_project_users(true);
 
 
 
