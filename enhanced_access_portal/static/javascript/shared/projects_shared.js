@@ -586,6 +586,10 @@ function ADMIN_USER_PROMPT_add_vm(vms_content, vm_add_button, vm_id_to_add) {
                 }
             }
             
+            // Updating project content as a whole so that the user gets updated figures when they
+            // go back to the main projects view display
+            update_projects_content(project_detail_data);
+
         }else{
             // If the VM has failed to be added, give a failed prompt
             // then return back to normal
@@ -645,6 +649,10 @@ function ADMIN_USER_PROMPT_remove_vm(arg_list){
                     update_project_display_with_project_data(project);
                 }
             }
+
+            // Updating project content as a whole so that the user gets updated figures when they
+            // go back to the main projects view display
+            update_projects_content(project_detail_data);
 
         }else{
             // If the VM has failed to be added, give a failed prompt
