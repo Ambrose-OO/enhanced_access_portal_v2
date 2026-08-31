@@ -24,7 +24,7 @@ def fetch_user_from_id(user_id: int):
     
 def fetch_project_from_id(project_id: int):
     try:
-        return Projects.objects.get(id=project_id)
+        return Projects.objects.get(id=project_id, entity_type="PROJECT")
     except Projects.DoesNotExist:
         return None
 
@@ -970,48 +970,58 @@ def ADMIN_USER_PROMPT_rename_project(request):
             new_project_name = request.POST.get("new_project_name")
             project = fetch_project_from_id(project_id)
 
-            if (project != None):
-                if (new_project_name) and (new_project_name != ""):
-                    
-                    # Checking if the new project name entered doesn't already exist
-                    for project in Projects.objects.all():
-                        
-                        if (project.project_name == new_project_name):
-                            return JsonResponse(
-                                {
-                                    "status": "fail", 
-                                    "header_message": "Error: Project duplicate name",
-                                    "message": "Issue with renaming the project. As one already exists with the same name. Please enter a different one, rename the project that is clashing, or delete the clashing project before trying again."
-                                }
-                            )
-                    
-                    # Attempting to rename the project
-                    fetched_project_identifier_code = project.project_identifier_code
-                    for found_project in Projects.objects.all():
-                        if (found_project.project_identifier_code == fetched_project_identifier_code):
-                            # If there's a match in the project identifier code then update the project entry
-                            # Updating entries: https://www.w3schools.com/django/django_update_data.php
-                            found_project.project_name = new_project_name
-                            found_project.save()
-                    
-                    # print("renamed project")
+            if (new_project_name) and (new_project_name != ""):
 
-                    return JsonResponse(
-                        {
-                            "status": "success", 
-                            "header_message": "Success: Server renamed the project",
-                            "message": "Server successfully updated the project name with the new inputted one within the database."
-                        }
-                    ) 
-                else:
-                    return JsonResponse(
-                    {
-                        "status": "fail", 
-                        "header_message": "Error: Missing rename entry",
-                        "message": "A project name to rename to hasn't been entered. Try again."
-                    }
-                )
-            else:
+                print("POINT A")
+
+                # Checking if the new project name entered doesn't already exist
+                for project in Projects.objects.all():
+                    
+                    if (project.project_name == new_project_name):
+                        print("POINT B")
+                        return JsonResponse(
+                            {
+                                "status": "fail", 
+                                "header_message": "Error: Project duplicate name",
+                                "message": "Issue with renaming the project. As one already exists with the same name. Please enter a different one, rename the project that is clashing, or delete the clashing project before trying again."
+                            }
+                        )
+
+                print("POINT B")         
+                # Attempting to rename the project
+                for project in Projects.objects.all():
+                    if (project.entity_type == "PROJECT"):
+                        print("POINT C " + str(project.id))
+                        if (str(project.id) == str(project_id)) and (str(project.entity_id) == str(0)):
+                            print("POINT D")
+
+                            project.project_name = new_project_name
+                            project.save()
+
+                            user_type = request.session.get("user_type")
+                            user_id = request.session.get("user_id")  
+                            
+                            if (user_type == "USER"):
+                                user = fetch_user_from_id(user_id)
+                                return JsonResponse(
+                                    {
+                                        "status": "success", 
+                                        "header_message": "Success: Server renamed the project",
+                                        "message": "Server successfully updated the project name with the new inputted one within the database.",
+                                        "projects": collate_USER_project_listings(user)
+                                    }
+                                ) 
+                            elif (user_type == "ADMIN"):
+                                return JsonResponse(
+                                    {
+                                        "status": "success", 
+                                        "header_message": "Success: Server renamed the project",
+                                        "message": "Server successfully updated the project name with the new inputted one within the database.",
+                                        "projects": collate_ADMIN_project_listings()
+                                    }
+                                ) 
+
+
                 return JsonResponse(
                     {
                         "status": "fail", 
@@ -1019,6 +1029,16 @@ def ADMIN_USER_PROMPT_rename_project(request):
                         "message": "Selected project for renaming cannot be identified. Try again or refresh your page."
                     }
                 )
+
+            else:
+                return JsonResponse(
+                {
+                    "status": "fail", 
+                    "header_message": "Error: Missing rename entry",
+                    "message": "A project name to rename to hasn't been entered. Try again."
+                }
+            )
+      
         else:
             return JsonResponse(
                 {

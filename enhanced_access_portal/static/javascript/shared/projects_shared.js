@@ -40,7 +40,7 @@ function navigate_to_project_display(project) {
 function navigate_to_project_rename_display(project) {
     // Updating knowledge on which project has been selected by changing
     // the selected_project_id variable
-
+    console.log(project.project_id);
     selected_project_id = project.project_id; 
 
     // Reveals "Add VM" and "Add user" buttons
@@ -526,11 +526,11 @@ function ADMIN_USER_PROMPT_rename_project(arg_list){
         
         if (data.status == "success"){
             
-            prompt_user(data.header_message, data.message);
-            update_projects_content();
+            generate_projects_content_with_project_data(data.projects);
             reset_project_navigation_to_project_content();
-
             lower_button_toggle(false, false, false, true, false, false, false);
+            prompt_user(data.header_message, data.message);
+
         }else{
             // If the VM has failed to be renamed, give a failed prompt
             // then return back to normal
