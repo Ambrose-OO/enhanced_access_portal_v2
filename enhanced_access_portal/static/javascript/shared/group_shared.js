@@ -297,13 +297,13 @@ update_groups_content()
 
 
 function update_available_group_vms_content() {
-    const group_content = document.getElementById("group_content");
-    
-    const all_vms_display_content = document.getElementById("all_vms_display_content");
+  
+    // Fetching available group vms
 
-    //console.log("fetch available group vms");
-                    
-    fetch(
+    const timeout_controller = new AbortController();
+    const timeout_id = setTimeout(() => timeout_controller.abort(), 10000); // network timeout, kept shorter than BASE_POLL_TIME on purpose
+
+    return fetch(
         available_vms_for_group_request_url, 
         {
             method: "POST",
@@ -315,7 +315,8 @@ function update_available_group_vms_content() {
                 {
                     group_name_target: selected_group_name
                 }
-            )
+            ),
+            signal: timeout_controller.signal
         }
     )
     .then(response => response.json())
@@ -347,17 +348,22 @@ function update_available_group_vms_content() {
             }
 
         }else{
-            //console.log(data.message);
+            console.log("Error updating available group vms content");
         }
                                                                     
     })
     .catch(error => {
         console.error("Error:", error);
+    })
+    .finally(() => {
+        clearTimeout(timeout_id);
+        // Reschedule from inside every call (not just the first) so the loop is actually self-sustaining
+        setTimeout(update_available_group_vms_content, BASE_POLL_TIME);
     });
 
 }
 update_available_group_vms_content() 
-//setInterval(update_available_group_vms_content, 1000); 
+ 
 
 
 // Functions
