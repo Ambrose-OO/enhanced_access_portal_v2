@@ -358,7 +358,7 @@ function update_available_group_vms_content(auto_poll = true) {
             },
             body: new URLSearchParams(
                 {
-                    group_name_target: selected_group_name
+                    "selected_group_name": selected_group_name
                 }
             ),
             signal: timeout_controller.signal
@@ -416,7 +416,7 @@ function ADMIN_USER_PROMPT_create_group_attempt(project_identifier_code){
                 },
                 body: new URLSearchParams(
                     {
-                        group_name: group_name_entry.value
+                        "selected_group_name": group_name_entry.value
                     }
                 )
             }
@@ -476,7 +476,7 @@ function ADMIN_USER_PROMPT_add_vm_to_group(vms_content, vm_add_button, vm_id_to_
             body: new URLSearchParams(
                 {
                     vm_id: vm_id_to_add,
-                    group_name: selected_group_name
+                    "selected_group_name": selected_group_name
                 }
             )
         }
@@ -536,7 +536,7 @@ function ADMIN_USER_PROMPT_remove_vm_from_group(arg_list){
             body: new URLSearchParams(
                 {
                     vm_id: vm_id_to_remove,
-                    group_name: selected_group_name
+                    "selected_group_name": selected_group_name
                 }
             )
         }

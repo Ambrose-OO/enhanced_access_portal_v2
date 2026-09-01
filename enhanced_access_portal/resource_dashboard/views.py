@@ -303,7 +303,7 @@ def USER_ADMIN_PROMPT_create_vm_group(request):
         
         if (logged_in_status == True):
             
-            group_name = request.POST.get("group_name")
+            group_name = request.POST.get("selected_group_name")
 
             if (group_name != None):
                 
@@ -632,7 +632,7 @@ def USRER_ADMIN_PROMPT_add_vm_to_group(request):
         if (logged_in_status == True):
 
             vm_id = request.POST.get("vm_id")
-            group_name = request.POST.get("group_name")
+            group_name = request.POST.get("selected_group_name")
 
             group_exists = False
             vm_already_exists = False
@@ -662,6 +662,9 @@ def USRER_ADMIN_PROMPT_add_vm_to_group(request):
                 group_metadata = fetch_group_listings_return[0]
                 user_group_listings = fetch_group_listings_return[1]
 
+                user_type = request.session.get("user_type")
+                selected_group_name = request.POST.get("selected_group_name")
+                
                 # Returning project data in JSON format back to the user
                 return JsonResponse(
                     {
@@ -817,7 +820,7 @@ def USRER_ADMIN_PROMPT_remove_vm_from_group(request):
         if (logged_in_status == True):
 
             vm_id = request.POST.get("vm_id")
-            group_name = request.POST.get("group_name")
+            group_name = request.POST.get("selected_group_name")
 
             # print("found group name")
             # print(group_name)
