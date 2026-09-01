@@ -308,9 +308,38 @@ function update_groups_content() {
 update_groups_content() 
 
 
+function generate_available_group_vms_with_group_vm_data(vm_data, vms_content){
+    console.log("ADD VM TO GROUP B.1");
+    group_available_vms_content.innerHTML = ""; // Clearing all the elements under the div content container
+    vm_counter = 0;
 
-function update_available_group_vms_content() {
-    if (group_name_target == ""){
+    console.log("ADD VM TO GROUP B.2");
+    // Display available VM details
+    for (const vm of vm_data){
+        vm_counter += 1;
+
+        // Generating vm entries for available vms for selection in a group
+        generate_vm_element_returns = generate_vm_element(
+            vm.vm_name,
+            vm.vm_status,
+            vm.vm_ip
+        );
+        vm_add_button = generate_vm_element_returns[0];
+        vms_content = generate_vm_element_returns[1];
+        
+        vm_add_button.onclick = () => ADMIN_USER_PROMPT_add_vm_to_group(vms_content, vm_add_button, vm.vm_id);
+
+        // Generating vm entries for available vms for selection in a group - Rendering the div we created into "group_available_vms_content"
+        group_available_vms_content.appendChild(vms_content);
+
+    }
+    console.log("new vm data");
+
+    console.log("ADD VM TO GROUP B.3");
+}
+
+function update_available_group_vms_content(auto_poll = true) {
+    if (selected_group_name == ""){
         return;
     }
     
@@ -339,30 +368,9 @@ function update_available_group_vms_content() {
     .then(data => {
 
         if (data.status == "success"){
-            
-            group_available_vms_content.innerHTML = ""; // Clearing all the elements under the div content container
-            vm_counter = 0;
-
-            // Display available VM details
-            for (const vm of data.vms){
-                vm_counter += 1;
-
-                // Generating vm entries for available vms for selection in a group
-                generate_vm_element_returns = generate_vm_element(
-                    vm.vm_name,
-                    vm.vm_status,
-                    vm.vm_ip
-                );
-                vm_add_button = generate_vm_element_returns[0];
-                vms_content = generate_vm_element_returns[1];
-                
-                vm_add_button.onclick = () => ADMIN_USER_PROMPT_add_vm_to_group(vms_content, vm_add_button, vm.vm_id);
-
-                // Generating vm entries for available vms for selection in a group - Rendering the div we created into "group_available_vms_content"
-                group_available_vms_content.appendChild(vms_content);
-
-            }
-
+            console.log("INITIAL AVAILABLE GROUP VM UPDATE")
+            generate_available_group_vms_with_group_vm_data(data.vms);
+            console.log("VM data for groups came through");
         }else{
             console.log("Error updating available group vms content");
         }
@@ -372,13 +380,15 @@ function update_available_group_vms_content() {
         console.error("Error:", error);
     })
     .finally(() => {
+        if (auto_poll == true){
         clearTimeout(timeout_id);
         // Reschedule from inside every call (not just the first) so the loop is actually self-sustaining
         setTimeout(update_available_group_vms_content, BASE_POLL_TIME);
+        }
     });
 
 }
-update_available_group_vms_content() 
+update_available_group_vms_content(true) 
  
 
 
