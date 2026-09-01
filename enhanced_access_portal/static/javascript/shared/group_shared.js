@@ -73,6 +73,7 @@ function toggle_add_group_vm_button_innertext(default_state){
 }
 function reveal_group_display_available_vms_subfunction(state){
     if (state == true){
+        update_available_group_vms_content(false)
         available_group_vms_display.style.display = "block";
         group_display.style.display = "none";
 
@@ -176,112 +177,119 @@ function navigate_to_group_display(group_listing_data, group_metadata_data, inpu
 }
 
 
+function generate_groups_content_with_group_data(group_detail_data){
+    group_content.innerHTML = ""; // Clearing all the elements under the div content container
+
+    // Display project details
+    const group_listing_data = group_detail_data.listings;
+    const group_metadata_data = group_detail_data.meta_data;
+    
+    let group_dictionary = {};
+
+    // Collecting data for individual groups
+    for (const group of group_listing_data){
+        if (group.group_root == false){
+            if (group_dictionary[group.group_name]){
+                group_dictionary[group.group_name]["count"] += 1;
+                if (group.vm_status == "Online"){
+                    group_dictionary[group.group_name]["online_count"] += 1;
+                }
+            }else{
+                group_dictionary[group.group_name] = {}
+                group_dictionary[group.group_name]["count"] = 0;
+                group_dictionary[group.group_name]["online_count"] = 0;
+            }
+        }else{
+            if (!group_dictionary[group.group_name]){
+                group_dictionary[group.group_name] = {}
+                group_dictionary[group.group_name]["count"] = 0;
+                group_dictionary[group.group_name]["online_count"] = 0;
+            }
+        }
+    }
+    
+    // Displaying groups
+    for (const group of group_listing_data){
+        // Checking for the group root records which act as a representation of a group
+        if (group.group_root == true){
+            
+            const group_entry_div = document.createElement("div");
+            group_entry_div.className = "rounded_container project_entry";
+            group_entry_div.id = "project_entry";
+
+            // <p> class elements
+            const group_title = document.createElement("p");
+            group_title.className = "roboto_font project_entry_p1";
+            group_title.innerHTML = "Group name: " + group.group_name;
+            group_entry_div.appendChild(group_title);
+
+            const group_id = document.createElement("p");
+            group_id.className = "roboto_font project_entry_p2";
+            group_id.innerHTML = "Id: " + group.group_id;
+            group_entry_div.appendChild(group_id);
+
+            const group_details = document.createElement("p");
+            group_details.className = "roboto_font";
+            group_details.innerHTML = "VMs (" + group_dictionary[group.group_name]["count"] + ") VMs online (" + group_dictionary[group.group_name]["online_count"] + ")";
+            group_entry_div.appendChild(group_details);
+            
+            // <button> class elements
+            const open_group_button = document.createElement("button");
+            open_group_button.type = "button";
+            open_group_button.className = "alternate_connect_button";
+            open_group_button.onclick = () => navigate_to_group_display(group_listing_data, group_metadata_data, group.group_name);
+            open_group_button.innerHTML = "Open";
+            open_group_button.style.marginRight = "3%";
+            group_entry_div.appendChild(open_group_button);
+
+
+            const delete_group_button = document.createElement("button");
+            delete_group_button.type = "button";
+            delete_group_button.className = "alternate_connect_button"
+
+            let delete_group_args = [group_entry_div, delete_group_button, group.group_id];
+            delete_group_button.onclick = () => confirmation_prompt_user(
+                "Group deletion confirmation",
+                "Clicking confirm will mean you will completely delete the group entry. There is no recovery of this data. Are you sure?",
+                "ADMIN_USER_PROMPT_delete_group",
+                delete_group_args
+            );
+            
+            delete_group_button.innerHTML = "Delete";
+            group_entry_div.appendChild(delete_group_button);
+            
+            group_content.appendChild(group_entry_div);
+        }
+    }
+}
+
+
+
 function update_groups_content() {
     const group_content = document.getElementById("group_content");
 
-    //console.log("fetch group listings");
+    const timeout_controller = new AbortController();
+    const timeout_id = setTimeout(() => timeout_controller.abort(), 10000); // network timeout, kept shorter than BASE_POLL_TIME on purpose
                      
-    fetch(
-        group_list_request_url, 
+    return fetch(
+        group_list_request_url,
         {
             method: "POST",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
                 "X-CSRFToken": getCookie('csrftoken') //https://www.geeksforgeeks.org/python/csrf-token-in-django/
             },
-            body: new URLSearchParams({})
+            body: new URLSearchParams({}),
+            signal: timeout_controller.signal
         }
     )
     .then(response => response.json())
     .then(data => {
 
         if (data.status == "success"){
-            //console.log("fetched group listings");
-            //console.log(data.message);
-            
-            group_content.innerHTML = ""; // Clearing all the elements under the div content container
+        
+            generate_groups_content_with_group_data(data.groups)
 
-            // Display project details
-            const group_listing_data = data.groups.listings;
-            const group_metadata_data = data.groups.meta_data;
-            
-            let group_dictionary = {};
-
-            // Collecting data for individual groups
-            for (const group of group_listing_data){
-                if (group.group_root == false){
-                    if (group_dictionary[group.group_name]){
-                        group_dictionary[group.group_name]["count"] += 1;
-                        if (group.vm_status == "Online"){
-                            group_dictionary[group.group_name]["online_count"] += 1;
-                        }
-                    }else{
-                        group_dictionary[group.group_name] = {}
-                        group_dictionary[group.group_name]["count"] = 0;
-                        group_dictionary[group.group_name]["online_count"] = 0;
-                    }
-                }else{
-                    if (!group_dictionary[group.group_name]){
-                        group_dictionary[group.group_name] = {}
-                        group_dictionary[group.group_name]["count"] = 0;
-                        group_dictionary[group.group_name]["online_count"] = 0;
-                    }
-                }
-            }
-            
-            // Displaying groups
-            for (const group of group_listing_data){
-                // Checking for the group root records which act as a representation of a group
-                if (group.group_root == true){
-                    
-                    const group_entry_div = document.createElement("div");
-                    group_entry_div.className = "rounded_container project_entry";
-                    group_entry_div.id = "project_entry";
-
-                    // <p> class elements
-                    const group_title = document.createElement("p");
-                    group_title.className = "roboto_font project_entry_p1";
-                    group_title.innerHTML = "Group name: " + group.group_name;
-                    group_entry_div.appendChild(group_title);
-
-                    const group_id = document.createElement("p");
-                    group_id.className = "roboto_font project_entry_p2";
-                    group_id.innerHTML = "Id: " + group.group_id;
-                    group_entry_div.appendChild(group_id);
-
-                    const group_details = document.createElement("p");
-                    group_details.className = "roboto_font";
-                    group_details.innerHTML = "VMs (" + group_dictionary[group.group_name]["count"] + ") VMs online (" + group_dictionary[group.group_name]["online_count"] + ")";
-                    group_entry_div.appendChild(group_details);
-                    
-                    // <button> class elements
-                    const open_group_button = document.createElement("button");
-                    open_group_button.type = "button";
-                    open_group_button.className = "alternate_connect_button";
-                    open_group_button.onclick = () => navigate_to_group_display(group_listing_data, group_metadata_data, group.group_name);
-                    open_group_button.innerHTML = "Open";
-                    open_group_button.style.marginRight = "3%";
-                    group_entry_div.appendChild(open_group_button);
-
-
-                    const delete_group_button = document.createElement("button");
-                    delete_group_button.type = "button";
-                    delete_group_button.className = "alternate_connect_button"
-
-                    let delete_group_args = [group_entry_div, delete_group_button, group.group_id];
-                    delete_group_button.onclick = () => confirmation_prompt_user(
-                        "Group deletion confirmation",
-                        "Clicking confirm will mean you will completely delete the group entry. There is no recovery of this data. Are you sure?",
-                        "ADMIN_USER_PROMPT_delete_group",
-                        delete_group_args
-                    );
-                    
-                    delete_group_button.innerHTML = "Delete";
-                    group_entry_div.appendChild(delete_group_button);
-                    
-                    group_content.appendChild(group_entry_div);
-                }
-            }
         }else{
             //console.log(data.message);
         }
@@ -289,21 +297,54 @@ function update_groups_content() {
     })
     .catch(error => {
         console.error("Error:", error);
+    })
+    .finally(() => {
+        clearTimeout(timeout_id);
+        // Reschedule from inside every call (not just the first) so the loop is actually self-sustaining
+        setTimeout(update_groups_content, BASE_POLL_TIME);
     });
 
 }
 update_groups_content() 
-//setInterval(update_groups_content, 3000); 
 
 
-function update_available_group_vms_content() {
-    const group_content = document.getElementById("group_content");
+function generate_available_group_vms_with_group_vm_data(vm_data, vms_content){
     
-    const all_vms_display_content = document.getElementById("all_vms_display_content");
+    group_available_vms_content.innerHTML = ""; // Clearing all the elements under the div content container
+    vm_counter = 0;
 
-    //console.log("fetch available group vms");
-                    
-    fetch(
+    // Display available VM details
+    for (const vm of vm_data){
+        vm_counter += 1;
+
+        // Generating vm entries for available vms for selection in a group
+        generate_vm_element_returns = generate_vm_element(
+            vm.vm_name,
+            vm.vm_status,
+            vm.vm_ip
+        );
+        vm_add_button = generate_vm_element_returns[0];
+        vms_content = generate_vm_element_returns[1];
+        
+        vm_add_button.onclick = () => ADMIN_USER_PROMPT_add_vm_to_group(vms_content, vm_add_button, vm.vm_id);
+
+        // Generating vm entries for available vms for selection in a group - Rendering the div we created into "group_available_vms_content"
+        group_available_vms_content.appendChild(vms_content);
+
+    }
+}
+
+function update_available_group_vms_content(auto_poll = true) {
+    if (selected_group_name == ""){
+        return;
+    }
+
+    // Fetching available group vms
+
+    const timeout_controller = new AbortController();
+    const timeout_id = setTimeout(() => timeout_controller.abort(), 10000); // network timeout, kept shorter than BASE_POLL_TIME on purpose
+
+    return fetch(
         available_vms_for_group_request_url, 
         {
             method: "POST",
@@ -313,51 +354,38 @@ function update_available_group_vms_content() {
             },
             body: new URLSearchParams(
                 {
-                    group_name_target: selected_group_name
+                    "selected_group_name": selected_group_name
                 }
-            )
+            ),
+            signal: timeout_controller.signal
         }
     )
     .then(response => response.json())
     .then(data => {
 
         if (data.status == "success"){
-            
-            group_available_vms_content.innerHTML = ""; // Clearing all the elements under the div content container
-            vm_counter = 0;
-
-            // Display available VM details
-            for (const vm of data.vms){
-                vm_counter += 1;
-
-                // Generating vm entries for available vms for selection in a group
-                generate_vm_element_returns = generate_vm_element(
-                    vm.vm_name,
-                    vm.vm_status,
-                    vm.vm_ip
-                );
-                vm_add_button = generate_vm_element_returns[0];
-                vms_content = generate_vm_element_returns[1];
-                
-                vm_add_button.onclick = () => ADMIN_USER_PROMPT_add_vm_to_group(vms_content, vm_add_button, vm.vm_id);
-
-                // Generating vm entries for available vms for selection in a group - Rendering the div we created into "group_available_vms_content"
-                group_available_vms_content.appendChild(vms_content);
-
-            }
-
+            console.log("INITIAL AVAILABLE GROUP VM UPDATE")
+            generate_available_group_vms_with_group_vm_data(data.vms);
+            console.log("VM data for groups came through");
         }else{
-            //console.log(data.message);
+            console.log("Error updating available group vms content");
         }
                                                                     
     })
     .catch(error => {
         console.error("Error:", error);
+    })
+    .finally(() => {
+        if (auto_poll == true){
+            clearTimeout(timeout_id);
+            // Reschedule from inside every call (not just the first) so the loop is actually self-sustaining
+            setTimeout(update_available_group_vms_content, BASE_POLL_TIME);
+        }
     });
 
 }
-update_available_group_vms_content() 
-//setInterval(update_available_group_vms_content, 1000); 
+update_available_group_vms_content(true) 
+ 
 
 
 // Functions
@@ -384,7 +412,7 @@ function ADMIN_USER_PROMPT_create_group_attempt(project_identifier_code){
                 },
                 body: new URLSearchParams(
                     {
-                        group_name: group_name_entry.value
+                        "selected_group_name": group_name_entry.value
                     }
                 )
             }
@@ -395,7 +423,9 @@ function ADMIN_USER_PROMPT_create_group_attempt(project_identifier_code){
             if (data.status == "success"){
                 
                 group_creation_loading_text.innerHTML = "Group created!";
-            
+                
+                generate_groups_content_with_group_data(data.groups);
+
                 setTimeout(function() {
                     group_creation_cancellation(); // Moving user back to main project display section
                     reset_group_creation_section();
@@ -442,7 +472,7 @@ function ADMIN_USER_PROMPT_add_vm_to_group(vms_content, vm_add_button, vm_id_to_
             body: new URLSearchParams(
                 {
                     vm_id: vm_id_to_add,
-                    group_name: selected_group_name
+                    "selected_group_name": selected_group_name
                 }
             )
         }
@@ -451,7 +481,9 @@ function ADMIN_USER_PROMPT_add_vm_to_group(vms_content, vm_add_button, vm_id_to_
     .then(data => {
         
         if (data.status == "success"){
-                
+            generate_groups_content_with_group_data(data.groups);
+            generate_available_group_vms_with_group_vm_data(data.vms);
+
             prompt_user(data.header_message, data.message);
 
             // Updating group information currently being displayed to the user
@@ -502,7 +534,7 @@ function ADMIN_USER_PROMPT_remove_vm_from_group(arg_list){
             body: new URLSearchParams(
                 {
                     vm_id: vm_id_to_remove,
-                    group_name: selected_group_name
+                    "selected_group_name": selected_group_name
                 }
             )
         }
@@ -511,6 +543,8 @@ function ADMIN_USER_PROMPT_remove_vm_from_group(arg_list){
     .then(data => {
 
         if (data.status == "success"){
+            generate_groups_content_with_group_data(data.groups);
+            generate_available_group_vms_with_group_vm_data(data.vms);
             
             prompt_user(data.header_message, data.message);
 
@@ -571,14 +605,12 @@ function ADMIN_USER_PROMPT_delete_group(arg_list){
         
         if (data.status == "success"){
             
+
+            generate_groups_content_with_group_data(data.groups);
+            console.log("group data generation after group deletion");
+
             prompt_user(data.header_message, data.message);
-            // Removing the project entry display
-            group_entry_div.parentNode.removeChild(vms_content); // removing the listing after success
-        
-            // Don't need to do further updates as the project entry display
-            // will dissapear and that's the most latest visual update that we will need
-            // nothing else will be visible to the user from the project we deleted after
-        
+           
         }else{
             // If the VM has failed to be deleted, give a failed prompt
             // then return back to normal

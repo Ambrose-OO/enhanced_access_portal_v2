@@ -24,7 +24,7 @@ def fetch_user_from_id(user_id: int):
     
 def fetch_project_from_id(project_id: int):
     try:
-        return Projects.objects.get(id=project_id)
+        return Projects.objects.get(id=project_id, entity_type="PROJECT")
     except Projects.DoesNotExist:
         return None
 
@@ -303,7 +303,7 @@ def USER_ADMIN_PROMPT_create_vm_group(request):
         
         if (logged_in_status == True):
             
-            group_name = request.POST.get("group_name")
+            group_name = request.POST.get("selected_group_name")
 
             if (group_name != None):
                 
@@ -335,7 +335,21 @@ def USER_ADMIN_PROMPT_create_vm_group(request):
                 )
                 group_root_entry.save()
 
-                return JsonResponse({"status": "success", "message": "Group created"})
+                # Variable to store data on private groups
+                fetch_group_listings_return = fetch_group_listings(user_id)
+                group_metadata = fetch_group_listings_return[0]
+                user_group_listings = fetch_group_listings_return[1]
+                
+                return JsonResponse(
+                    {
+                        "status": "success", 
+                        "message": "Group created",
+                        "groups": {
+                            "listings": user_group_listings,
+                            "meta_data": group_metadata
+                        }
+                    }
+                )
 
     return JsonResponse({"status": "fail", "message": "Only POST allowed"}, status=405)
 
@@ -365,13 +379,25 @@ def USER_ADMIN_PROMPT_delete_vm_group(request):
                     
                     group.delete()
 
+
+                    # Variable to store data on private groups
+                    fetch_group_listings_return = fetch_group_listings(user_id)
+                    group_metadata = fetch_group_listings_return[0]
+                    user_group_listings = fetch_group_listings_return[1]
+
+                                
                     return JsonResponse(
                         {
                             "status": "success", 
                             "header_message": "Success: Server deleted the group",
-                            "message": "Server successfully deleted the project from the database."
+                            "message": "Server successfully deleted the project from the database.",
+                            "groups": {
+                                "listings": user_group_listings,
+                                "meta_data": group_metadata
+                            }
                         }
                     ) 
+
                 else:
                     return JsonResponse(
                         {
@@ -393,9 +419,6 @@ def USER_ADMIN_PROMPT_delete_vm_group(request):
 
     return JsonResponse({"status": "fail", "message": "Only POST allowed"}, status=405)
 
-#@csrf_protect
-#def USER_ADMIN_PROMPT_add_vm_to_vm_group(request):
-#    return
 
 @csrf_protect
 def USER_ADMIN_PROMPT_remove_group_vm(request):
@@ -477,6 +500,23 @@ def USER_ADMIN_PROMPT_project_listings(request):
                 }
             )
 
+def collate_available_project_vms():
+
+    available_vms = []
+    
+    for vm in VMs.objects.all():
+        if (vm.project_id == None):
+            vm_detail = {}
+
+            vm_detail["vm_id"] = vm.id
+            vm_detail["vm_name"] = vm.vm_name
+            vm_detail["vm_status"] = vm.vm_online
+            vm_detail["vm_ip"] = vm.vm_ip 
+            available_vms.append(vm_detail) 
+
+    return available_vms
+
+    
 @csrf_protect
 def USRER_ADMIN_PROMPT_available_vms(request):
     if request.method == "POST":
@@ -497,24 +537,12 @@ def USRER_ADMIN_PROMPT_available_vms(request):
         
         if (logged_in_status == True):
             
-            available_vms = []
-
-            for vm in VMs.objects.all():
-                if (vm.project_id == None):
-                    vm_detail = {}
-
-                    vm_detail["vm_id"] = vm.id
-                    vm_detail["vm_name"] = vm.vm_name
-                    vm_detail["vm_status"] = vm.vm_online
-                    vm_detail["vm_ip"] = vm.vm_ip 
-                    available_vms.append(vm_detail) 
-
             # Returning project data in JSON format back to the user
             return JsonResponse(
                 {
                     "status": "success", 
                     "message": "Server succeeded pass data on available vms",
-                    "vms": available_vms
+                    "vms": collate_available_project_vms()
                 }
             ) 
             
@@ -522,9 +550,49 @@ def USRER_ADMIN_PROMPT_available_vms(request):
         return JsonResponse(
             {
                 "status": "failure", 
+                "header_message": "Error: Error in retrieving data",
                 "message": "Server can't pass data on user who is logged out"
             }
         )
+
+
+def fetch_available_vms_for_group(user_type, selected_group_name, user_id):
+    print("fetching available vms for group: " + str(selected_group_name))
+
+    available_vms = []
+    
+    for vm in VMs.objects.all():
+        # If the user_type is an ADMIN, they can view all 
+        # VMs to add to their own private group
+
+        # Else USER, then one should just check
+        # if vm.project_id == NONE to know if the VM is not
+        # assigned to a current project
+        if (user_type == "ADMIN") or (vm.project_id == None):
+            
+            # Additional filter to see if the VM is not already
+            # in the group to hide it from the list
+            vm_is_not_in_group = True
+
+            for found_group in VM_Group.objects.all():
+                # Looking at group vm entries
+                if (found_group.owner_id == fetch_user_from_id(user_id)):
+                    if (found_group.vm_group_name == selected_group_name):
+                        if (vm == found_group.vm_id):
+                            vm_is_not_in_group = False
+               
+
+            if (vm_is_not_in_group == True):
+        
+                vm_detail = {}
+
+                vm_detail["vm_id"] = vm.id
+                vm_detail["vm_name"] = vm.vm_name
+                vm_detail["vm_status"] = vm.vm_online
+                vm_detail["vm_ip"] = vm.vm_ip 
+                available_vms.append(vm_detail) 
+
+    return available_vms
 
 
 @csrf_protect
@@ -536,48 +604,18 @@ def USRER_ADMIN_PROMPT_available_vms_for_group(request):
         logged_in_status = request.session.get("logged_in")
         user_type = request.session.get("user_type")
 
-        group_name_target = request.POST.get("group_name_target")
+        selected_group_name = request.POST.get("selected_group_name")
        
         if (logged_in_status == True):
             
-            available_vms = []
-   
-            for vm in VMs.objects.all():
-                # If the user_type is an ADMIN, they can view all 
-                # VMs to add to their own private group
-
-                # Else USER, then one should just check
-                # if vm.project_id == NONE to know if the VM is not
-                # assigned to a current project
-                if (user_type == "ADMIN") or (vm.project_id == None):
-                    
-                    # Additional filter to see if the VM is not already
-                    # in the group to hide it from the list
-                    vm_is_not_in_group = True
-
-                    for found_group in VM_Group.objects.all():
-                        # Looking at group vm entries
-                        if (found_group.vm_id != None):
-                            if (found_group.vm_group_name == group_name_target):
-                                if (found_group.vm_id == vm):
-                                    vm_is_not_in_group = False
-
-                    if (vm_is_not_in_group == True):
-                
-                        vm_detail = {}
-
-                        vm_detail["vm_id"] = vm.id
-                        vm_detail["vm_name"] = vm.vm_name
-                        vm_detail["vm_status"] = vm.vm_online
-                        vm_detail["vm_ip"] = vm.vm_ip 
-                        available_vms.append(vm_detail) 
+            user_id = request.session.get("user_id")  
 
             # Returning project data in JSON format back to the user
             return JsonResponse(
                 {
                     "status": "success", 
                     "message": "Server succeeded pass data on available vms",
-                    "vms": available_vms
+                    "vms": fetch_available_vms_for_group(user_type, selected_group_name, user_id)
                 }
             ) 
                 
@@ -600,7 +638,7 @@ def USRER_ADMIN_PROMPT_add_vm_to_group(request):
         if (logged_in_status == True):
 
             vm_id = request.POST.get("vm_id")
-            group_name = request.POST.get("group_name")
+            group_name = request.POST.get("selected_group_name")
 
             group_exists = False
             vm_already_exists = False
@@ -630,6 +668,9 @@ def USRER_ADMIN_PROMPT_add_vm_to_group(request):
                 group_metadata = fetch_group_listings_return[0]
                 user_group_listings = fetch_group_listings_return[1]
 
+                user_type = request.session.get("user_type")
+                selected_group_name = request.POST.get("selected_group_name")
+                
                 # Returning project data in JSON format back to the user
                 return JsonResponse(
                     {
@@ -639,7 +680,8 @@ def USRER_ADMIN_PROMPT_add_vm_to_group(request):
                         "groups": {
                             "listings": user_group_listings,
                             "meta_data": group_metadata
-                        }
+                        },
+                        "vms": fetch_available_vms_for_group(user_type, selected_group_name, user_id)
                     }
                 ) 
             else:
@@ -785,7 +827,7 @@ def USRER_ADMIN_PROMPT_remove_vm_from_group(request):
         if (logged_in_status == True):
 
             vm_id = request.POST.get("vm_id")
-            group_name = request.POST.get("group_name")
+            group_name = request.POST.get("selected_group_name")
 
             # print("found group name")
             # print(group_name)
@@ -808,6 +850,9 @@ def USRER_ADMIN_PROMPT_remove_vm_from_group(request):
                         group_metadata = fetch_group_listings_return[0]
                         user_group_listings = fetch_group_listings_return[1]
 
+                        user_type = request.session.get("user_type")
+                        selected_group_name = request.POST.get("selected_group_name")
+                        
                         # Returning project data in JSON format back to the user
                         return JsonResponse(
                             {
@@ -817,7 +862,8 @@ def USRER_ADMIN_PROMPT_remove_vm_from_group(request):
                                 "groups": {
                                     "listings": user_group_listings,
                                     "meta_data": group_metadata
-                                }
+                                },
+                                "vms": fetch_available_vms_for_group(user_type, selected_group_name, user_id)
                             }
                         ) 
         
@@ -928,7 +974,8 @@ def ADMIN_PROMPT_delete_project(request):
                         {
                             "status": "success", 
                             "header_message": "Success: Server deleted the project",
-                            "message": "Server successfully deleted the project from the database."
+                            "message": "Server successfully deleted the project from the database.",
+                            "projects": collate_ADMIN_project_listings()
                         }
                     ) 
                      
@@ -963,48 +1010,58 @@ def ADMIN_USER_PROMPT_rename_project(request):
             new_project_name = request.POST.get("new_project_name")
             project = fetch_project_from_id(project_id)
 
-            if (project != None):
-                if (new_project_name) and (new_project_name != ""):
-                    
-                    # Checking if the new project name entered doesn't already exist
-                    for project in Projects.objects.all():
-                        
-                        if (project.project_name == new_project_name):
-                            return JsonResponse(
-                                {
-                                    "status": "fail", 
-                                    "header_message": "Error: Project duplicate name",
-                                    "message": "Issue with renaming the project. As one already exists with the same name. Please enter a different one, rename the project that is clashing, or delete the clashing project before trying again."
-                                }
-                            )
-                    
-                    # Attempting to rename the project
-                    fetched_project_identifier_code = project.project_identifier_code
-                    for found_project in Projects.objects.all():
-                        if (found_project.project_identifier_code == fetched_project_identifier_code):
-                            # If there's a match in the project identifier code then update the project entry
-                            # Updating entries: https://www.w3schools.com/django/django_update_data.php
-                            found_project.project_name = new_project_name
-                            found_project.save()
-                    
-                    # print("renamed project")
+            if (new_project_name) and (new_project_name != ""):
 
-                    return JsonResponse(
-                        {
-                            "status": "success", 
-                            "header_message": "Success: Server renamed the project",
-                            "message": "Server successfully updated the project name with the new inputted one within the database."
-                        }
-                    ) 
-                else:
-                    return JsonResponse(
-                    {
-                        "status": "fail", 
-                        "header_message": "Error: Missing rename entry",
-                        "message": "A project name to rename to hasn't been entered. Try again."
-                    }
-                )
-            else:
+                print("POINT A")
+
+                # Checking if the new project name entered doesn't already exist
+                for project in Projects.objects.all():
+                    
+                    if (project.project_name == new_project_name):
+                        print("POINT B")
+                        return JsonResponse(
+                            {
+                                "status": "fail", 
+                                "header_message": "Error: Project duplicate name",
+                                "message": "Issue with renaming the project. As one already exists with the same name. Please enter a different one, rename the project that is clashing, or delete the clashing project before trying again."
+                            }
+                        )
+
+                print("POINT B")         
+                # Attempting to rename the project
+                for project in Projects.objects.all():
+                    if (project.entity_type == "PROJECT"):
+                        print("POINT C " + str(project.id))
+                        if (str(project.id) == str(project_id)) and (str(project.entity_id) == str(0)):
+                            print("POINT D")
+
+                            project.project_name = new_project_name
+                            project.save()
+
+                            user_type = request.session.get("user_type")
+                            user_id = request.session.get("user_id")  
+                            
+                            if (user_type == "USER"):
+                                user = fetch_user_from_id(user_id)
+                                return JsonResponse(
+                                    {
+                                        "status": "success", 
+                                        "header_message": "Success: Server renamed the project",
+                                        "message": "Server successfully updated the project name with the new inputted one within the database.",
+                                        "projects": collate_USER_project_listings(user)
+                                    }
+                                ) 
+                            elif (user_type == "ADMIN"):
+                                return JsonResponse(
+                                    {
+                                        "status": "success", 
+                                        "header_message": "Success: Server renamed the project",
+                                        "message": "Server successfully updated the project name with the new inputted one within the database.",
+                                        "projects": collate_ADMIN_project_listings()
+                                    }
+                                ) 
+
+
                 return JsonResponse(
                     {
                         "status": "fail", 
@@ -1012,6 +1069,16 @@ def ADMIN_USER_PROMPT_rename_project(request):
                         "message": "Selected project for renaming cannot be identified. Try again or refresh your page."
                     }
                 )
+
+            else:
+                return JsonResponse(
+                {
+                    "status": "fail", 
+                    "header_message": "Error: Missing rename entry",
+                    "message": "A project name to rename to hasn't been entered. Try again."
+                }
+            )
+      
         else:
             return JsonResponse(
                 {
@@ -1213,7 +1280,8 @@ def ADMIN_USER_PROMPT_add_vm(request):
                             "status": "success", 
                             "header_message": "Success: VM added to project", 
                             "message": "Server successfully added vm to project",
-                            "projects": admin_project_listings
+                            "projects": admin_project_listings,
+                            "vms": collate_available_project_vms()
                         }
                     ) 
                         
@@ -1253,6 +1321,77 @@ def ADMIN_USER_PROMPT_add_vm(request):
                     "message": "Error adding VM to project as you are logged out. Please log in and try again."
                 }
             )
+
+
+def collate_available_users_given_project(project):
+    available_users_details = []
+                        
+    # Filtering users who are already in the project
+    for found_user in User.objects.all():
+        user_in_project_of_focus = False
+
+        for found_project in Projects.objects.all():
+            
+            if (found_project.entity_type == "ADMIN") or (found_project.entity_type == "USER"):
+                
+                found_project_entity_id = int(found_project.entity_id)
+                found_user_id = int(found_user.id)
+
+                if (found_project_entity_id == found_user_id):
+                    if (found_project.project_identifier_code == project.project_identifier_code):
+                        user_in_project_of_focus = True
+    
+        if (user_in_project_of_focus == False):
+            
+            member_detail = {}
+            member_detail["firstname"] = found_user.firstname
+            member_detail["emailaddress"] = found_user.emailaddress
+            member_detail["type"] = found_user.user_type
+            member_detail["user_id"] = found_user.id
+
+            available_users_details.append(member_detail)
+
+    return available_users_details
+
+
+@csrf_protect
+def ADMIN_PROMPT_available_users(request):
+    if request.method == "POST":
+        # print("---------------------")
+        # print("Available users")
+
+      
+        logged_in_status = request.session.get("logged_in")
+        user_type = request.session.get("user_type")
+        
+        user_id = request.session.get("user_id")  
+        user = fetch_user_from_id(user_id)
+        
+        project_id = int(request.POST.get("project_id"))
+        project = fetch_project_from_id(project_id)
+        
+        if (logged_in_status == True):
+    
+            if (user != None) and (project != None):
+                if (user_type == "ADMIN"):
+                    
+                    # Returning project data in JSON format back to the user
+                    return JsonResponse(
+                        {
+                            "status": "success", 
+                            "message": "Server succeeded passing data on available users",
+                            "available_users_details": collate_available_users_given_project(project)
+                        }
+                    ) 
+                
+        # Failure response if the user is requesting data when logged out
+        return JsonResponse(
+            {
+                "status": "failure", 
+                "message": "Server can't pass data on user who is logged out"
+            }
+        ) 
+
     
 @csrf_protect
 def ADMIN_PROMPT_add_user_to_project(request):
@@ -1294,7 +1433,8 @@ def ADMIN_PROMPT_add_user_to_project(request):
                             "status": "success", 
                             "header_message": "Success: Server added user to project",
                             "message": "Server succeeded adding user to project",
-                            "projects": admin_project_listings
+                            "projects": admin_project_listings,
+                            "available_users_details": collate_available_users_given_project(project)
                         }
                     ) 
                 else:
@@ -1397,8 +1537,8 @@ def ADMIN_PROMPT_remove_user_from_project(request):
                         return JsonResponse(
                             {
                                 "status": "fail", 
-                                "header_message": "Error: Cannot remove yourself", 
-                                "message": "Cannot remove yourself from the project as an admin. If you wish to do so, go ahead and delete the project if okay."
+                                "header_message": "Error: Cannot remove project owner from the project", 
+                                "message": "Cannot remove the project owner from the project. If you wish to do so, go ahead and delete the project if okay."
                             }
                         )
                 else:
@@ -1445,72 +1585,6 @@ def ADMIN_PROMPT_remove_user_from_project(request):
             )
            
 
-@csrf_protect
-def ADMIN_PROMPT_available_users(request):
-    if request.method == "POST":
-        # print("---------------------")
-        # print("Available users")
-
-      
-        logged_in_status = request.session.get("logged_in")
-        user_type = request.session.get("user_type")
-        
-        user_id = request.session.get("user_id")  
-        user = fetch_user_from_id(user_id)
-        
-        project_id = int(request.POST.get("project_id"))
-        project = fetch_project_from_id(project_id)
-        
-        if (logged_in_status == True):
-    
-            if (user != None) and (project != None):
-                if (user_type == "ADMIN"):
-                    
-                    available_users_details = []
-                    
-                    # Filtering users who are already in the project
-                    for found_user in User.objects.all():
-                        user_in_project_of_focus = False
-
-                        for found_project in Projects.objects.all():
-                            
-                            if (found_project.entity_type == "ADMIN") or (found_project.entity_type == "USER"):
-                                
-                                found_project_entity_id = int(found_project.entity_id)
-                                found_user_id = int(found_user.id)
-
-                                if (found_project_entity_id == found_user_id):
-                                    if (found_project.project_identifier_code == project.project_identifier_code):
-                                        user_in_project_of_focus = True
-                 
-                        if (user_in_project_of_focus == False):
-                            
-                            member_detail = {}
-                            member_detail["firstname"] = found_user.firstname
-                            member_detail["emailaddress"] = found_user.emailaddress
-                            member_detail["type"] = found_user.user_type
-                            member_detail["user_id"] = found_user.id
-
-                            available_users_details.append(member_detail)
-                            
-                    # Returning project data in JSON format back to the user
-                    return JsonResponse(
-                        {
-                            "status": "success", 
-                            "message": "Server succeeded passing data on available users",
-                            "available_users_details": available_users_details
-                        }
-                    ) 
-                
-        # Failure response if the user is requesting data when logged out
-        return JsonResponse(
-            {
-                "status": "failure", 
-                "message": "Server can't pass data on user who is logged out"
-            }
-        ) 
-    
-    
 @csrf_protect
 def ADMIN_PROMPT_create_project(request):
     if request.method == "POST":

@@ -40,7 +40,7 @@ function navigate_to_project_display(project) {
 function navigate_to_project_rename_display(project) {
     // Updating knowledge on which project has been selected by changing
     // the selected_project_id variable
-
+    console.log(project.project_id);
     selected_project_id = project.project_id; 
 
     // Reveals "Add VM" and "Add user" buttons
@@ -70,6 +70,7 @@ function reveal_project_display_available_users(state)
         if (CORE_USER_TYPE == "ADMIN"){
             available_users_display.style.display = "block";
             toggle_add_user_to_project_button_innertext(false);
+            update_available_project_users(false);
         } 
 
         toggle_add_vm_to_project_button_innertext(true);
@@ -107,6 +108,7 @@ function reveal_project_display_available_users(state)
         if (CORE_USER_TYPE == "ADMIN"){
             available_users_display.style.display = "block";
             toggle_add_user_to_project_button_innertext(false);
+            update_available_project_users(false);
         }
 
         toggle_add_vm_to_project_button_innertext(true);
@@ -126,6 +128,7 @@ function reveal_project_display_available_vms(state)
         }
 
         toggle_add_vm_to_project_button_innertext(false);
+        update_available_project_vms(false);
     }else if (state == false){
         available_vms_display.style.display = "none";
 
@@ -163,6 +166,7 @@ function reveal_project_display_available_vms(state)
         }
         
         toggle_add_vm_to_project_button_innertext(false);
+        update_available_project_vms(false);
     }
 }
 
@@ -247,7 +251,6 @@ function update_project_display_with_project_data(project){
         member_remove_button.type = "button";
         member_remove_button.className = "alternate_connect_button";
         
-        member_remove_button.onclick = () => ADMIN_PROMPT_remove_member_from_project(member_content, member_remove_button, member.user_id, project.project_id);
         
         let remove_member_args = [member_content, member_remove_button, member.user_id, project.project_id];
         member_remove_button.onclick = () => confirmation_prompt_user(
@@ -345,9 +348,12 @@ function update_projects_content() {
     const query_debug_id = generate_debug_id();
 
     console.log(query_debug_id + " Client: Point A - Project listings");
-                      
+
+    const timeout_controller = new AbortController();
+    const timeout_id = setTimeout(() => timeout_controller.abort(), 10000); // network timeout, kept shorter than BASE_POLL_TIME on purpose
+
     return fetch(
-        project_list_request_url, 
+        project_list_request_url,
         {
             method: "POST",
             headers: {
@@ -356,7 +362,8 @@ function update_projects_content() {
             },
             body: new URLSearchParams({
                 debug_id: query_debug_id
-            })
+            }),
+            signal: timeout_controller.signal
         }
     )
     .then(response => response.json())
@@ -368,76 +375,110 @@ function update_projects_content() {
 
             const project_detail_data = data.projects;
             generate_projects_content_with_project_data(project_detail_data);
-           
+
             console.log(query_debug_id + " Client: Point D - Project listings");
 
         }else{
             console.log(query_debug_id + " Client: Point C.2-Fail on data retrieve - Project listings");
         }
-                                                                    
+
     })
     .catch(error => {
         //console.error("Error:", error);
         console.log(query_debug_id + " Client: Point C.3-Server error - Project listings");
-    });
-}
-update_projects_content()
-    .finally(() => {
-        // Once the first request has been handled, wait one second before doing the next call
-        setTimeout(update_projects_content, BASE_POLL_TIME);
-    });
-
-
-function update_available_project_vms() { 
-    // Display virtual machines
-    const project_available_vms_content = document.getElementById("project_available_vms_content");
-    
-    fetch(
-        available_vms_request_url, 
-        {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-                "X-CSRFToken": getCookie('csrftoken') //https://www.geeksforgeeks.org/python/csrf-token-in-django/
-            },
-            body: new URLSearchParams({})
-        }
-    )
-    .then(response => response.json())
-    .then(data => {
-        
-        if (data.status == "success"){
-            
-            project_available_vms_content.innerHTML = ""; // Clearing the content views
-         
-            for (const vm of data.vms){
-                
-                generate_vm_element_returns = generate_vm_element(
-                    vm.vm_name,
-                    vm.vm_status,
-                    vm.vm_ip
-                )
-                vm_add_button = generate_vm_element_returns[0];
-                vms_content = generate_vm_element_returns[1];
-
-
-                vm_add_button.onclick = () => ADMIN_USER_PROMPT_add_vm(vms_content, vm_add_button, vm.vm_id);
-
-                // Rendering the div we created into "project_available_vms_content"
-                project_available_vms_content.appendChild(vms_content);
-            }
-            
-        }else{
-            //console.log(data.message);
-        }
-                                                                    
     })
-    .catch(error => {
-        console.error("Error:", error);
+    .finally(() => {
+        clearTimeout(timeout_id);
+        // Reschedule from inside every call (not just the first) so the loop is actually self-sustaining
+        console.log(query_debug_id + " Client: Point E - Project listings");
+        setTimeout(update_projects_content, BASE_POLL_TIME);
+        console.log(query_debug_id + " Client: Point G - Project listings");
     });
 }
-//setInterval(update_available_project_vms, 3000); // Updating available vm content every 3 seconds
+update_projects_content();
 
+
+function generate_available_project_vms_content_with_vm_data(vms_data){
+    const project_available_vms_content = document.getElementById("project_available_vms_content");
+    project_available_vms_content.innerHTML = ""; // Clearing the content views
+         
+    for (const vm of vms_data){
+        
+        generate_vm_element_returns = generate_vm_element(
+            vm.vm_name,
+            vm.vm_status,
+            vm.vm_ip
+        )
+        vm_add_button = generate_vm_element_returns[0];
+        vms_content = generate_vm_element_returns[1];
+
+
+        vm_add_button.onclick = () => ADMIN_USER_PROMPT_add_vm(vms_content, vm_add_button, vm.vm_id);
+
+        // Rendering the div we created into "project_available_vms_content"
+        project_available_vms_content.appendChild(vms_content);
+    }
+}
+
+
+function update_available_project_vms(poll_updates = true) { 
+
+    console.log("Checking if feasible to run an update for the available project vms");
+
+    if (available_vms_display.style.display == "block"){
+        // If the available vms display window is open, then query the update
+        const timeout_controller = new AbortController();
+        const timeout_id = setTimeout(() => timeout_controller.abort(), 10000); // network timeout, kept shorter than BASE_POLL_TIME on purpose
+
+        // Display virtual machines
+        fetch(
+            available_vms_request_url, 
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-CSRFToken": getCookie('csrftoken') //https://www.geeksforgeeks.org/python/csrf-token-in-django/
+                },
+                body: new URLSearchParams({}),
+                signal: timeout_controller.signal
+            }
+        )
+        .then(response => response.json())
+        .then(data => {
+            
+            if (data.status == "success"){
+                
+                generate_available_project_vms_content_with_vm_data(data.vms);
+                
+            }else{
+                prompt_user(data.header_message, data.message);
+                console.log("update_available_project_vms errored in retrieving data");
+            }
+                                                                        
+        })
+        .catch(error => {
+            prompt_user("Error: Caught unknown error in retrieving available project vms", "Re-login and try again after hard refreshing the page.");
+            console.error("Error:", error);
+        })
+        .finally(() => {
+            clearTimeout(timeout_id);
+            // Reschedule from inside every call (not just the first) so the loop is actually self-sustaining
+            
+            if (poll_updates == true){
+                setTimeout(update_available_project_vms, BASE_POLL_TIME);
+            }
+        });
+
+    }else{
+        // Else, do not query the update as it is a waste of resourecs, and wait for the
+        // the next iteration to check agani 
+        if (poll_updates == true){
+            setTimeout(update_available_project_vms, BASE_POLL_TIME);
+        }
+    }
+    
+}
+update_available_project_vms(true);
 
 // Functions
 
@@ -485,11 +526,11 @@ function ADMIN_USER_PROMPT_rename_project(arg_list){
         
         if (data.status == "success"){
             
-            prompt_user(data.header_message, data.message);
-            update_projects_content();
+            generate_projects_content_with_project_data(data.projects);
             reset_project_navigation_to_project_content();
-
             lower_button_toggle(false, false, false, true, false, false, false);
+            prompt_user(data.header_message, data.message);
+
         }else{
             // If the VM has failed to be renamed, give a failed prompt
             // then return back to normal
@@ -531,12 +572,10 @@ function ADMIN_USER_PROMPT_add_vm(vms_content, vm_add_button, vm_id_to_add) {
     .then(data => {
         
         if (data.status == "success"){
-            
             prompt_user(data.header_message, data.message);
 
-            // After successfully removing a VM, request an update on the latest
-            // available vms
-            update_available_project_vms();
+            // After successfully removing a VM, update the vm list
+            generate_available_project_vms_content_with_vm_data(data.vms);
 
             // Updating project information currently being displayed to the user
             const project_detail_data = data.projects;
@@ -547,6 +586,10 @@ function ADMIN_USER_PROMPT_add_vm(vms_content, vm_add_button, vm_id_to_add) {
                 }
             }
             
+            // Updating project content as a whole so that the user gets updated figures when they
+            // go back to the main projects view display
+            update_projects_content(project_detail_data);
+
         }else{
             // If the VM has failed to be added, give a failed prompt
             // then return back to normal
@@ -606,6 +649,10 @@ function ADMIN_USER_PROMPT_remove_vm(arg_list){
                     update_project_display_with_project_data(project);
                 }
             }
+
+            // Updating project content as a whole so that the user gets updated figures when they
+            // go back to the main projects view display
+            update_projects_content(project_detail_data);
 
         }else{
             // If the VM has failed to be added, give a failed prompt

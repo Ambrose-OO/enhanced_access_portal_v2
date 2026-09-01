@@ -36,7 +36,7 @@ function reveal_notification_or_prompt(reveal_type){
         error("Wrong input");
     }
 }
-//reveal_notification_or_prompt("none");
+reveal_notification_or_prompt("none");
 
 
 /**
@@ -95,10 +95,10 @@ function confirmation_prompt_user(prompt_header, prompt_message, function_to_cal
 
     reveal_notification_or_prompt("confirmation_prompt");
 
-    const confirmation_prompt_header_p = document.getElementById("confirmation_prompt_header");
+    const confirmation_prompt_header = document.getElementById("confirmation_prompt_header");
     confirmation_prompt_header.innerHTML = prompt_header;
 
-    const confirmation_prompt_message_p = document.getElementById("confirmation_prompt_message");
+    const confirmation_prompt_message = document.getElementById("confirmation_prompt_message");
     confirmation_prompt_message.innerHTML = prompt_message;
 
     confirmation_prompt_button.onclick = () => continue_confirmation_prompt(function_to_call, function_args);
