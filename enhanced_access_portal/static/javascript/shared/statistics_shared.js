@@ -7,8 +7,11 @@
 // Sub-functions
 
 function update_statistics() { 
-            
-    fetch(
+    
+    const timeout_controller = new AbortController();
+    const timeout_id = setTimeout(() => timeout_controller.abort(), 10000); // network timeout, kept shorter than BASE_POLL_TIME on purpose
+
+    return fetch(
         statistics_request_url, 
         {
             method: "POST",
@@ -18,7 +21,8 @@ function update_statistics() {
             },
             body: new URLSearchParams(
                 {}
-            )
+            ),
+            signal: timeout_controller.signal
         }
     )
     .then(response => response.json())
@@ -71,7 +75,11 @@ function update_statistics() {
     })
     .catch(error => {
         //console.error("Error:", error);
+    })
+    .finally(() => {
+        clearTimeout(timeout_id);
+        // Reschedule from inside every call (not just the first) so the loop is actually self-sustaining
+        setTimeout(update_statistics, BASE_POLL_TIME);
     });
 }
 update_statistics();
-//setInterval(update_statistics, 1000); // Updating available vm content every second
