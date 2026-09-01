@@ -73,6 +73,7 @@ function toggle_add_group_vm_button_innertext(default_state){
 }
 function reveal_group_display_available_vms_subfunction(state){
     if (state == true){
+        update_available_group_vms_content(false)
         available_group_vms_display.style.display = "block";
         group_display.style.display = "none";
 
