@@ -649,9 +649,9 @@ def USRER_ADMIN_PROMPT_add_vm_to_group(request):
                     group_exists = True
 
                     # Since the loop will continue through every other entry for the group,
-                    # a check on whether the vm exists in the group can be made 
-                    if (found_group.vm_id == vm_id):
-                        vm_already_exists == True
+                    # a check on whether the vm exists in the group can be made
+                    if (found_group.vm_id == vm):
+                        vm_already_exists = True
 
             
             if (group_exists) and (vm) and (vm_already_exists == False):

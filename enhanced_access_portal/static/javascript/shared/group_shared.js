@@ -455,9 +455,15 @@ function ADMIN_USER_PROMPT_create_group_attempt(project_identifier_code){
 
 function ADMIN_USER_PROMPT_add_vm_to_group(vms_content, vm_add_button, vm_id_to_add) {
     if (selected_group_name == ""){
-        //console.log("no selected group"); 
+        //console.log("no selected group");
         return;
     }
+
+    // Guard against double-clicks firing this twice for the same VM before the first request settles
+    if (vm_add_button.disabled){
+        return;
+    }
+    vm_add_button.disabled = true;
 
     vm_add_button.innerHTML = "Adding vm...";
 
@@ -502,12 +508,19 @@ function ADMIN_USER_PROMPT_add_vm_to_group(vms_content, vm_add_button, vm_id_to_
             vm_add_button.innerHTML = "Failed.";
             setTimeout(function() {
                 vm_add_button.innerHTML = "Add VM";
+                vm_add_button.disabled = false;
             }, 3000);
         }
-                                                                    
+
     })
     .catch(error => {
         console.error("Error:", error);
+
+        vm_add_button.innerHTML = "Failed.";
+        setTimeout(function() {
+            vm_add_button.innerHTML = "Add VM";
+            vm_add_button.disabled = false;
+        }, 3000);
     });
 }
 
