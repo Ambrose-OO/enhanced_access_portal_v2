@@ -850,6 +850,9 @@ def USRER_ADMIN_PROMPT_remove_vm_from_group(request):
                         group_metadata = fetch_group_listings_return[0]
                         user_group_listings = fetch_group_listings_return[1]
 
+                        user_type = request.session.get("user_type")
+                        selected_group_name = request.POST.get("selected_group_name")
+                        
                         # Returning project data in JSON format back to the user
                         return JsonResponse(
                             {
@@ -859,7 +862,8 @@ def USRER_ADMIN_PROMPT_remove_vm_from_group(request):
                                 "groups": {
                                     "listings": user_group_listings,
                                     "meta_data": group_metadata
-                                }
+                                },
+                                "vms": fetch_available_vms_for_group(user_type, selected_group_name, user_id)
                             }
                         ) 
         

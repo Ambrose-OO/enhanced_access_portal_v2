@@ -543,6 +543,8 @@ function ADMIN_USER_PROMPT_remove_vm_from_group(arg_list){
     .then(data => {
 
         if (data.status == "success"){
+            generate_groups_content_with_group_data(data.groups);
+            generate_available_group_vms_with_group_vm_data(data.vms);
             
             prompt_user(data.header_message, data.message);
 
