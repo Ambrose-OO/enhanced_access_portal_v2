@@ -176,112 +176,119 @@ function navigate_to_group_display(group_listing_data, group_metadata_data, inpu
 }
 
 
+function generate_groups_content_with_group_data(group_detail_data){
+    group_content.innerHTML = ""; // Clearing all the elements under the div content container
+
+    // Display project details
+    const group_listing_data = group_detail_data.listings;
+    const group_metadata_data = group_detail_data.meta_data;
+    
+    let group_dictionary = {};
+
+    // Collecting data for individual groups
+    for (const group of group_listing_data){
+        if (group.group_root == false){
+            if (group_dictionary[group.group_name]){
+                group_dictionary[group.group_name]["count"] += 1;
+                if (group.vm_status == "Online"){
+                    group_dictionary[group.group_name]["online_count"] += 1;
+                }
+            }else{
+                group_dictionary[group.group_name] = {}
+                group_dictionary[group.group_name]["count"] = 0;
+                group_dictionary[group.group_name]["online_count"] = 0;
+            }
+        }else{
+            if (!group_dictionary[group.group_name]){
+                group_dictionary[group.group_name] = {}
+                group_dictionary[group.group_name]["count"] = 0;
+                group_dictionary[group.group_name]["online_count"] = 0;
+            }
+        }
+    }
+    
+    // Displaying groups
+    for (const group of group_listing_data){
+        // Checking for the group root records which act as a representation of a group
+        if (group.group_root == true){
+            
+            const group_entry_div = document.createElement("div");
+            group_entry_div.className = "rounded_container project_entry";
+            group_entry_div.id = "project_entry";
+
+            // <p> class elements
+            const group_title = document.createElement("p");
+            group_title.className = "roboto_font project_entry_p1";
+            group_title.innerHTML = "Group name: " + group.group_name;
+            group_entry_div.appendChild(group_title);
+
+            const group_id = document.createElement("p");
+            group_id.className = "roboto_font project_entry_p2";
+            group_id.innerHTML = "Id: " + group.group_id;
+            group_entry_div.appendChild(group_id);
+
+            const group_details = document.createElement("p");
+            group_details.className = "roboto_font";
+            group_details.innerHTML = "VMs (" + group_dictionary[group.group_name]["count"] + ") VMs online (" + group_dictionary[group.group_name]["online_count"] + ")";
+            group_entry_div.appendChild(group_details);
+            
+            // <button> class elements
+            const open_group_button = document.createElement("button");
+            open_group_button.type = "button";
+            open_group_button.className = "alternate_connect_button";
+            open_group_button.onclick = () => navigate_to_group_display(group_listing_data, group_metadata_data, group.group_name);
+            open_group_button.innerHTML = "Open";
+            open_group_button.style.marginRight = "3%";
+            group_entry_div.appendChild(open_group_button);
+
+
+            const delete_group_button = document.createElement("button");
+            delete_group_button.type = "button";
+            delete_group_button.className = "alternate_connect_button"
+
+            let delete_group_args = [group_entry_div, delete_group_button, group.group_id];
+            delete_group_button.onclick = () => confirmation_prompt_user(
+                "Group deletion confirmation",
+                "Clicking confirm will mean you will completely delete the group entry. There is no recovery of this data. Are you sure?",
+                "ADMIN_USER_PROMPT_delete_group",
+                delete_group_args
+            );
+            
+            delete_group_button.innerHTML = "Delete";
+            group_entry_div.appendChild(delete_group_button);
+            
+            group_content.appendChild(group_entry_div);
+        }
+    }
+}
+
+
+
 function update_groups_content() {
     const group_content = document.getElementById("group_content");
 
-    //console.log("fetch group listings");
+    const timeout_controller = new AbortController();
+    const timeout_id = setTimeout(() => timeout_controller.abort(), 10000); // network timeout, kept shorter than BASE_POLL_TIME on purpose
                      
-    fetch(
-        group_list_request_url, 
+    return fetch(
+        group_list_request_url,
         {
             method: "POST",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
                 "X-CSRFToken": getCookie('csrftoken') //https://www.geeksforgeeks.org/python/csrf-token-in-django/
             },
-            body: new URLSearchParams({})
+            body: new URLSearchParams({}),
+            signal: timeout_controller.signal
         }
     )
     .then(response => response.json())
     .then(data => {
 
         if (data.status == "success"){
-            //console.log("fetched group listings");
-            //console.log(data.message);
-            
-            group_content.innerHTML = ""; // Clearing all the elements under the div content container
+        
+            generate_groups_content_with_group_data(data.groups)
 
-            // Display project details
-            const group_listing_data = data.groups.listings;
-            const group_metadata_data = data.groups.meta_data;
-            
-            let group_dictionary = {};
-
-            // Collecting data for individual groups
-            for (const group of group_listing_data){
-                if (group.group_root == false){
-                    if (group_dictionary[group.group_name]){
-                        group_dictionary[group.group_name]["count"] += 1;
-                        if (group.vm_status == "Online"){
-                            group_dictionary[group.group_name]["online_count"] += 1;
-                        }
-                    }else{
-                        group_dictionary[group.group_name] = {}
-                        group_dictionary[group.group_name]["count"] = 0;
-                        group_dictionary[group.group_name]["online_count"] = 0;
-                    }
-                }else{
-                    if (!group_dictionary[group.group_name]){
-                        group_dictionary[group.group_name] = {}
-                        group_dictionary[group.group_name]["count"] = 0;
-                        group_dictionary[group.group_name]["online_count"] = 0;
-                    }
-                }
-            }
-            
-            // Displaying groups
-            for (const group of group_listing_data){
-                // Checking for the group root records which act as a representation of a group
-                if (group.group_root == true){
-                    
-                    const group_entry_div = document.createElement("div");
-                    group_entry_div.className = "rounded_container project_entry";
-                    group_entry_div.id = "project_entry";
-
-                    // <p> class elements
-                    const group_title = document.createElement("p");
-                    group_title.className = "roboto_font project_entry_p1";
-                    group_title.innerHTML = "Group name: " + group.group_name;
-                    group_entry_div.appendChild(group_title);
-
-                    const group_id = document.createElement("p");
-                    group_id.className = "roboto_font project_entry_p2";
-                    group_id.innerHTML = "Id: " + group.group_id;
-                    group_entry_div.appendChild(group_id);
-
-                    const group_details = document.createElement("p");
-                    group_details.className = "roboto_font";
-                    group_details.innerHTML = "VMs (" + group_dictionary[group.group_name]["count"] + ") VMs online (" + group_dictionary[group.group_name]["online_count"] + ")";
-                    group_entry_div.appendChild(group_details);
-                    
-                    // <button> class elements
-                    const open_group_button = document.createElement("button");
-                    open_group_button.type = "button";
-                    open_group_button.className = "alternate_connect_button";
-                    open_group_button.onclick = () => navigate_to_group_display(group_listing_data, group_metadata_data, group.group_name);
-                    open_group_button.innerHTML = "Open";
-                    open_group_button.style.marginRight = "3%";
-                    group_entry_div.appendChild(open_group_button);
-
-
-                    const delete_group_button = document.createElement("button");
-                    delete_group_button.type = "button";
-                    delete_group_button.className = "alternate_connect_button"
-
-                    let delete_group_args = [group_entry_div, delete_group_button, group.group_id];
-                    delete_group_button.onclick = () => confirmation_prompt_user(
-                        "Group deletion confirmation",
-                        "Clicking confirm will mean you will completely delete the group entry. There is no recovery of this data. Are you sure?",
-                        "ADMIN_USER_PROMPT_delete_group",
-                        delete_group_args
-                    );
-                    
-                    delete_group_button.innerHTML = "Delete";
-                    group_entry_div.appendChild(delete_group_button);
-                    
-                    group_content.appendChild(group_entry_div);
-                }
-            }
         }else{
             //console.log(data.message);
         }
@@ -289,11 +296,16 @@ function update_groups_content() {
     })
     .catch(error => {
         console.error("Error:", error);
+    })
+    .finally(() => {
+        clearTimeout(timeout_id);
+        // Reschedule from inside every call (not just the first) so the loop is actually self-sustaining
+        setTimeout(update_groups_content, BASE_POLL_TIME);
     });
 
 }
 update_groups_content() 
-//setInterval(update_groups_content, 3000); 
+
 
 
 function update_available_group_vms_content() {
