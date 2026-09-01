@@ -241,21 +241,21 @@ def fetch_group_listings(user_id):
     user_group_listings = []
     user = fetch_user_from_id(user_id)
 
-    for group in VM_Group.objects.all():
+    # Filtering to just this user's groups in the DB (instead of scanning every
+    # user's groups in Python), and select_related pulls the linked VM in the
+    # same query so fetch_group_details below doesn't trigger a query per group
+    for group in VM_Group.objects.filter(owner_id=user).select_related('vm_id'):
         group_detail = {}
 
-        # If the user is part of a project then list the project details
-        # to the user
-        if (group.owner_id == user):
-            if (group.vm_id == None):
-                group_metadata["group_name"] = group.vm_group_name
-                group_metadata["created_date"] = group.created_date
-                group_metadata["group_id"] = group.id 
+        if (group.vm_id == None):
+            group_metadata["group_name"] = group.vm_group_name
+            group_metadata["created_date"] = group.created_date
+            group_metadata["group_id"] = group.id
 
-            group_detail = fetch_group_details(group) 
-                
-            user_group_listings.append(group_detail)
-    
+        group_detail = fetch_group_details(group)
+
+        user_group_listings.append(group_detail)
+
     return [group_metadata, user_group_listings]
 
 # Groups
@@ -427,18 +427,26 @@ def USER_ADMIN_PROMPT_remove_group_vm(request):
 def collate_USER_project_listings(user):
     # Variable to store data on projects that the user is allowed to see
     user_project_listings = []
-    
-    for project in Projects.objects.all():
-        project_detail = {}
 
-        # If the user is part of a project then list the project details
-        # to the user
-        if (project.entity_type == "PROJECT"):
-            if (user_exists_in_project(user, project) == True):
-                project_detail = fetch_project_details(project)    
-                user_project_listings.append(project_detail)
+    # Optimised query to get every project_identifier_code that the user has a "USER"
+    # entry for, instead of re-scanning the whole Projects table and re-fetching a User per row.
+    # Once for every "PROJECT" row checked.
+    user_project_codes = set(
+        Projects.objects.filter(
+            entity_type="USER",
+            entity_id=str(user.id)
+        ).values_list('project_identifier_code', flat=True)
+    )
 
-    return
+    # Only the "PROJECT" root entries whose identifier code the user is a
+    # member of, filtered in the DB rather than in Python
+    for project in Projects.objects.filter(
+        entity_type="PROJECT",
+        project_identifier_code__in=user_project_codes
+    ):
+        user_project_listings.append(fetch_project_details(project))
+
+    return user_project_listings
 
 # Project listings
 @csrf_protect
@@ -557,40 +565,42 @@ def USRER_ADMIN_PROMPT_available_vms(request):
 
 
 def fetch_available_vms_for_group(user_type, selected_group_name, user_id):
-    print("fetching available vms for group: " + str(selected_group_name))
+    # print("fetching available vms for group: " + str(selected_group_name))
 
     available_vms = []
-    
+
+    user = fetch_user_from_id(user_id)
+
+    # One query to get the ids of VMs already in this user's group, instead of
+    # re-scanning the whole VM_Group table (and re-fetching the user) once per VM
+    vm_ids_already_in_group = set(
+        VM_Group.objects.filter(
+            owner_id=user,
+            vm_group_name=selected_group_name,
+            vm_id__isnull=False
+        ).values_list('vm_id', flat=True)
+    )
+
     for vm in VMs.objects.all():
-        # If the user_type is an ADMIN, they can view all 
+        # If the user_type is an ADMIN, they can view all
         # VMs to add to their own private group
 
         # Else USER, then one should just check
         # if vm.project_id == NONE to know if the VM is not
         # assigned to a current project
-        if (user_type == "ADMIN") or (vm.project_id == None):
-            
-            # Additional filter to see if the VM is not already
-            # in the group to hide it from the list
-            vm_is_not_in_group = True
+        # (using project_id_id reads the raw foreign key column, avoiding a
+        # join query just to check whether it's set)
+        if (user_type == "ADMIN") or (vm.project_id_id == None):
 
-            for found_group in VM_Group.objects.all():
-                # Looking at group vm entries
-                if (found_group.owner_id == fetch_user_from_id(user_id)):
-                    if (found_group.vm_group_name == selected_group_name):
-                        if (vm == found_group.vm_id):
-                            vm_is_not_in_group = False
-               
+            if (vm.id not in vm_ids_already_in_group):
 
-            if (vm_is_not_in_group == True):
-        
                 vm_detail = {}
 
                 vm_detail["vm_id"] = vm.id
                 vm_detail["vm_name"] = vm.vm_name
                 vm_detail["vm_status"] = vm.vm_online
-                vm_detail["vm_ip"] = vm.vm_ip 
-                available_vms.append(vm_detail) 
+                vm_detail["vm_ip"] = vm.vm_ip
+                available_vms.append(vm_detail)
 
     return available_vms
 
@@ -640,20 +650,12 @@ def USRER_ADMIN_PROMPT_add_vm_to_group(request):
             vm_id = request.POST.get("vm_id")
             group_name = request.POST.get("selected_group_name")
 
-            group_exists = False
-            vm_already_exists = False
             vm = fetch_vm_from_id(vm_id)
 
-            for found_group in VM_Group.objects.all():    
-                if (found_group.vm_group_name == group_name):
-                    group_exists = True
+            # Targeted existence checks instead of pulling every VM_Group row into Python
+            group_exists = VM_Group.objects.filter(vm_group_name=group_name).exists()
+            vm_already_exists = VM_Group.objects.filter(vm_group_name=group_name, vm_id=vm).exists()
 
-                    # Since the loop will continue through every other entry for the group,
-                    # a check on whether the vm exists in the group can be made 
-                    if (found_group.vm_id == vm_id):
-                        vm_already_exists == True
-
-            
             if (group_exists) and (vm) and (vm_already_exists == False):
                 user_id = request.session.get("user_id")  
             
@@ -834,45 +836,47 @@ def USRER_ADMIN_PROMPT_remove_vm_from_group(request):
             # print("vm id")
             # print(vm_id)
 
-            for found_group in VM_Group.objects.all():
-                if (found_group.vm_id != None):    
-                    identified_group_name: bool = (found_group.vm_group_name == group_name)
-                    
-                    vm_id_match: bool = (int((found_group.vm_id).id) == int(vm_id))
-                    
-                    if (identified_group_name) and (vm_id_match):
-                        # Removing the vm from the users group
-                        found_group.delete()
+            # Single targeted query (using the raw vm_id_id foreign key column, so
+            # there's no join needed just to compare ids) instead of scanning every
+            # group row in Python and fetching a related VM object per row
+            found_group = VM_Group.objects.filter(
+                vm_group_name=group_name,
+                vm_id_id=int(vm_id)
+            ).first()
 
-                        user_id = request.session.get("user_id")  
+            if found_group:
+                # Removing the vm from the users group
+                found_group.delete()
 
-                        fetch_group_listings_return = fetch_group_listings(user_id)
-                        group_metadata = fetch_group_listings_return[0]
-                        user_group_listings = fetch_group_listings_return[1]
+                user_id = request.session.get("user_id")
 
-                        user_type = request.session.get("user_type")
-                        selected_group_name = request.POST.get("selected_group_name")
-                        
-                        # Returning project data in JSON format back to the user
-                        return JsonResponse(
-                            {
-                                "status": "success", 
-                                "header_message": "Success: Server VM removal from group",
-                                "message": "Server succeeded in the removing of selected vm from the group.",
-                                "groups": {
-                                    "listings": user_group_listings,
-                                    "meta_data": group_metadata
-                                },
-                                "vms": fetch_available_vms_for_group(user_type, selected_group_name, user_id)
-                            }
-                        ) 
-        
+                fetch_group_listings_return = fetch_group_listings(user_id)
+                group_metadata = fetch_group_listings_return[0]
+                user_group_listings = fetch_group_listings_return[1]
+
+                user_type = request.session.get("user_type")
+                selected_group_name = request.POST.get("selected_group_name")
+
+                # Returning project data in JSON format back to the user
+                return JsonResponse(
+                    {
+                        "status": "success",
+                        "header_message": "Success: Server VM removal from group",
+                        "message": "Server succeeded in the removing of selected vm from the group.",
+                        "groups": {
+                            "listings": user_group_listings,
+                            "meta_data": group_metadata
+                        },
+                        "vms": fetch_available_vms_for_group(user_type, selected_group_name, user_id)
+                    }
+                )
+
             return JsonResponse(
                 {
-                    "status": "error", 
+                    "status": "error",
                     "message": "Server cannot add vm to the group"
                 }
-            ) 
+            )
         else:
             # Failure response if the user is requesting data when logged out
             return JsonResponse(

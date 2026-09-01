@@ -247,21 +247,25 @@ function update_project_display_with_project_data(project){
         member_title.innerHTML = member.firstname + " | " + member.emailaddress + " | Type: " + member.type; 
         member_content.appendChild(member_title);
         
-        const member_remove_button = document.createElement("button");
-        member_remove_button.type = "button";
-        member_remove_button.className = "alternate_connect_button";
-        
-        
-        let remove_member_args = [member_content, member_remove_button, member.user_id, project.project_id];
-        member_remove_button.onclick = () => confirmation_prompt_user(
-            "Member removal confirmation",
-            "Clicking confirm will mean you will remove this member from the project. You can add them back later if they still exist in the system. Are you sure?",
-            "ADMIN_PROMPT_remove_member_from_project",
-            remove_member_args
-        );
-        
-        member_remove_button.innerHTML = "Remove";
-        member_content.appendChild(member_remove_button);
+        // Only admins can remove project members - the button (and the
+        // ADMIN_PROMPT_remove_member_from_project call/URL it wires up) is
+        // never created for a USER type, not just hidden via CSS
+        if (CORE_USER_TYPE == "ADMIN"){
+            const member_remove_button = document.createElement("button");
+            member_remove_button.type = "button";
+            member_remove_button.className = "alternate_connect_button";
+
+            let remove_member_args = [member_content, member_remove_button, member.user_id, project.project_id];
+            member_remove_button.onclick = () => confirmation_prompt_user(
+                "Member removal confirmation",
+                "Clicking confirm will mean you will remove this member from the project. You can add them back later if they still exist in the system. Are you sure?",
+                "ADMIN_PROMPT_remove_member_from_project",
+                remove_member_args
+            );
+
+            member_remove_button.innerHTML = "Remove";
+            member_content.appendChild(member_remove_button);
+        }
 
 
         // Rendering the div we created into "project_display_users_content"

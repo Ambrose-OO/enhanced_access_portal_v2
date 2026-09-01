@@ -21,6 +21,7 @@
         <link rel = "stylesheet" href="{% static 'css/styling_style.css' %}">
     </head>
 
+
     <body class = "resource_dashboard_body">
         
         <div class = "main_panel" style="display:flex">
@@ -88,7 +89,7 @@
 
 
             <div class = "resource_dashboard_column">
-                <div class = "main_section" style="z-index: 1; position: relative;">
+                <div class = "main_section " style="z-index: 1; position: relative;">
                     
                     <!-- Upper panel -->
                     <div class = "upper_panel width_section_length" style = "align-items: center; display: flex; height: 12%">
@@ -106,7 +107,7 @@
                             </p>
                         </div>
                         
-                       <div style="text-align: right; margin-right: 0.45%;">
+                        <div style="text-align: right; margin-right: 0.45%;">
                             <button id = "panel_toggle_button" type="button" onclick="toggle_left_panel()" class = "panel_toggle_button" style = "width: 110%; height: 50px;">
                                 <img id="panel_toggle_button" src="{% static 'media/PanelToggleIcon.png' %}" class="nine_square_button_icon" alt="Panel toggle" />
                             </button>
@@ -118,12 +119,12 @@
 
                     <div class = "width_section_length" style="height: 5.5%; display: grid; align-items: center; display: flex; margin-bottom: 3%;" >
 
-                             <!-- "display: block;" helps put the elements on seperate lines */ -->
-                             <input type="text" placeholder="Search VMs" id="vm_search" class="entry_style1" style = "width: 80%; margin-right: 1%;"> 
+                            <!-- "display: block;" helps put the elements on seperate lines */ -->
+                            <input type="text" placeholder="Search VMs" id="vm_search" class="entry_style1" style = "width: 80%; margin-right: 1%;"> 
                      
-                             <button id = "search_button" type="button" onclick="search_all_vms()" class = "alternate_button">
-                                 Search
-                             </button>
+                            <button id = "search_button" type="button" onclick="search_all_vms()" class = "alternate_button">
+                                Search
+                            </button>
                     
                     </div>
                     
@@ -172,19 +173,19 @@
 
                             
                             <div id = "projects_section" style = "display: flex; width: 100%; height: 100%;">
-                                <!-- Display is typically "grid" for "project_content" -->
-                                <div id = "project_content" style = "
-                                     display: grid; 
-                                     grid-template-columns: repeat(2, 1fr);
-                                     
- 
-                                     width: 100%; 
-                                     height: 100%; 
-                                     align-items: center;
-                                     overflow-y: auto;
-                                     ">
- 
-                                     <!-- 
+                               <!-- Display is typically "grid" for "project_content" -->
+                               <div id = "project_content" style = "
+                                    display: grid; 
+                                    grid-template-columns: repeat(2, 1fr);
+                                    
+
+                                    width: 100%; 
+                                    height: 100%; 
+                                    align-items: center;
+                                    overflow-y: auto;
+                                    ">
+
+                                    <!-- 
                                         <div style = 
                                             "width: 100%; 
                                             height: 20%; 
@@ -207,7 +208,7 @@
                                             </button>
                                         </div>
                                     -->
-                                 </div>
+                                </div>
                                 
                                 <!-- Display is typically "flex" for "project_display" -->
                                 <div id = "project_display" style = "display: none; width: 100%; height: 100%;">
@@ -274,8 +275,7 @@
                                         </div>
                                     </div>
 
-
-                                    <div id = "available_vms_display" style = "width: 100%; height: 100%; overflow-y: auto; display: none;"> 
+                                    <div id = "available_users_display" style = "width: 100%; height: 100%; overflow-y: auto; display: none;"> 
 
                                         <div style = 
                                             "width: 100%; 
@@ -284,22 +284,15 @@
                                             justify-content: center; 
                                             display: flex;
                                         "> 
-                                            <p class = "header_title" style = "margin-top: 1%;">Available virtual machines</p>
+                                            <p class = "header_title" style = "margin-top: 1%;">Available users</p>
                                         </div>
                                         
 
-                                        <div id = "project_available_vms_content" style = "width: 90%; height: 80%;">
-                                            <div class = "vms_content">
-                                                <p class = "roboto_font project_entry_p2">Virtual machine: Ambroses VM | Status: Online | 255.193.321.0</p>
-                                                <button id="x1" type="button" onclick="" class="alternate_connect_button">
-                                                    Add VM
-                                                </button>
-                                            </div>
-                                            
+                                        <div id = "project_available_users_content" style = "width: 90%; height: 80%;">
+     
                                         </div>
                                     </div>
 
-                                    <!-- No need to add available_users_display as users can't add users to projects -->
                                 </div>
 
                                 <!-- No need for project_creation for users -->
@@ -377,7 +370,7 @@
                                     -->
                                 </div>
                                 
-
+                                
                                 <div id = "group_creation" style = "display: none; width: 100%; height: 100%; align-items: center; 
                                 justify-content: center; flex-direction: column;">
                                     <div style = 
@@ -473,7 +466,6 @@
                                 </div>
                             </div>
 
-
                             <div id = "all_vms_section" style = "width: 100%; height: 100%; display: none;">
                                
                                 <div style = "width: 100%; height: 100%; overflow-y: auto; display: block;">
@@ -496,7 +488,6 @@
 
                                 </div>
                             </div>
-
 
                             <div id = "statistics_section" style = "display: none; width: 100%; height: 100%; justify-content: center; align-items: center;">
                           
@@ -557,7 +548,7 @@
 
                         </div>
                     </div>
-        
+
                     <div id = "lower_button_panel" style = "margin-top: 1%; align-items: center; justify-content: space-around; display: flex;">
                         <button id = "add_vm_button" type="button" onclick="reveal_project_display_available_vms()" class = "alternate_button_2" style = "display: none;">
                             Add VM
@@ -683,13 +674,8 @@
 
         const statistics_request_url = "{% url 'statistics_request' %}";
 
-   
-       
-        // Blank functions to make for User
-        // toggle_add_user_to_project_button_innertext
-
     </script>
-    
+
     <!-- Shared scripts to import -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
@@ -697,7 +683,7 @@
     <script src="{% static 'javascript/shared/utilities_shared.js' %}"></script>
 
     <script src="{% static 'javascript/shared/notification_and_prompts.js' %}"></script>
-    <script src="{% static 'javascript/user/notification_and_prompts_user.js' %}"></script>
+    <script src="{% static 'javascript/admin/notification_and_prompts_admin.js' %}"></script>
     
     <script src="{% static 'javascript/shared/projects_shared.js' %}"></script>
 
