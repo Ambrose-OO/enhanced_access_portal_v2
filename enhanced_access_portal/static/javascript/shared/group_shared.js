@@ -413,7 +413,9 @@ function ADMIN_USER_PROMPT_create_group_attempt(project_identifier_code){
             if (data.status == "success"){
                 
                 group_creation_loading_text.innerHTML = "Group created!";
-            
+                
+                generate_groups_content_with_group_data(data.groups);
+                console.log("group data generation after group creation");
                 setTimeout(function() {
                     group_creation_cancellation(); // Moving user back to main project display section
                     reset_group_creation_section();
