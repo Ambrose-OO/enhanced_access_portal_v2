@@ -419,9 +419,6 @@ def USER_ADMIN_PROMPT_delete_vm_group(request):
 
     return JsonResponse({"status": "fail", "message": "Only POST allowed"}, status=405)
 
-#@csrf_protect
-#def USER_ADMIN_PROMPT_add_vm_to_vm_group(request):
-#    return
 
 @csrf_protect
 def USER_ADMIN_PROMPT_remove_group_vm(request):
@@ -683,7 +680,8 @@ def USRER_ADMIN_PROMPT_add_vm_to_group(request):
                         "groups": {
                             "listings": user_group_listings,
                             "meta_data": group_metadata
-                        }
+                        },
+                        "vms": fetch_available_vms_for_group(user_type, selected_group_name, user_id)
                     }
                 ) 
             else:
