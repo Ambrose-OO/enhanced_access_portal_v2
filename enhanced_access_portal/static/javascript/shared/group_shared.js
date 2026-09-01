@@ -415,7 +415,7 @@ function ADMIN_USER_PROMPT_create_group_attempt(project_identifier_code){
                 group_creation_loading_text.innerHTML = "Group created!";
                 
                 generate_groups_content_with_group_data(data.groups);
-                console.log("group data generation after group creation");
+
                 setTimeout(function() {
                     group_creation_cancellation(); // Moving user back to main project display section
                     reset_group_creation_section();
@@ -591,14 +591,12 @@ function ADMIN_USER_PROMPT_delete_group(arg_list){
         
         if (data.status == "success"){
             
+
+            generate_groups_content_with_group_data(data.groups);
+            console.log("group data generation after group deletion");
+
             prompt_user(data.header_message, data.message);
-            // Removing the project entry display
-            group_entry_div.parentNode.removeChild(vms_content); // removing the listing after success
-        
-            // Don't need to do further updates as the project entry display
-            // will dissapear and that's the most latest visual update that we will need
-            // nothing else will be visible to the user from the project we deleted after
-        
+           
         }else{
             // If the VM has failed to be deleted, give a failed prompt
             // then return back to normal

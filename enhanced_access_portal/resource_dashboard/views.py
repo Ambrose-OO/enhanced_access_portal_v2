@@ -379,13 +379,25 @@ def USER_ADMIN_PROMPT_delete_vm_group(request):
                     
                     group.delete()
 
+
+                    # Variable to store data on private groups
+                    fetch_group_listings_return = fetch_group_listings(user_id)
+                    group_metadata = fetch_group_listings_return[0]
+                    user_group_listings = fetch_group_listings_return[1]
+
+                                
                     return JsonResponse(
                         {
                             "status": "success", 
                             "header_message": "Success: Server deleted the group",
-                            "message": "Server successfully deleted the project from the database."
+                            "message": "Server successfully deleted the project from the database.",
+                            "groups": {
+                                "listings": user_group_listings,
+                                "meta_data": group_metadata
+                            }
                         }
                     ) 
+
                 else:
                     return JsonResponse(
                         {
