@@ -427,18 +427,26 @@ def USER_ADMIN_PROMPT_remove_group_vm(request):
 def collate_USER_project_listings(user):
     # Variable to store data on projects that the user is allowed to see
     user_project_listings = []
-    
-    for project in Projects.objects.all():
-        project_detail = {}
 
-        # If the user is part of a project then list the project details
-        # to the user
-        if (project.entity_type == "PROJECT"):
-            if (user_exists_in_project(user, project) == True):
-                project_detail = fetch_project_details(project)    
-                user_project_listings.append(project_detail)
+    # Optimised query to get every project_identifier_code that the user has a "USER"
+    # entry for, instead of re-scanning the whole Projects table and re-fetching a User per row.
+    # Once for every "PROJECT" row checked.
+    user_project_codes = set(
+        Projects.objects.filter(
+            entity_type="USER",
+            entity_id=str(user.id)
+        ).values_list('project_identifier_code', flat=True)
+    )
 
-    return
+    # Only the "PROJECT" root entries whose identifier code the user is a
+    # member of, filtered in the DB rather than in Python
+    for project in Projects.objects.filter(
+        entity_type="PROJECT",
+        project_identifier_code__in=user_project_codes
+    ):
+        user_project_listings.append(fetch_project_details(project))
+
+    return user_project_listings
 
 # Project listings
 @csrf_protect
