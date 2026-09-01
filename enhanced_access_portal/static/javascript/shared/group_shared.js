@@ -309,7 +309,10 @@ update_groups_content()
 
 
 function update_available_group_vms_content() {
-  
+    if (group_name_target == ""){
+        return;
+    }
+    
     // Fetching available group vms
 
     const timeout_controller = new AbortController();
