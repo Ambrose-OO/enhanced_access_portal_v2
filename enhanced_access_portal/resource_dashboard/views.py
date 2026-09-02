@@ -31,6 +31,48 @@ ACTION_THROTTLE_SECONDS = 2
 # Generic functions
 ###################
 
+
+def is_blank_or_whitespace(value):
+    # Treat missing/None the same as an empty or whitespace-only string
+    return (not value) or (value.strip() == "")
+
+
+def name_length_error(value, min_length, max_length):
+    # Expects an already-trimmed value. Returns a user-facing message if the
+    # length is out of bounds, otherwise None
+    if (len(value) < min_length):
+        return "Must be at least " + str(min_length) + " characters long."
+    if (len(value) > max_length):
+        return "Must be no more than " + str(max_length) + " characters long."
+    return None
+
+
+def throttle_action(view_func):
+    # Rejects a POST if the same session (or, if logged out, the same IP) hit
+    # this same URL within the last ACTION_THROTTLE_SECONDS - keeps a
+    # double-click or repeated submission from firing the action twice, and
+    # caps how often any one client can hammer a mutating endpoint
+    @wraps(view_func)
+    def wrapped_view(request, *args, **kwargs):
+        if request.method == "POST":
+            throttle_key_owner = request.session.get("user_id") or request.META.get("REMOTE_ADDR", "unknown")
+            throttle_cache_key = "throttle:" + request.path + ":" + str(throttle_key_owner)
+
+            if cache.get(throttle_cache_key):
+                return JsonResponse(
+                    {
+                        "status": "fail",
+                        "header_message": "Error: Too many requests",
+                        "message": "Please wait a moment before trying that again."
+                    },
+                    status=429
+                )
+
+            cache.set(throttle_cache_key, True, timeout=ACTION_THROTTLE_SECONDS)
+
+        return view_func(request, *args, **kwargs)
+    return wrapped_view
+
 def fetch_user_from_id(user_id: int):
     try:
         return User.objects.get(id=user_id)
@@ -311,60 +353,69 @@ def USER_ADMIN_PROMPT_group_listings(request):
         ) 
 
 @csrf_protect
+@throttle_action
 def USER_ADMIN_PROMPT_create_vm_group(request):
     if request.method == "POST":
 
         logged_in_status = request.session.get("logged_in")
         
         if (logged_in_status == True):
-            
-            group_name = request.POST.get("selected_group_name")
 
-            if (group_name != None):
-                
-                if (len(group_name) < 3):
-                    return JsonResponse(
-                        {
-                            "status": "fail", 
-                            "header_message": "Error: VM group name length",
-                            "message": "Issue with creating a VM group. As the group name has less than three characters. Please try again."
-                        }
-                    )
-                
-                user_id = request.session.get("user_id")  
-                user = fetch_user_from_id(user_id)
+            group_name = (request.POST.get("selected_group_name") or "").strip()
 
-                for vm_group in VM_Group.objects.all():
-                    if (vm_group.vm_group_name == group_name) and (vm_group.owner_id == user):
-                        return JsonResponse(
-                            {
-                                "status": "fail", 
-                                "header_message": "Error: VM group duplicate name",
-                                "message": "Issue with creating a VM group. As one already exists with the same name. Please try again"
-                            }
-                        )
-                            
-                group_root_entry = VM_Group(
-                    owner_id = fetch_user_from_id(user_id),
-                    vm_group_name = group_name
-                )
-                group_root_entry.save()
-
-                # Variable to store data on private groups
-                fetch_group_listings_return = fetch_group_listings(user_id)
-                group_metadata = fetch_group_listings_return[0]
-                user_group_listings = fetch_group_listings_return[1]
-                
+            if is_blank_or_whitespace(group_name):
                 return JsonResponse(
                     {
-                        "status": "success", 
-                        "message": "Group created",
-                        "groups": {
-                            "listings": user_group_listings,
-                            "meta_data": group_metadata
-                        }
+                        "status": "fail",
+                        "header_message": "Error: VM group name entry",
+                        "message": "Issue with creating a VM group. No group name was entered. Please try again."
                     }
                 )
+
+            length_error = name_length_error(group_name, GROUP_NAME_MIN_LENGTH, GROUP_NAME_MAX_LENGTH)
+            if length_error:
+                return JsonResponse(
+                    {
+                        "status": "fail",
+                        "header_message": "Error: VM group name length",
+                        "message": "Issue with creating a VM group. " + length_error
+                    }
+                )
+
+            user_id = request.session.get("user_id")
+            user = fetch_user_from_id(user_id)
+
+            for vm_group in VM_Group.objects.all():
+                if (vm_group.vm_group_name == group_name) and (vm_group.owner_id == user):
+                    return JsonResponse(
+                        {
+                            "status": "fail",
+                            "header_message": "Error: VM group duplicate name",
+                            "message": "Issue with creating a VM group. As one already exists with the same name. Please try again"
+                        }
+                    )
+
+            group_root_entry = VM_Group(
+                owner_id = fetch_user_from_id(user_id),
+                vm_group_name = group_name
+            )
+            group_root_entry.save()
+
+            # Variable to store data on private groups
+            fetch_group_listings_return = fetch_group_listings(user_id)
+            group_metadata = fetch_group_listings_return[0]
+            user_group_listings = fetch_group_listings_return[1]
+
+            return JsonResponse(
+                {
+                    "status": "success",
+                    "message": "Group created",
+                    "groups": {
+                        "listings": user_group_listings,
+                        "meta_data": group_metadata
+                    }
+                }
+            )
 
     return JsonResponse({"status": "fail", "message": "Only POST allowed"}, status=405)
 
