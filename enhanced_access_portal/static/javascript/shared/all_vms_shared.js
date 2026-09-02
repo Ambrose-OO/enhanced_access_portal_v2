@@ -124,15 +124,20 @@ function search_all_vms(){
 
         console.log(query_debug_id + " Client: Point 2");
 
-        if (vm_search.value == ""){
+        if (is_blank_or_whitespace(vm_search.value)){
             prompt_user(
                 "Error: Cannot run a search query",
                 "Error handling the search query. As nothing has been entered into the 'Search VMs' entry box. Please try again."
             );
+        }else if (vm_search.value.trim().length > 100){
+            prompt_user(
+                "Error: Cannot run a search query",
+                "Error handling the search query. The search text is too long - please shorten it and try again."
+            );
         }else{
             console.log(query_debug_id + " Client: Point 3");
             search_button.innerHTML = "Indexing..."
-            search_query = vm_search.value;
+            search_query = vm_search.value.trim();
 
             search_all_vms_call_handler(search_query, query_debug_id);
             search_button.innerHTML = "Close search";

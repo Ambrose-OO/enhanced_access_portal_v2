@@ -187,6 +187,32 @@ function lower_button_toggle(
 }
 
 
+// Keep these in sync with the matching constants in resource_dashboard/views.py -
+// validating here is just for instant feedback, the server enforces the same bounds
+const PROJECT_NAME_MIN_LENGTH = 3;
+const PROJECT_NAME_MAX_LENGTH = 100;
+const GROUP_NAME_MIN_LENGTH = 3;
+const GROUP_NAME_MAX_LENGTH = 100;
+
+
+function is_blank_or_whitespace(value){
+    return (!value) || (value.trim() == "");
+}
+
+
+function name_length_error(value, min_length, max_length){
+    // Expects an already-trimmed value. Returns a user-facing message if the
+    // length is out of bounds, otherwise null
+    if (value.length < min_length){
+        return "Must be at least " + min_length + " characters long.";
+    }
+    if (value.length > max_length){
+        return "Must be no more than " + max_length + " characters long.";
+    }
+    return null;
+}
+
+
 function generate_debug_id(length = 6){
     const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 

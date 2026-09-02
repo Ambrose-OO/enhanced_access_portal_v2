@@ -191,7 +191,6 @@ function ADMIN_PROMPT_create_project_attempt(project_identifier_code){
     // Hiding the project creation form and revealing project loading icon
 
     const project_detail = document.getElementById("project_detail");
-    
     const project_name_entry = document.getElementById("project_name_entry");
     const project_name_value = project_name_entry.value.trim();
 
