@@ -1,9 +1,12 @@
 
+from functools import wraps
+
 from django.http import HttpResponse
 from django.template import loader
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
+from django.core.cache import cache
 
 from login_page.models import User
 from login_page.views import login_page_view
@@ -420,6 +423,7 @@ def USER_ADMIN_PROMPT_create_vm_group(request):
     return JsonResponse({"status": "fail", "message": "Only POST allowed"}, status=405)
 
 @csrf_protect
+@throttle_action
 def USER_ADMIN_PROMPT_delete_vm_group(request):
     if request.method == "POST":
 
@@ -519,13 +523,15 @@ def collate_USER_project_listings(user):
 def USER_ADMIN_PROMPT_project_listings(request):
     if request.method == "POST":
 
-        debug_id = request.POST.get("debug_id")
+        # Falls back to a placeholder so a client that omits debug_id
+        # doesn't 500 the whole endpoint on a None + str concatenation
+        debug_id = request.POST.get("debug_id") or "no_debug_id"
 
         print()
-                
+
         logged_in_status = request.session.get("logged_in")
         user_type = request.session.get("user_type")
-        user_id = request.session.get("user_id")  
+        user_id = request.session.get("user_id")
         user = fetch_user_from_id(user_id)
 
         print(debug_id + " Server: Point B - Project listings\n")
@@ -704,6 +710,7 @@ def USRER_ADMIN_PROMPT_available_vms_for_group(request):
         ) 
 
 @csrf_protect
+@throttle_action
 def USRER_ADMIN_PROMPT_add_vm_to_group(request):
     if request.method == "POST":
         # print("----------------")
@@ -885,6 +892,7 @@ def USRER_ADMIN_PROMPT_statistics(request):
 
 
 @csrf_protect
+@throttle_action
 def USRER_ADMIN_PROMPT_remove_vm_from_group(request):
     if request.method == "POST":
         # print("----------------------")
@@ -1020,6 +1028,7 @@ def USER_ADMIN_PROMPT_logout_attempt(request):
 
 # Projects
 @csrf_protect
+@throttle_action
 def ADMIN_PROMPT_delete_project(request):
     if request.method == "POST":
         # print("----------------")
@@ -1067,92 +1076,91 @@ def ADMIN_PROMPT_delete_project(request):
         )
     
 
+@csrf_protect
+@throttle_action
 def ADMIN_USER_PROMPT_rename_project(request):
     if request.method == "POST":
-        # print("----------------")
-        # print("Renaming project")
 
         logged_in_status = request.session.get("logged_in")
-    
+
         if (logged_in_status == True):
 
             project_id = request.POST.get("project_id")
-            new_project_name = request.POST.get("new_project_name")
-            project = fetch_project_from_id(project_id)
+            new_project_name = (request.POST.get("new_project_name") or "").strip()
 
-            if (new_project_name) and (new_project_name != ""):
-
-                print("POINT A")
-
-                # Checking if the new project name entered doesn't already exist
-                for project in Projects.objects.all():
-                    
-                    if (project.project_name == new_project_name):
-                        print("POINT B")
-                        return JsonResponse(
-                            {
-                                "status": "fail", 
-                                "header_message": "Error: Project duplicate name",
-                                "message": "Issue with renaming the project. As one already exists with the same name. Please enter a different one, rename the project that is clashing, or delete the clashing project before trying again."
-                            }
-                        )
-
-                print("POINT B")         
-                # Attempting to rename the project
-                for project in Projects.objects.all():
-                    if (project.entity_type == "PROJECT"):
-                        print("POINT C " + str(project.id))
-                        if (str(project.id) == str(project_id)) and (str(project.entity_id) == str(0)):
-                            print("POINT D")
-
-                            project.project_name = new_project_name
-                            project.save()
-
-                            user_type = request.session.get("user_type")
-                            user_id = request.session.get("user_id")  
-                            
-                            if (user_type == "USER"):
-                                user = fetch_user_from_id(user_id)
-                                return JsonResponse(
-                                    {
-                                        "status": "success", 
-                                        "header_message": "Success: Server renamed the project",
-                                        "message": "Server successfully updated the project name with the new inputted one within the database.",
-                                        "projects": collate_USER_project_listings(user)
-                                    }
-                                ) 
-                            elif (user_type == "ADMIN"):
-                                return JsonResponse(
-                                    {
-                                        "status": "success", 
-                                        "header_message": "Success: Server renamed the project",
-                                        "message": "Server successfully updated the project name with the new inputted one within the database.",
-                                        "projects": collate_ADMIN_project_listings()
-                                    }
-                                ) 
-
-
+            if is_blank_or_whitespace(new_project_name):
                 return JsonResponse(
                     {
-                        "status": "fail", 
-                        "header_message": "Error: Can't identify project",
-                        "message": "Selected project for renaming cannot be identified. Try again or refresh your page."
+                        "status": "fail",
+                        "header_message": "Error: Missing rename entry",
+                        "message": "A project name to rename to hasn't been entered. Try again."
                     }
                 )
 
-            else:
+            length_error = name_length_error(new_project_name, PROJECT_NAME_MIN_LENGTH, PROJECT_NAME_MAX_LENGTH)
+            if length_error:
                 return JsonResponse(
+                    {
+                        "status": "fail",
+                        "header_message": "Error: Invalid project name",
+                        "message": "Project rename failure. " + length_error
+                    }
+                )
+
+            # Checking if the new project name entered doesn't already exist
+            for existing_project in Projects.objects.all():
+                if (existing_project.project_name == new_project_name):
+                    return JsonResponse(
+                        {
+                            "status": "fail",
+                            "header_message": "Error: Project duplicate name",
+                            "message": "Issue with renaming the project. As one already exists with the same name. Please enter a different one, rename the project that is clashing, or delete the clashing project before trying again."
+                        }
+                    )
+
+            # Attempting to rename the project
+            for found_project in Projects.objects.all():
+                if (found_project.entity_type == "PROJECT"):
+                    if (str(found_project.id) == str(project_id)) and (str(found_project.entity_id) == str(0)):
+
+                        found_project.project_name = new_project_name
+                        found_project.save()
+
+                        user_type = request.session.get("user_type")
+                        user_id = request.session.get("user_id")
+
+                        if (user_type == "USER"):
+                            user = fetch_user_from_id(user_id)
+                            return JsonResponse(
+                                {
+                                    "status": "success",
+                                    "header_message": "Success: Server renamed the project",
+                                    "message": "Server successfully updated the project name with the new inputted one within the database.",
+                                    "projects": collate_USER_project_listings(user)
+                                }
+                            )
+                        elif (user_type == "ADMIN"):
+                            return JsonResponse(
+                                {
+                                    "status": "success",
+                                    "header_message": "Success: Server renamed the project",
+                                    "message": "Server successfully updated the project name with the new inputted one within the database.",
+                                    "projects": collate_ADMIN_project_listings()
+                                }
+                            )
+
+            return JsonResponse(
                 {
-                    "status": "fail", 
-                    "header_message": "Error: Missing rename entry",
-                    "message": "A project name to rename to hasn't been entered. Try again."
+                    "status": "fail",
+                    "header_message": "Error: Can't identify project",
+                    "message": "Selected project for renaming cannot be identified. Try again or refresh your page."
                 }
             )
-      
+
         else:
             return JsonResponse(
                 {
-                    "status": "fail", 
+                    "status": "fail",
                     "header_message": "Error: Cannot rename project entry",
                     "message": "Project rename failure. As the user is not logged in."
                 }
@@ -1164,7 +1172,7 @@ def ADMIN_USER_PROMPT_all_vms(request):
         debug_id = request.POST.get("debug_id")
 
         print()
-       
+
         print(debug_id + " Server: Point B - All vms\n")
         logged_in_status = request.session.get("logged_in")
     
@@ -1220,6 +1228,7 @@ def user_exists_in_project(user, project):
     return user_in_project
 
 @csrf_protect
+@throttle_action
 def ADMIN_USER_PROMPT_remove_vm(request):
     if request.method == "POST":
         # print("----------------")
@@ -1300,6 +1309,7 @@ def ADMIN_USER_PROMPT_remove_vm(request):
             )
 
 @csrf_protect
+@throttle_action
 def ADMIN_USER_PROMPT_add_vm(request):
     if request.method == "POST":
         # print("----------------")
@@ -1464,6 +1474,7 @@ def ADMIN_PROMPT_available_users(request):
 
     
 @csrf_protect
+@throttle_action
 def ADMIN_PROMPT_add_user_to_project(request):
     if request.method == "POST":
         # print("---------------------")
@@ -1552,6 +1563,7 @@ def ADMIN_PROMPT_add_user_to_project(request):
     
 
 @csrf_protect
+@throttle_action
 def ADMIN_PROMPT_remove_user_from_project(request):
     if request.method == "POST":
         # print("--------------------------")
@@ -1656,98 +1668,77 @@ def ADMIN_PROMPT_remove_user_from_project(request):
            
 
 @csrf_protect
+@throttle_action
 def ADMIN_PROMPT_create_project(request):
     if request.method == "POST":
 
-        print()
-
-        debug_id = request.POST.get("debug_id")
-        print(debug_id + " Server: Point C - Create project attempt")
-
         logged_in_status = request.session.get("logged_in")
-    
-        if (logged_in_status == True):
 
-            print(debug_id + " Server: Point D - Create project attempt")
+        if (logged_in_status == True):
 
             user_type = request.session.get("user_type")
 
             if (user_type == "ADMIN"):
 
-                print(debug_id + " Server: Point E.1.1 - Create project attempt")
+                user_id = request.session.get("user_id")
 
-                user_id = request.session.get("user_id")  
-
-                project_name_value = request.POST.get("project_name")
+                project_name_value = (request.POST.get("project_name") or "").strip()
                 project_identifier = request.POST.get("project_identifier")
 
-                if (project_name_value != ""):
-
-                    print(debug_id + " Server: Point E.1.2.A - Create project attempt")
-
-                    if (len(project_name_value) > 2): 
-
-                        print(debug_id + " Server: Point E.1.2.A.1 - Create project attempt")
-
-                        for project in Projects.objects.all():
-                            
-                            if (project.project_name == project_name_value):
-                                print(debug_id + " Server: Point E.1.2.A.2 - Create project attempt")
-                                return JsonResponse(
-                                    {
-                                        "status": "fail", 
-                                        "header_message": "Error: Project duplicate name",
-                                        "message": "Issue with creating a project. As one already exists with the same name."
-                                    }
-                                )
-                        
-                        print(debug_id + " Server: Point E.1.2.A.3 - Create project attempt")
-                        project_root_entry = Projects(
-                            entity_type = "PROJECT",
-                            entity_id = 0, # Can just use the project identifier code to find records for a particulat project then hone in on "PROJECT" entity_type
-                            owner_id_id = user_id,
-                            project_name = project_name_value,
-                            project_identifier_code = project_identifier
-                        )
-                        project_root_entry.save()
-
-                        print(debug_id + " Server: Point E.1.2.A.4 - Create project attempt")
-                        project_admin_entry = Projects(
-                            entity_type = user_type,
-                            entity_id = user_id,
-                            owner_id_id = user_id,
-                            project_name = project_name_value,
-                            project_identifier_code = project_identifier
-                        )
-                        project_admin_entry.save()
-
-                        print(debug_id + " Server: Point E.1.2.A.5 - Create project attempt")
-                        
-                        return JsonResponse(
-                            {
-                                "status": "success", 
-                                "message": "Project registered",
-                                "projects": collate_ADMIN_project_listings()
-                            })
-                    else:
-                        print(debug_id + " Server: Point E.1.2.B - Create project attempt")
-                        return JsonResponse(
-                        {
-                            "status": "fail", 
-                            "header_message": "Error: Invalid project name",
-                            "message": "Project creation failure. Project name has less than 3 characters. Write in at least a 3 character string."
-                        }
-                    )
-                else:
-                    print(debug_id + " Server: Point E.2 - Create project attempt")
+                if is_blank_or_whitespace(project_name_value):
                     return JsonResponse(
                         {
-                            "status": "fail", 
+                            "status": "fail",
                             "header_message": "Error: Invalid project name",
                             "message": "Project creation failure. Project name has no characters. Write in at least a 3 character string."
                         }
                     )
-    
+
+                length_error = name_length_error(project_name_value, PROJECT_NAME_MIN_LENGTH, PROJECT_NAME_MAX_LENGTH)
+                if length_error:
+                    return JsonResponse(
+                        {
+                            "status": "fail",
+                            "header_message": "Error: Invalid project name",
+                            "message": "Project creation failure. " + length_error
+                        }
+                    )
+
+                for project in Projects.objects.all():
+                    if (project.project_name == project_name_value):
+                        return JsonResponse(
+                            {
+                                "status": "fail",
+                                "header_message": "Error: Project duplicate name",
+                                "message": "Issue with creating a project. As one already exists with the same name."
+                            }
+                        )
+
+                project_root_entry = Projects(
+                    entity_type = "PROJECT",
+                    entity_id = 0, # Can just use the project identifier code to find records for a particulat project then hone in on "PROJECT" entity_type
+                    owner_id_id = user_id,
+                    project_name = project_name_value,
+                    project_identifier_code = project_identifier
+                )
+                project_root_entry.save()
+
+                project_admin_entry = Projects(
+                    entity_type = user_type,
+                    entity_id = user_id,
+                    owner_id_id = user_id,
+                    project_name = project_name_value,
+                    project_identifier_code = project_identifier
+                )
+                project_admin_entry.save()
+
+                return JsonResponse(
+                    {
+                        "status": "success",
+                        "message": "Project registered",
+                        "projects": collate_ADMIN_project_listings()
+                    })
+
     return JsonResponse({"status": "fail", "message": "Only POST allowed"}, status=405)
 
 
