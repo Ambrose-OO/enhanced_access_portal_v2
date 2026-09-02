@@ -12,6 +12,21 @@ from resource_dashboard.models import Projects
 from resource_dashboard.models import VMs
 from resource_dashboard.models import VM_Group
 
+######################
+# Validation constants
+######################
+
+PROJECT_NAME_MIN_LENGTH = 3
+PROJECT_NAME_MAX_LENGTH = 100
+
+GROUP_NAME_MIN_LENGTH = 3
+GROUP_NAME_MAX_LENGTH = 100
+
+# Minimum time (in seconds) a logged in user (or, if logged out, an IP) must
+# wait between calls to the same throttled endpoint - guards against a
+# double-click, or a script, firing the same mutating request repeatedly
+ACTION_THROTTLE_SECONDS = 2
+
 ###################
 # Generic functions
 ###################
