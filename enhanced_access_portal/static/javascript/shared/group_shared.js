@@ -395,15 +395,33 @@ function ADMIN_USER_PROMPT_create_group_attempt(project_identifier_code){
     
    
     const group_name_entry = document.getElementById("group_name_entry");
+    const group_name_value = group_name_entry.value.trim();
+
+    if (is_blank_or_whitespace(group_name_value)){
+        prompt_user(
+            "Error: VM group name entry",
+            "Issue with creating a VM group. No group name was entered. Please try again."
+        );
+        return;
+    }
+
+    const group_name_length_error = name_length_error(group_name_value, GROUP_NAME_MIN_LENGTH, GROUP_NAME_MAX_LENGTH);
+    if (group_name_length_error){
+        prompt_user(
+            "Error: VM group name length",
+            "Issue with creating a VM group. " + group_name_length_error
+        );
+        return;
+    }
 
     group_detail.style.display = "none";
     group_creation_loading.style.display = "block";
-    
+
     // Post request to create group
     setTimeout(function() {
-                                       
+
         fetch(
-            create_group_request_url, 
+            create_group_request_url,
             {
                 method: "POST",
                 headers: {
@@ -412,7 +430,7 @@ function ADMIN_USER_PROMPT_create_group_attempt(project_identifier_code){
                 },
                 body: new URLSearchParams(
                     {
-                        "selected_group_name": group_name_entry.value
+                        "selected_group_name": group_name_value
                     }
                 )
             }

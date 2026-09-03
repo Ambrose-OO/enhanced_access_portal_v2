@@ -191,18 +191,35 @@ function ADMIN_PROMPT_create_project_attempt(project_identifier_code){
     // Hiding the project creation form and revealing project loading icon
 
     const project_detail = document.getElementById("project_detail");
-    
     const project_name_entry = document.getElementById("project_name_entry");
+    const project_name_value = project_name_entry.value.trim();
+
+    if (is_blank_or_whitespace(project_name_value)){
+        prompt_user(
+            "Error: Invalid project name",
+            "Project creation failure. Project name has no characters. Write in at least a 3 character string."
+        );
+        return;
+    }
+
+    const project_name_length_error = name_length_error(project_name_value, PROJECT_NAME_MIN_LENGTH, PROJECT_NAME_MAX_LENGTH);
+    if (project_name_length_error){
+        prompt_user(
+            "Error: Invalid project name",
+            "Project creation failure. " + project_name_length_error
+        );
+        return;
+    }
 
     project_detail.style.display = "none";
     project_creation_loading.style.display = "block";
-    
+
     // Post request to create project
     console.log(query_debug_id + " Client: Point B - Create project attempt");
     setTimeout(function() {
-                                       
+
         fetch(
-            create_project_request_url, 
+            create_project_request_url,
             {
                 method: "POST",
                 headers: {
@@ -211,7 +228,7 @@ function ADMIN_PROMPT_create_project_attempt(project_identifier_code){
                 },
                 body: new URLSearchParams(
                     {
-                        project_name: project_name_entry.value,
+                        project_name: project_name_value,
                         project_identifier: project_identifier,
                         debug_id: query_debug_id
                     }

@@ -492,25 +492,35 @@ function ADMIN_USER_PROMPT_rename_project(arg_list){
     //console.log("Renaming VM");
 
     const rename_project_entry = document.getElementById("rename_project_entry");
+    const new_project_name_value = rename_project_entry.value.trim();
 
     if (selected_project_id == ""){
         prompt_user(
-            "Error: Rename project query failed", 
+            "Error: Rename project query failed",
             "A project for renaming hasn't been selected."
         );
         return;
-    }else if (rename_project_entry.value == ""){
+    }else if (is_blank_or_whitespace(new_project_name_value)){
         prompt_user(
-            "Error: Rename project query failed", 
+            "Error: Rename project query failed",
             "A project name to rename to hasn't been entered."
         );
         return;
-    } else { 
-        notify_user("Renaming project...", true);
     }
-    
+
+    const rename_project_length_error = name_length_error(new_project_name_value, PROJECT_NAME_MIN_LENGTH, PROJECT_NAME_MAX_LENGTH);
+    if (rename_project_length_error){
+        prompt_user(
+            "Error: Rename project query failed",
+            rename_project_length_error
+        );
+        return;
+    }
+
+    notify_user("Renaming project...", true);
+
     fetch(
-        rename_project_request_url, 
+        rename_project_request_url,
         {
             method: "POST",
             headers: {
@@ -520,7 +530,7 @@ function ADMIN_USER_PROMPT_rename_project(arg_list){
             body: new URLSearchParams(
                 {
                     project_id: selected_project_id,
-                    new_project_name: rename_project_entry.value
+                    new_project_name: new_project_name_value
                 }
             )
         }
