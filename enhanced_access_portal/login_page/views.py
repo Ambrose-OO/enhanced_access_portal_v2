@@ -4,6 +4,7 @@ from django.template import loader
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.http import JsonResponse
 from django.shortcuts import render
+from django.contrib.auth.hashers import make_password, check_password
 
 from login_page.models import User
 
@@ -11,30 +12,22 @@ import re
 
 @csrf_protect
 def login_page_view(request):
-    print(type(request)) # django.core.handlers.wsgi.WSGIRequest
-    print(request.COOKIES)
     return render(request, 'login_webpage.html')
 
 # https://www.geeksforgeeks.org/python/csrf-token-in-django/
 @csrf_protect
 def USER_PROMPT_login_attempt(request):
     if request.method == "POST":
-        print(request.COOKIES)
         email_login = request.POST.get("email")
         password_login = request.POST.get("password")
-        print(request)
-        print(email_login)
-        print(password_login)
-
+       
         for user in User.objects.all():
             if email_login == user.emailaddress:
-                if password_login == user.password:
-                    print("match")
+                if check_password(password_login, user.password):
                     request.session["logged_in"] = True
                     request.session["user_type"] = user.user_type
                     request.session["user_id"] = user.id
                     return JsonResponse({"status": "success", "message": f"Received: {email_login}"})
-    print("fail")
     return JsonResponse({"status": "fail", "message": "Only POST allowed"}, status=405)
 
 
@@ -42,7 +35,6 @@ def empty_or_whitespace_string_check(string: str):
     filtered_string = string.strip()
     if (filtered_string != ""):
         for character in filtered_string:
-            print("'" + character + "'")
             if (character == "") or (character == " "): 
                 return True
         return False
@@ -204,7 +196,7 @@ def USER_PROMPT_register_attempt(request):
             firstname = first_name, 
             lastname = other_names, 
             emailaddress = email_address, 
-            password = password, 
+            password = make_password(password), 
             user_type="USER"
         )
         
