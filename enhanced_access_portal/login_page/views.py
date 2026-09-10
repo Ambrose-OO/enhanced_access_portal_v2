@@ -12,15 +12,12 @@ import re
 
 @csrf_protect
 def login_page_view(request):
-    print(type(request)) # django.core.handlers.wsgi.WSGIRequest
-    print(request.COOKIES)
     return render(request, 'login_webpage.html')
 
 # https://www.geeksforgeeks.org/python/csrf-token-in-django/
 @csrf_protect
 def USER_PROMPT_login_attempt(request):
     if request.method == "POST":
-        print(request.COOKIES)
         email_login = request.POST.get("email")
         password_login = request.POST.get("password")
        
@@ -38,7 +35,6 @@ def empty_or_whitespace_string_check(string: str):
     filtered_string = string.strip()
     if (filtered_string != ""):
         for character in filtered_string:
-            print("'" + character + "'")
             if (character == "") or (character == " "): 
                 return True
         return False
