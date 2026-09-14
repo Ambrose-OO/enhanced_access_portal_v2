@@ -26,8 +26,8 @@ function update_name_email_display() {
 
         if (data.status == "success"){
 
-            name_display.innerHTML = data.name;
-            email_display.innerHTML = data.email; 
+            name_display.textContent = data.name;
+            email_display.textContent = data.email;
 
         }else{
             //console.log(data.message);
@@ -75,7 +75,7 @@ function generate_vm_element(
 
     const vm_title = document.createElement("p");
     vm_title.className = "roboto_font project_entry_p2";
-    vm_title.innerHTML = "Virtual machine: " + vm_name + " | Status: " + vm_status + " | " + vm_ip;
+    vm_title.textContent = "Virtual machine: " + vm_name + " | Status: " + vm_status + " | " + vm_ip;
     vms_content.appendChild(vm_title);
 
             

@@ -121,7 +121,7 @@ function update_group_display_with_group_data(group_listing_data, group_metadata
 
             const vm_title = document.createElement("p");
             vm_title.className = "roboto_font project_entry_p2"
-            vm_title.innerHTML = "Virtual machine: " + group.vm_name + " | Status: " + group.vm_status + " | " + group.vm_ip;
+            vm_title.textContent = "Virtual machine: " + group.vm_name + " | Status: " + group.vm_status + " | " + group.vm_ip;
             vms_content.appendChild(vm_title);
 
     
@@ -220,17 +220,17 @@ function generate_groups_content_with_group_data(group_detail_data){
             // <p> class elements
             const group_title = document.createElement("p");
             group_title.className = "roboto_font project_entry_p1";
-            group_title.innerHTML = "Group name: " + group.group_name;
+            group_title.textContent = "Group name: " + group.group_name;
             group_entry_div.appendChild(group_title);
 
             const group_id = document.createElement("p");
             group_id.className = "roboto_font project_entry_p2";
-            group_id.innerHTML = "Id: " + group.group_id;
+            group_id.textContent = "Id: " + group.group_id;
             group_entry_div.appendChild(group_id);
 
             const group_details = document.createElement("p");
             group_details.className = "roboto_font";
-            group_details.innerHTML = "VMs (" + group_dictionary[group.group_name]["count"] + ") VMs online (" + group_dictionary[group.group_name]["online_count"] + ")";
+            group_details.textContent = "VMs (" + group_dictionary[group.group_name]["count"] + ") VMs online (" + group_dictionary[group.group_name]["online_count"] + ")";
             group_entry_div.appendChild(group_details);
             
             // <button> class elements
