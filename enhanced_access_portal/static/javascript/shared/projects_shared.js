@@ -201,7 +201,7 @@ function update_project_display_with_project_data(project){
 
         const vm_title = document.createElement("p");
         vm_title.className = "roboto_font project_entry_p2"
-        vm_title.innerHTML = "Virtual machine: " + vm.vm_name + " | Status: " + vm.vm_status + " | " + vm.vm_ip;
+        vm_title.textContent = "Virtual machine: " + vm.vm_name + " | Status: " + vm.vm_status + " | " + vm.vm_ip;
         vms_content.appendChild(vm_title);
 
 
@@ -244,7 +244,7 @@ function update_project_display_with_project_data(project){
 
         const member_title = document.createElement("p");
         member_title.className = "roboto_font project_entry_p2";
-        member_title.innerHTML = member.firstname + " | " + member.emailaddress + " | Type: " + member.type; 
+        member_title.textContent = member.firstname + " | " + member.emailaddress + " | Type: " + member.type;
         member_content.appendChild(member_title);
         
         // Only admins can remove project members - the button (and the
@@ -292,17 +292,17 @@ function generate_projects_content_with_project_data(project_detail_data){
             // <p> class elements
             const project_title = document.createElement("p");
             project_title.className = "roboto_font project_entry_p1";
-            project_title.innerHTML = "Project name: " + project.project_name;
+            project_title.textContent = "Project name: " + project.project_name;
             project_entry_div.appendChild(project_title);
 
             const project_id = document.createElement("p");
             project_id.className = "roboto_font project_entry_p2";
-            project_id.innerHTML = "Id: " + project.project_identifier_code;
+            project_id.textContent = "Id: " + project.project_identifier_code;
             project_entry_div.appendChild(project_id);
 
             const project_details = document.createElement("p");
             project_details.className = "roboto_font";
-            project_details.innerHTML = "VMs (" + project.project_available_vms + ") VMs online (" + project.project_vms_online + ") Users (" + project.project_users + ") Admins (" + project.project_admins + ")";
+            project_details.textContent = "VMs (" + project.project_available_vms + ") VMs online (" + project.project_vms_online + ") Users (" + project.project_users + ") Admins (" + project.project_admins + ")";
             project_entry_div.appendChild(project_details);
             
             // <button> class elements

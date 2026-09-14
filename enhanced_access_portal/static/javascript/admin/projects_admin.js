@@ -98,7 +98,7 @@ function generate_available_project_users_content(available_users_details_data){
 
         const member_title = document.createElement("p");
         member_title.className = "roboto_font project_entry_p2";
-        member_title.innerHTML = user.firstname + " | " + user.emailaddress + " | Type: " + user.type; 
+        member_title.textContent = user.firstname + " | " + user.emailaddress + " | Type: " + user.type;
         user_content.appendChild(member_title);
                     
         const user_add_button = document.createElement("button");
